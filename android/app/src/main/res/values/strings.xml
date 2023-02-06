@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DO Mission Control</string>
+    <string name="title_activity_main">DO Mission Control</string>
+    <string name="package_name">com.appvents.domc</string>
+    <string name="custom_url_scheme">com.appvents.domc</string>
+</resources>
