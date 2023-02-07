@@ -55,9 +55,8 @@ export default function DeploymentDetails() {
       url: string;
       type: string;
     }): Promise<{ sucess: boolean; content: string }> => {
-      const res = await fetch(`/api/download-logs`, {
+      const res = await fetch(`https://domc.vercel.app/api/download-logs`, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-type": "application/json",
         },
         method: "post",
