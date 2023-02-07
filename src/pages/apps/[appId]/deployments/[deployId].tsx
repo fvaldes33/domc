@@ -47,41 +47,6 @@ export default function DeploymentDetails() {
   >({
     show: false,
   });
-  const downloadLogFile = useMutation({
-    mutationFn: async ({
-      url,
-      type,
-    }: {
-      url: string;
-      type: string;
-    }): Promise<{ sucess: boolean; content: string }> => {
-      const res = await fetch(`https://domc.vercel.app/api/download-logs`, {
-        headers: {
-          "Content-type": "application/json",
-        },
-        method: "post",
-        body: JSON.stringify({
-          url,
-        }),
-      });
-
-      if (!res.ok) throw res;
-
-      const data = await res.json();
-      return data;
-    },
-    onSuccess: (data, vars) => {
-      console.log(data);
-      setLogModalProps({
-        show: true,
-        contents: data.content,
-        type: vars.type,
-      });
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
 
   if (isLoading) {
     return (
@@ -136,10 +101,13 @@ export default function DeploymentDetails() {
       },
       {
         onSuccess: (data) => {
-          console.log("getLogsForComponent", data);
           if (data.historic_urls.length) {
             const [url] = data.historic_urls;
-            downloadLogFile.mutate({ url, type });
+            setLogModalProps({
+              show: true,
+              url,
+              type,
+            });
           }
         },
         onError: (error: any) => {
@@ -278,10 +246,16 @@ export default function DeploymentDetails() {
         onClose={() => {
           setLogModalProps({
             show: false,
-            contents: undefined,
+            url: undefined,
+            type: undefined,
           });
         }}
       />
+      {getAppDeploymentLogs.isLoading && (
+        <div className="absolute inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <IconLoader className="animate-spin" />
+        </div>
+      )}
     </Page>
   );
 }

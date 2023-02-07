@@ -1,51 +1,73 @@
+import { useDownloadLogFile } from "@/hooks/useDownloadLogFile";
 import { Dialog, Transition } from "@headlessui/react";
-import { IconX } from "@tabler/icons-react";
+import { IconLoader, IconX } from "@tabler/icons-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import type { Terminal } from "xterm";
 
 export interface LogModalProps {
   show: boolean;
   onClose: () => void;
-  contents?: string;
+  url?: string;
   type?: string;
 }
 
-export function LogModal({ contents, show, type, onClose }: LogModalProps) {
+export function LogModal({ url, show, type, onClose }: LogModalProps) {
   const xtermRef = useRef<HTMLDivElement>(null);
-  const [terminal, setTerminal] = useState<any>(null);
-  const [showLogs, setShowLogs] = useState<boolean>(false);
+  const [instance, setInstance] = useState<Terminal>();
 
-  const loadLogs = async () => {
-    if (!contents) return;
+  const { data, isLoading } = useDownloadLogFile({
+    url,
+    refetchInterval: type === "RUN" ? 5000 : false,
+    onSuccess: async (data) => {
+      if (instance) {
+        if (data.success) {
+          instance.clear();
+          instance.write(data.content);
+          instance.scrollToBottom();
+        }
+      } else {
+        const Terminal = (await import("xterm")).Terminal;
+        const CanvasAddon = (await import("xterm-addon-canvas")).CanvasAddon;
+        const FitAddon = (await import("xterm-addon-fit")).FitAddon;
 
-    setShowLogs(true);
+        const xterm = new Terminal({
+          convertEol: true,
+          fontSize: 8,
+          theme: {
+            background: "transparent",
+          },
+        });
+        const fitAddon = new FitAddon();
+        const canvasAddon = new CanvasAddon();
 
-    const Terminal = (await import("xterm")).Terminal;
-    const CanvasAddon = (await import("xterm-addon-canvas")).CanvasAddon;
-    const FitAddon = (await import("xterm-addon-fit")).FitAddon;
+        xterm.loadAddon(fitAddon);
+        xterm.loadAddon(canvasAddon);
 
-    const xterm = new Terminal({
-      convertEol: true,
-      fontSize: 10,
-      theme: {
-        background: "transparent",
-      },
-    });
+        xterm.open(xtermRef.current!);
+        fitAddon.fit();
 
-    const fitAddon = new FitAddon();
-    xterm.loadAddon(fitAddon);
-    xterm.loadAddon(new CanvasAddon());
+        if (data.success) {
+          xterm.write(data.content);
+          xterm.scrollToBottom();
+        }
 
-    xterm.open(xtermRef.current!);
-    fitAddon.fit();
+        setInstance(xterm);
+      }
+    },
+  });
 
-    xterm.write(contents);
+  useEffect(() => {
+    if (!show) {
+      setInstance(undefined);
+    }
 
-    setTerminal(xterm);
-  };
+    return () => {
+      setInstance(undefined);
+    };
+  }, [show]);
 
   const onBeforeClose = () => {
-    setShowLogs(false);
-    terminal && terminal.dispose();
+    instance && instance.dispose();
     onClose();
   };
 
@@ -82,24 +104,19 @@ export function LogModal({ contents, show, type, onClose }: LogModalProps) {
               </button>
               <Dialog.Title
                 as="h3"
-                className="text-lg font-medium leading-6 text-gray-900 p-4 border-b flex-shrink-0 dark:text-white"
+                className="text-lg font-medium leading-6 text-gray-900 p-4 border-b flex-shrink-0 dark:text-white capitalize"
               >
-                <span>Log - {type}</span>
+                <span>{type?.toLowerCase()} Log</span>
               </Dialog.Title>
-              {!showLogs && (
-                <div className="p-4 flex flex-col items-center">
-                  <button
-                    onClick={loadLogs}
-                    className="px-2 py-1 bg-ocean-2 text-white rounded-md"
-                  >
-                    Show
-                  </button>
-                </div>
-              )}
               <div
                 ref={xtermRef}
                 className="max-w-full overflow-y-auto flex-1"
               ></div>
+              {isLoading && (
+                <div className="absolute inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                  <IconLoader className="animate-spin" />
+                </div>
+              )}
             </Dialog.Panel>
           </Transition.Child>
         </div>

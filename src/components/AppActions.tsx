@@ -1,10 +1,13 @@
 import { useDisclosure } from "@mantine/hooks";
 import { IconLoader } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { IApp } from "dots-wrapper/dist/app";
+import { AppDeploymentLogType, IApp } from "dots-wrapper/dist/app";
 
-import { useCreateDeployment } from "@/hooks/useApps";
+import { useCreateDeployment, useGetAppDeploymentLogs } from "@/hooks/useApps";
 import { ActionSheet } from "./ActionSheet";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import { LogModal, LogModalProps } from "./LogModal";
 
 interface AppActionsProps {
   app: IApp;
@@ -14,7 +17,14 @@ export function AppActions({ app }: AppActionsProps) {
   const [opened, { open, close }] = useDisclosure(false);
 
   const createDeployment = useCreateDeployment();
+  const getAppDeploymentLogs = useGetAppDeploymentLogs();
   const queryClient = useQueryClient();
+
+  const [logModalProps, setLogModalProps] = useState<
+    Omit<LogModalProps, "onClose">
+  >({
+    show: false,
+  });
 
   const deploy = (force_build: boolean) => {
     close();
@@ -28,6 +38,40 @@ export function AppActions({ app }: AppActionsProps) {
           setTimeout(() => {
             queryClient.invalidateQueries(["apps", app.id]);
           }, 2500);
+        },
+      }
+    );
+  };
+
+  const getLogsForComponent = () => {
+    close();
+    getAppDeploymentLogs.mutate(
+      {
+        app_id: app?.id,
+        deployment_id: app.active_deployment.id,
+        component_name: app.active_deployment.services[0].name,
+        type: "RUN",
+      },
+      {
+        onSuccess: (data) => {
+          if (data.historic_urls?.length) {
+            const [url] = data.historic_urls;
+            setLogModalProps({
+              show: true,
+              url,
+              type: "RUN",
+            });
+          } else if (data.live_url) {
+            setLogModalProps({
+              show: true,
+              url: data.live_url,
+              type: "RUN",
+            });
+          }
+        },
+        onError: (error: any) => {
+          console.log("getLogsForComponent", error);
+          toast.error(error.message);
         },
       }
     );
@@ -50,6 +94,9 @@ export function AppActions({ app }: AppActionsProps) {
         <ActionSheet.Button onClick={() => deploy(true)}>
           Force Rebuild and Deploy
         </ActionSheet.Button>
+        <ActionSheet.Button onClick={() => getLogsForComponent()}>
+          View Runtime Logs
+        </ActionSheet.Button>
         <ActionSheet.Button className="text-red-600" onClick={close}>
           Cancel
         </ActionSheet.Button>
@@ -60,6 +107,17 @@ export function AppActions({ app }: AppActionsProps) {
           <IconLoader size={32} className="animate-spin" />
         </div>
       )}
+
+      <LogModal
+        {...logModalProps}
+        onClose={() => {
+          setLogModalProps({
+            show: false,
+            url: undefined,
+            type: undefined,
+          });
+        }}
+      />
     </>
   );
 }
