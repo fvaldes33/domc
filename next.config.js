@@ -10,7 +10,7 @@ const nextConfig = {
           { key: "Access-Control-Allow-Credentials", value: "true" },
           {
             key: "Access-Control-Allow-Origin",
-            value: "capacitor://localhost",
+            value: "*",
           },
           {
             key: "Access-Control-Allow-Methods",
