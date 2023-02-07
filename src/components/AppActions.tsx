@@ -1,15 +1,10 @@
-import { useCreateDeployment } from "@/hooks/useApps";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLoader } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { IApp } from "dots-wrapper/dist/app";
-import {
-  Actions,
-  ActionsButton,
-  ActionsGroup,
-  ActionsLabel,
-  Button,
-} from "konsta/react";
+
+import { useCreateDeployment } from "@/hooks/useApps";
+import { ActionSheet } from "./ActionSheet";
 
 interface AppActionsProps {
   app: IApp;
@@ -40,22 +35,25 @@ export function AppActions({ app }: AppActionsProps) {
 
   return (
     <>
-      <Button large tonal className="text-sm px-6" onClick={open}>
+      <button
+        className="text-sm px-6 bg-ocean-2 text-white rounded-md h-11 flex items-center justify-center font-semibold transform transition-transform duration-75 active:scale-95"
+        onClick={open}
+      >
         Actions
-      </Button>
+      </button>
 
-      <Actions opened={opened} onBackdropClick={close}>
-        <ActionsGroup>
-          <ActionsLabel>Actions</ActionsLabel>
-          <ActionsButton onClick={() => deploy(false)}>Deploy</ActionsButton>
-          <ActionsButton onClick={() => deploy(true)}>
-            Force Rebuild and Deploy
-          </ActionsButton>
-          <ActionsButton colors={{ textIos: "text-red-600" }} onClick={close}>
-            Cancel
-          </ActionsButton>
-        </ActionsGroup>
-      </Actions>
+      <ActionSheet show={opened} onClose={close}>
+        <ActionSheet.Label>Actions</ActionSheet.Label>
+        <ActionSheet.Button onClick={() => deploy(false)}>
+          Deploy
+        </ActionSheet.Button>
+        <ActionSheet.Button onClick={() => deploy(true)}>
+          Force Rebuild and Deploy
+        </ActionSheet.Button>
+        <ActionSheet.Button className="text-red-600" onClick={close}>
+          Cancel
+        </ActionSheet.Button>
+      </ActionSheet>
 
       {createDeployment.isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">

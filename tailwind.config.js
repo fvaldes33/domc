@@ -1,14 +1,14 @@
-const konstaConfig = require("konsta/config");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
-module.exports = konstaConfig({
+module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
       colors: {
         ocean: "#031b4d",
+        "ocean-2": "#0061eb",
         "ios-light-surface": "#fff",
         "ios-light-surface-2": "#fff",
       },
@@ -19,5 +19,5 @@ module.exports = konstaConfig({
       },
     },
   },
-  plugins: [],
-});
+  plugins: [require("tailwindcss-safe-area")],
+};

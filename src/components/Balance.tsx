@@ -12,7 +12,7 @@ export function Balance() {
         <span className="ml-2 uppercase">Usage</span>
       </p>
       <div className="px-4 grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-        <div className="rounded-lg p-2 h-20 flex flex-col bg-indigo-600 shadow-lg shadow-indigo-600/25">
+        <div className="rounded-lg p-2 h-20 flex flex-col bg-ocean shadow-lg shadow-ocean/25">
           <p className="text-xs text-indigo-200">Balance</p>
           <p className="text-lg text-indigo-50 font-bold mt-auto">
             {billing ? (
@@ -22,7 +22,7 @@ export function Balance() {
             )}
           </p>
         </div>
-        <div className="rounded-lg p-2 h-20 flex flex-col bg-indigo-600 shadow-lg shadow-indigo-600/25">
+        <div className="rounded-lg p-2 h-20 flex flex-col bg-ocean shadow-lg shadow-ocean/25">
           <p className="text-xs text-indigo-200">MTD</p>
           <p className="text-lg text-indigo-50 font-bold mt-auto">
             {billing ? (

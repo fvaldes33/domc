@@ -1,16 +1,19 @@
 import "@/styles/globals.css";
+import "xterm/css/xterm.css";
+
 import { Inter } from "@next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { App } from "konsta/react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useState } from "react";
 
 import { useGetPreference } from "@/hooks/usePreferences";
+import { App } from "@/components/App";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { SetupScreen } from "@/components/SetupScreen";
 import { MissonControlProvider } from "@/components/MissionControlProvider";
 import { classNames } from "@/utils/classNames";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +33,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <AppWrapper>
         <Component {...pageProps} />
+        <Toaster />
       </AppWrapper>
     </QueryClientProvider>
   );
@@ -45,15 +49,7 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <App
-      theme="ios"
-      dark={colorScheme === "dark"}
-      safeAreas
-      className={classNames(
-        // inter.className,
-        "absolute inset-0 overscroll-y-none"
-      )}
-    >
+    <App>
       {isLoading ? (
         <LoadingScreen />
       ) : token ? (

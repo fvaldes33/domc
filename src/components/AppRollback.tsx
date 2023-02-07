@@ -3,9 +3,11 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLoader } from "@tabler/icons-react";
 import { IAppDeployment } from "dots-wrapper/dist/app";
-import { Button, Checkbox, List, ListItem, Toolbar } from "konsta/react";
+import { Button, Checkbox, List, ListItem } from "konsta/react";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
+import { Footer } from "./Footer";
+import { Toolbar } from "./Toolbar";
 
 export function AppRollback({
   appId,
@@ -39,21 +41,14 @@ export function AppRollback({
   };
 
   return (
-    <>
-      <Toolbar
-        top={false}
-        className={`left-0 bottom-0 fixed text-center w-full`}
-        innerClassName="!p-0"
-      >
-        <Button
+    <Footer className="bg-ocean-2">
+      <Toolbar border position="bottom">
+        <button
           onClick={openConfirm}
-          rounded={false}
-          tonal
-          className="rounded-none"
-          large
+          className="absolute inset-0 bg-ocean-2 border-0 text-white dark:text-white font-semibold"
         >
           Rollback
-        </Button>
+        </button>
       </Toolbar>
       <Transition show={confirm} as={Fragment}>
         <Dialog as="div" className="relative z-[999]" onClose={closeConfirm}>
@@ -145,6 +140,6 @@ export function AppRollback({
           <IconLoader size={32} className="animate-spin" />
         </div>
       )}
-    </>
+    </Footer>
   );
 }

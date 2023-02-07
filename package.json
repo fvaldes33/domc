@@ -33,7 +33,12 @@
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.0",
+    "tailwindcss-safe-area": "^0.2.2",
     "typescript": "4.9.5",
+    "xterm": "^5.1.0",
+    "xterm-addon-canvas": "^0.3.0",
+    "xterm-addon-fit": "^0.7.0",
     "zod": "^3.20.2"
   },
   "devDependencies": {

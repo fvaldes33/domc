@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { classNames } from "@/utils/classNames";
-import { useDisclosure } from "@mantine/hooks";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   IconApps,
   IconDatabase,
@@ -9,10 +9,15 @@ import {
   IconWorld,
   IconX,
 } from "@tabler/icons-react";
-import { List, ListInput, ListItem, Navbar, Page, Panel } from "konsta/react";
+import { List, ListInput, ListItem, Panel } from "konsta/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Fragment } from "react";
+import { Footer } from "./Footer";
 import { useMissionControl } from "./MissionControlProvider";
+import { Navbar } from "./Navbar";
+import { Page } from "./Page";
+import { Toolbar } from "./Toolbar";
 
 interface MenuPanelProps {
   opened: boolean;
@@ -32,56 +37,94 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
   const { account } = useMissionControl();
 
   return (
-    <Panel side="left" opened={opened} onBackdropClick={close}>
-      <Page>
-        <Navbar
-          centerTitle={false}
-          title="Mission Control"
-          right={
-            <button
-              onClick={close}
-              className="ml-auto h-full bg-transparent flex items-center justify-center"
-            >
-              <IconX size={24} />
-            </button>
-          }
-        />
-        {account && (
-          <List margin="m-0">
-            <ListItem
-              // @ts-ignore
-              title={account.team.name}
-              text={account.email}
-              media={
-                <img
-                  className="w-12 object-cover rounded-full bg-ocean"
-                  src={`https://avatars.dicebear.com/api/miniavs/${account.email}.svg`}
-                  alt=""
+    <Transition show={opened} as={Fragment}>
+      <Dialog as="div" className="relative z-[999]" onClose={close}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-md" />
+        </Transition.Child>
+        <div className="fixed inset-0">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="ease-in duration-200"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+          >
+            <Dialog.Panel className="relative h-full w-2/3 bg-white dark:bg-gray-700/50">
+              <Page>
+                <Navbar
+                  title={"Mission Control"}
+                  titleProps={{
+                    centered: false,
+                  }}
+                  right={
+                    <button onClick={close} className="dark:text-white">
+                      <IconX size={24} />
+                    </button>
+                  }
                 />
-              }
-            />
-          </List>
-        )}
-        <nav className="flex flex-col">
-          {NAV_ITEMS.map(({ label, to, end, icon: Icon }) => {
-            const isActive = router.route === to;
-            return (
-              <Link
-                key={to}
-                href={to}
-                className={classNames(
-                  "h-10 px-4 flex items-center",
-                  isActive ? "bg-ocean text-white" : ""
+                <Page.Content>
+                  <div className="flex flex-col h-full">
+                    <nav className="flex flex-col">
+                      {NAV_ITEMS.map(({ label, to, end, icon: Icon }) => {
+                        const isActive = router.route === to;
+                        return (
+                          <Link
+                            key={to}
+                            href={to}
+                            className={classNames(
+                              "h-10 px-4 flex items-center",
+                              isActive
+                                ? "bg-ocean text-white dark:text-white"
+                                : "dark:text-white"
+                            )}
+                            onClick={close}
+                          >
+                            <Icon size={20} className="mr-4" />
+                            <p>{label}</p>
+                          </Link>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                </Page.Content>
+                {account && (
+                  <Footer>
+                    <Toolbar border position="bottom">
+                      <div className="px-2 py-2 flex items-center">
+                        <img
+                          className="w-10 object-cover rounded-full bg-ocean flex-shrink-0"
+                          src={`https://avatars.dicebear.com/api/miniavs/${account.email}.svg`}
+                          alt=""
+                        />
+                        <div className="px-4 text-sm">
+                          <p className="font-medium dark:text-white">
+                            {/* @ts-ignore */}
+                            {account.team.name}
+                          </p>
+                          <p className="text-xs truncate dark:text-white">
+                            {account.email}
+                          </p>
+                        </div>
+                      </div>
+                    </Toolbar>
+                  </Footer>
                 )}
-                onClick={close}
-              >
-                <Icon size={20} className="mr-4" />
-                <p>{label}</p>
-              </Link>
-            );
-          })}
-        </nav>
-      </Page>
-    </Panel>
+              </Page>
+            </Dialog.Panel>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition>
   );
 }

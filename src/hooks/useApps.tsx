@@ -7,6 +7,7 @@ import {
   ICreateAppDeploymentApiRequest,
   IGetAppApiRequest,
   IGetAppDeploymentApiRequest,
+  IGetAppDeploymentLogsApiRequest,
   IListAppDeploymentsApiRequest,
 } from "dots-wrapper/dist/app";
 import { IListRequest } from "dots-wrapper/dist/types";
@@ -195,6 +196,19 @@ async function validateRollback({
   return data as { valid: boolean };
 }
 
+async function getAppDeploymentLogs({
+  token,
+  ...input
+}: IGetAppDeploymentLogsApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+
+  const { data } = await dots.app.getAppDeploymentLogs(input);
+
+  return data;
+}
+
 /**
  * ==========================================================
  * HOOKS START HERE
@@ -248,6 +262,7 @@ export function useGetAppDeployments({
         page,
         per_page,
       }),
+    enabled: Boolean(app_id),
   });
 }
 
@@ -266,6 +281,7 @@ export function useGetAppDeployment({
         app_id,
         deployment_id,
       }),
+    enabled: Boolean(app_id) && Boolean(deployment_id),
   });
 }
 
@@ -313,5 +329,18 @@ export function useCreateRollback() {
         void (await queryClient.invalidateQueries(["apps", vars.app_id]));
       }, 2500);
     },
+  });
+}
+
+export function useGetAppDeploymentLogs() {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  return useMutation({
+    mutationFn: async (input: IGetAppDeploymentLogsApiRequest) =>
+      getAppDeploymentLogs({
+        token,
+        ...input,
+      }),
   });
 }

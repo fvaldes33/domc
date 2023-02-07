@@ -6,9 +6,10 @@ import {
   IconMoon,
   IconSun,
 } from "@tabler/icons-react";
-import { Navbar } from "konsta/react";
 import { useRouter } from "next/router";
-import { MenuPanel } from "./MenuPanel";
+
+import { Navbar } from "@/components/Navbar";
+import { MenuPanel } from "@/components/MenuPanel";
 
 export function MainNavbar({ title }: { title?: string }) {
   const router = useRouter();
@@ -32,9 +33,7 @@ export function MainNavbar({ title }: { title?: string }) {
   return (
     <>
       <Navbar
-        className="fixed top-0 inset-x-0"
         title={title}
-        outline={false}
         left={
           showBackBtn ? (
             <button className="" onClick={() => router.back()}>
@@ -52,7 +51,6 @@ export function MainNavbar({ title }: { title?: string }) {
           </button>
         }
       />
-      <div className="h-11 mt-safe" aria-hidden="true"></div>
       <MenuPanel opened={opened} close={close} />
     </>
   );

@@ -1,5 +1,3 @@
-import { useCreateRollback } from "@/hooks/useApps";
-import { DeploymentPhaseMap } from "@/utils/deployment-phases";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDisclosure } from "@mantine/hooks";
 import { IconFileUnknown, IconLoader } from "@tabler/icons-react";
@@ -8,6 +6,9 @@ import { IAppDeployment } from "dots-wrapper/dist/app";
 import { Button, Checkbox, List, ListItem } from "konsta/react";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+
+import { useCreateRollback } from "@/hooks/useApps";
+import { DeploymentPhaseMap } from "@/utils/deployment-phases";
 
 export function AppDeploymentRecord({
   appId,
@@ -36,7 +37,7 @@ export function AppDeploymentRecord({
   return (
     <>
       <div className="py-2 flex items-start">
-        <div className="bg-white dark:bg-ios-dark-surface w-full max-w-[50px] flex justify-center items-start relative z-10">
+        <div className="bg-white dark:bg-black w-full max-w-[50px] flex justify-center items-start relative">
           <Phase />
         </div>
         <div className="ml-2 text-sm">
