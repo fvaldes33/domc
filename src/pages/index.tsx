@@ -110,7 +110,9 @@ export default function Home() {
                   >
                     <div>
                       <div className="flex items-center">
-                        <h1 className="text-lg font-bold">{project.name}</h1>
+                        <h1 className="text-lg font-bold text-black dark:text-white">
+                          {project.name}
+                        </h1>
                         {project.is_default && (
                           <span className="ml-2 px-2 py-1 bg-slate-200 text-slate-600 uppercase text-xs rounded-md">
                             Default
