@@ -62,7 +62,7 @@ export default function DropletDetailPage() {
             setTimeout(() => {
               setShutdownAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 1000);
+            }, 2500);
           }
         }
 
@@ -72,7 +72,7 @@ export default function DropletDetailPage() {
             setTimeout(() => {
               setPowerOnAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 1000);
+            }, 2500);
           }
         }
       },
