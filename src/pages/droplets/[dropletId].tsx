@@ -81,8 +81,6 @@ export default function DropletDetailPage() {
     }
   );
 
-  console.log({ actions });
-
   const region = useMemo(() => {
     if (!droplet) return null;
     if (typeof droplet.region === "string") return null;

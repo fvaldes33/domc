@@ -18,7 +18,6 @@ export default function AppListingPage() {
     per_page: 10,
   });
 
-  console.log(droplets);
   return (
     <Page>
       <MainNavbar />
