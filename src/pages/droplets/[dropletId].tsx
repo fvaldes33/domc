@@ -1,6 +1,7 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import {
+  powerOffAttemptAtom,
   powerOnAttemptAtom,
   shutdownAttemptAtom,
   useGetDropletDetails,
@@ -38,6 +39,7 @@ export default function DropletDetailPage() {
   const queryClient = useQueryClient();
   const [shutdownAttempt, setShutdownAttempt] = useAtom(shutdownAttemptAtom);
   const [powerOnAttempt, setPowerOnAttempt] = useAtom(powerOnAttemptAtom);
+  const [powerOffAttempt, setPowerOffAttempt] = useAtom(powerOffAttemptAtom);
   const { data: droplet, isLoading } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
   });
@@ -56,18 +58,25 @@ export default function DropletDetailPage() {
       onSuccess(data) {
         if (shutdownAttempt) {
           const shutdownAction = data.find((a) => a.id === shutdownAttempt);
-          console.log({
-            shutdownAction,
-          });
           if (shutdownAction && shutdownAction.status === "errored") {
+            setShutdownAttempt(undefined);
             forcePowerOff.mutate({
               droplet_id: droplet!.id,
             });
           }
           if (shutdownAction && shutdownAction.status === "completed") {
             setTimeout(() => {
-              console.log("INVALIDATE");
               setShutdownAttempt(undefined);
+              queryClient.invalidateQueries(["droplets", droplet?.id]);
+            }, 5000);
+          }
+        }
+
+        if (powerOffAttempt) {
+          const powerOffAction = data.find((a) => a.id === powerOffAttempt);
+          if (powerOffAction && powerOffAction.status === "completed") {
+            setTimeout(() => {
+              setPowerOffAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
             }, 5000);
           }
@@ -79,7 +88,7 @@ export default function DropletDetailPage() {
             setTimeout(() => {
               setPowerOnAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 2500);
+            }, 5000);
           }
         }
       },
@@ -288,13 +297,15 @@ export default function DropletDetailPage() {
                                 <p className="text-gray-600 dark:text-white capitalize">
                                   {action.status}
                                 </p>
-                                <p className="text-xs text-gray-600 dark:text-white">
-                                  {dayjs(action.completed_at).diff(
-                                    dayjs(action.started_at),
-                                    "s"
-                                  )}{" "}
-                                  seconds
-                                </p>
+                                {action.completed_at && (
+                                  <p className="text-xs text-gray-600 dark:text-white">
+                                    {dayjs(action.completed_at).diff(
+                                      dayjs(action.started_at),
+                                      "s"
+                                    )}{" "}
+                                    seconds
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </li>

@@ -190,6 +190,7 @@ export function useListDropletActions(
 }
 
 export const shutdownAttemptAtom = atom<number | undefined>(undefined);
+export const powerOffAttemptAtom = atom<number | undefined>(undefined);
 export const powerOnAttemptAtom = atom<number | undefined>(undefined);
 
 export function useShutdownDroplet() {
@@ -213,7 +214,7 @@ export function usePowerOffDroplet() {
   const { data: token } = useGetPreference<string | null>({
     key: "token",
   });
-  const setShutdownAttempt = useSetAtom(shutdownAttemptAtom);
+  const setPowerOffAttempt = useSetAtom(powerOffAttemptAtom);
 
   return useMutation({
     mutationFn: (input: IPowerOffDropletApiRequest) =>
@@ -221,8 +222,8 @@ export function usePowerOffDroplet() {
         token,
         ...input,
       }),
-    onSuccess() {
-      setShutdownAttempt(undefined);
+    onSuccess(data) {
+      setPowerOffAttempt(data.id);
     },
   });
 }
