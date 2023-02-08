@@ -60,11 +60,12 @@ export default function DropletDetailPage() {
             forcePowerOff.mutate({
               droplet_id: droplet!.id,
             });
-          } else if (shutdownAction && shutdownAction.status === "completed") {
+          }
+          if (shutdownAction && shutdownAction.status === "completed") {
             setTimeout(() => {
               setShutdownAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 2500);
+            }, 3000);
           }
         }
 
