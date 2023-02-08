@@ -10,6 +10,7 @@ export interface ButtonBaseProps {
   square?: boolean;
   loading?: boolean;
   leftIcon?: React.ReactNode;
+  full?: boolean;
 }
 
 export type ButtonProps<C extends React.ElementType> =
@@ -67,6 +68,8 @@ const Button: ButtonComponent = forwardRef(function Button<
     loading = false,
     square = false,
     leftIcon,
+    className,
+    full,
     ...props
   }: ButtonProps<C>,
   ref: PolymorphicRef<C>
@@ -96,7 +99,8 @@ const Button: ButtonComponent = forwardRef(function Button<
         square
           ? `aspect-square ${sizeClass.slice(0, 1).join(" ")}`
           : sizeClass.join(" "),
-        props.className
+        className,
+        full ? "!w-full" : ""
       )}
     >
       <div

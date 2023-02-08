@@ -1,3 +1,5 @@
+import { classNames } from "@/utils/classNames";
+
 function Page({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -12,7 +14,11 @@ function Page({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Content({ children }: { children: React.ReactNode }) {
+function Content({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"main">) {
   return (
     <div
       data-type="domc-content"
@@ -21,7 +27,13 @@ function Content({ children }: { children: React.ReactNode }) {
         contain: "size style",
       }}
     >
-      <main className="absolute inset-0 overflow-hidden touch-pan-x touch-pan-y touch-pinch-zoom overflow-y-auto overscroll-y-contain z-0 will-change-scroll">
+      <main
+        className={classNames(
+          "absolute inset-0 overflow-hidden touch-pan-x touch-pan-y touch-pinch-zoom overflow-y-auto overscroll-y-contain z-0 will-change-scroll",
+          className ?? ""
+        )}
+        {...props}
+      >
         {children}
       </main>
     </div>

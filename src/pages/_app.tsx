@@ -33,7 +33,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <AppWrapper>
         <Component {...pageProps} />
-        <Toaster />
+        <Toaster containerClassName="mt-safe" />
       </AppWrapper>
     </QueryClientProvider>
   );

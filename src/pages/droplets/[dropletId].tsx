@@ -1,18 +1,85 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
-import { useGetDropletDetails } from "@/hooks/useDroplets";
+import {
+  powerOnAttemptAtom,
+  shutdownAttemptAtom,
+  useGetDropletDetails,
+  useListDropletActions,
+  usePowerOffDroplet,
+} from "@/hooks/useDroplets";
 import { classNames } from "@/utils/classNames";
 import { timeAgo } from "@/utils/timeAgo";
-import { IconChevronRight, IconLoader, IconNetwork } from "@tabler/icons-react";
+import {
+  IconCamera,
+  IconChevronRight,
+  IconCloudUpload,
+  IconLoader,
+  IconNetwork,
+  IconPower,
+  IconResize,
+} from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
+const dropletNavigationItems = [
+  { label: "Power", icon: IconPower, href: "power" },
+  { label: "Resize", icon: IconResize, href: "resize" },
+  { label: "Backups", icon: IconCloudUpload, href: "backups" },
+  { label: "Snapshots", icon: IconCamera, href: "snapshots" },
+];
+
 export default function DropletDetailPage() {
   const { query } = useRouter();
+  const queryClient = useQueryClient();
+  const [shutdownAttempt, setShutdownAttempt] = useAtom(shutdownAttemptAtom);
+  const [powerOnAttempt, setPowerOnAttempt] = useAtom(powerOnAttemptAtom);
   const { data: droplet, isLoading } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
   });
+  const forcePowerOff = usePowerOffDroplet();
+  const { data: actions } = useListDropletActions(
+    {
+      page: 1,
+      per_page: 10,
+      droplet_id: Number(query.dropletId),
+    },
+    {
+      refetchInterval(data, query) {
+        const inProgress = data?.some((a) => a.status === "in-progress");
+        return inProgress ? 2500 : 0;
+      },
+      onSuccess(data) {
+        if (shutdownAttempt) {
+          const shutdownAction = data.find((a) => a.id === shutdownAttempt);
+          if (shutdownAction && shutdownAction.status === "errored") {
+            forcePowerOff.mutate({
+              droplet_id: droplet!.id,
+            });
+          } else if (shutdownAction && shutdownAction.status === "completed") {
+            setTimeout(() => {
+              setShutdownAttempt(undefined);
+              queryClient.invalidateQueries(["droplets", droplet?.id]);
+            }, 1000);
+          }
+        }
+
+        if (powerOnAttempt) {
+          const poweronAction = data.find((a) => a.id === powerOnAttempt);
+          if (poweronAction && poweronAction.status === "completed") {
+            setTimeout(() => {
+              setPowerOnAttempt(undefined);
+              queryClient.invalidateQueries(["droplets", droplet?.id]);
+            }, 1000);
+          }
+        }
+      },
+    }
+  );
+
+  console.log({ actions });
 
   const region = useMemo(() => {
     if (!droplet) return null;
@@ -27,7 +94,10 @@ export default function DropletDetailPage() {
     return droplet.image;
   }, [droplet]);
 
-  console.log({ droplet });
+  const inProgress = useMemo(() => {
+    return actions?.find((a) => a.status === "in-progress");
+  }, [actions]);
+
   return (
     <Page>
       <MainNavbar />
@@ -109,6 +179,38 @@ export default function DropletDetailPage() {
                     </div>
                   </div>
                 </section>
+
+                {inProgress && (
+                  <section className="mt-4 mx-4 p-4 flex items-center bg-ocean-2/10 rounded-lg">
+                    <div className="flex-none">
+                      <IconLoader className="animate-spin" />
+                    </div>
+                    <div className="pl-4">
+                      <p className="text-sm font-semibold capitalize">
+                        {inProgress.type.replace("_", " ")} in progress
+                      </p>
+                      <p className="text-xs">
+                        {timeAgo(inProgress.started_at)}
+                      </p>
+                    </div>
+                  </section>
+                )}
+
+                <section className="mt-4 px-4 grid grid-cols-4 gap-4">
+                  {dropletNavigationItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={`${droplet.id}/${item.href}`}
+                      className="flex items-center justify-center aspect-square rounded-lg bg-ocean-2/10 dark:bg-ocean-2/40 text-ocean-2 dark:text-white"
+                    >
+                      <span className="flex flex-col items-center">
+                        <item.icon size={24} strokeWidth={1} />
+                        <p className="text-xs mt-1">{item.label}</p>
+                      </span>
+                    </Link>
+                  ))}
+                </section>
+
                 <section className="mt-4">
                   <div className="mb-6">
                     <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">

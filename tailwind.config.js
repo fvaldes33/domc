@@ -19,5 +19,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-safe-area")],
+  plugins: [
+    require("tailwindcss-safe-area"),
+    require("@tailwindcss/typography"),
+  ],
 };
