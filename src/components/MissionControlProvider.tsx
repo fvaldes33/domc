@@ -1,7 +1,11 @@
 import { useGetAccount } from "@/hooks/useAccount";
 import { useGetPreference } from "@/hooks/usePreferences";
 import { IAccount } from "dots-wrapper/dist/account";
+import { IAction } from "dots-wrapper/dist/action";
+import { IDroplet } from "dots-wrapper/dist/droplet";
+import { atom, useAtomValue } from "jotai";
 import { createContext, useContext, useEffect } from "react";
+import { DropletActionWatcher } from "./DropletActionWatcher";
 
 interface MissionControlContextProps {
   theme: "light" | "dark";
@@ -13,6 +17,12 @@ const MissionControlContext = createContext<MissionControlContextProps>({
   theme: "light",
 });
 
+interface InProgress {
+  droplet: IDroplet;
+  action: IAction;
+}
+export const inProgressAtom = atom<InProgress | undefined>(undefined);
+
 export function MissonControlProvider({
   token,
   theme,
@@ -23,6 +33,7 @@ export function MissonControlProvider({
   children: React.ReactNode;
 }) {
   const { data: account } = useGetAccount();
+  const inProgress = useAtomValue(inProgressAtom);
 
   useEffect(() => {
     if (
@@ -37,6 +48,12 @@ export function MissonControlProvider({
 
   return (
     <MissionControlContext.Provider value={{ theme, token, account }}>
+      {inProgress && (
+        <DropletActionWatcher
+          droplet={inProgress.droplet}
+          action={inProgress.action}
+        />
+      )}
       {children}
     </MissionControlContext.Provider>
   );

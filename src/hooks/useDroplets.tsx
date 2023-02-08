@@ -7,6 +7,7 @@ import {
 import { createApiClient } from "dots-wrapper";
 import { IAction } from "dots-wrapper/dist/action";
 import {
+  IEnableDropletIpv6ApiRequest,
   IGetDropletActionApiRequest,
   IGetDropletApiRequest,
   IListDropletActionsApiRequest,
@@ -132,6 +133,40 @@ async function powerOnDroplet({
   return action;
 }
 
+async function enableDropletIpv6({
+  token,
+  ...input
+}: IEnableDropletIpv6ApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { action },
+  } = await dots.droplet.enableDropletIpv6(input);
+
+  return action;
+}
+
+async function waitForAction({
+  token,
+  ...input
+}: Partial<IGetDropletActionApiRequest> & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+  const { droplet_id, action_id } = input;
+  if (!droplet_id) throw new Error("Token is required");
+  if (!action_id) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { action },
+  } = await dots.droplet.getDropletAction({
+    droplet_id,
+    action_id,
+  });
+
+  return action;
+}
+
 /**
  * ==========================================================
  * HOOKS START HERE
@@ -185,10 +220,15 @@ export function useListDropletActions(
         token,
         ...input,
       }),
+    refetchInterval(data, query) {
+      const inProgress = data?.some((a) => a.status === "in-progress");
+      return inProgress ? 2500 : 0;
+    },
     ...options,
   });
 }
 
+export const latestActionAtom = atom<IAction | undefined>(undefined);
 export const shutdownAttemptAtom = atom<number | undefined>(undefined);
 export const powerOffAttemptAtom = atom<number | undefined>(undefined);
 export const powerOnAttemptAtom = atom<number | undefined>(undefined);
@@ -289,6 +329,67 @@ export function usePowerOnDroplet() {
         "droplet-actions",
         vars.droplet_id,
       ]));
+    },
+  });
+}
+
+export function useEnableDropletIpv6() {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: IPowerOnDropletApiRequest) =>
+      enableDropletIpv6({
+        token,
+        ...input,
+      }),
+    onSuccess: async (data, vars) => {
+      void (await queryClient.invalidateQueries([
+        "droplet-actions",
+        vars.droplet_id,
+      ]));
+    },
+  });
+}
+
+export type UseWaitForActionQueryOptions = Omit<
+  UseQueryOptions<IAction, unknown, IAction, (string | number)[]>,
+  "initialData"
+>;
+export function useWaitForAction(
+  input: Partial<IGetDropletActionApiRequest>,
+  options: UseWaitForActionQueryOptions = {}
+) {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const queryClient = useQueryClient();
+  const setLatestAction = useSetAtom(latestActionAtom);
+  return useQuery({
+    queryKey: ["droplet-actions", input.action_id ?? ""],
+    queryFn: () =>
+      waitForAction({
+        token,
+        ...input,
+      }),
+    refetchInterval(data) {
+      const inProgress = data && data.status === "in-progress";
+      return inProgress ? 2500 : 0;
+    },
+    enabled: Boolean(input.droplet_id) && Boolean(input.action_id),
+    ...options,
+    onSuccess: async (data, ...args) => {
+      if (data.status === "completed") {
+        void (await queryClient.invalidateQueries([
+          "droplet-actions",
+          input.droplet_id,
+        ]));
+      }
+      if (options.onSuccess) {
+        options.onSuccess(data, ...args);
+      }
     },
   });
 }

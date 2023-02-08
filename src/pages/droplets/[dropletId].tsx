@@ -1,12 +1,8 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import {
-  powerOffAttemptAtom,
-  powerOnAttemptAtom,
-  shutdownAttemptAtom,
   useGetDropletDetails,
   useListDropletActions,
-  usePowerOffDroplet,
 } from "@/hooks/useDroplets";
 import { classNames } from "@/utils/classNames";
 import { timeAgo } from "@/utils/timeAgo";
@@ -20,9 +16,7 @@ import {
   IconPower,
   IconResize,
 } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -36,64 +30,14 @@ const dropletNavigationItems = [
 
 export default function DropletDetailPage() {
   const { query } = useRouter();
-  const queryClient = useQueryClient();
-  const [shutdownAttempt, setShutdownAttempt] = useAtom(shutdownAttemptAtom);
-  const [powerOnAttempt, setPowerOnAttempt] = useAtom(powerOnAttemptAtom);
-  const [powerOffAttempt, setPowerOffAttempt] = useAtom(powerOffAttemptAtom);
   const { data: droplet, isLoading } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
   });
-  const forcePowerOff = usePowerOffDroplet();
-  const { data: actions } = useListDropletActions(
-    {
-      page: 1,
-      per_page: 50,
-      droplet_id: Number(query.dropletId),
-    },
-    {
-      refetchInterval(data, query) {
-        const inProgress = data?.some((a) => a.status === "in-progress");
-        return inProgress ? 2500 : 0;
-      },
-      onSuccess(data) {
-        if (shutdownAttempt) {
-          const shutdownAction = data.find((a) => a.id === shutdownAttempt);
-          if (shutdownAction && shutdownAction.status === "errored") {
-            setShutdownAttempt(undefined);
-            forcePowerOff.mutate({
-              droplet_id: droplet!.id,
-            });
-          }
-          if (shutdownAction && shutdownAction.status === "completed") {
-            setTimeout(() => {
-              setShutdownAttempt(undefined);
-              queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 5000);
-          }
-        }
-
-        if (powerOffAttempt) {
-          const powerOffAction = data.find((a) => a.id === powerOffAttempt);
-          if (powerOffAction && powerOffAction.status === "completed") {
-            setTimeout(() => {
-              setPowerOffAttempt(undefined);
-              queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 5000);
-          }
-        }
-
-        if (powerOnAttempt) {
-          const poweronAction = data.find((a) => a.id === powerOnAttempt);
-          if (poweronAction && poweronAction.status === "completed") {
-            setTimeout(() => {
-              setPowerOnAttempt(undefined);
-              queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 5000);
-          }
-        }
-      },
-    }
-  );
+  const { data: actions } = useListDropletActions({
+    page: 1,
+    per_page: 10,
+    droplet_id: Number(query.dropletId),
+  });
 
   const region = useMemo(() => {
     if (!droplet) return null;
@@ -236,19 +180,19 @@ export default function DropletDetailPage() {
                         return (
                           <li key={network.ip_address} className="">
                             <Link
-                              href={`${droplet.id}/networks/v4-${network.type}`}
+                              href={`${droplet.id}/networking`}
                               className="flex justify-between items-center px-4 py-2"
                             >
-                              <div className="capitalize">
+                              <div className="capitalize text-sm">
                                 {network.type === "public"
                                   ? `${network.type} IPv4`
                                   : `${network.type} Network`}
                               </div>
                               <div className="flex items-center">
-                                <p className="text-gray-600 dark:text-white">
+                                <p className="text-gray-600 dark:text-white text-sm">
                                   {network.ip_address}
                                 </p>
-                                <IconChevronRight size={16} className="ml-4" />
+                                <IconChevronRight size={16} className="ml-2" />
                               </div>
                             </Link>
                           </li>
@@ -256,19 +200,23 @@ export default function DropletDetailPage() {
                       })}
                       {droplet.networks.v6.map((network) => {
                         return (
-                          <li
-                            key={network.ip_address}
-                            className="flex justify-between items-center px-4 py-2"
-                          >
-                            <div className="capitalize">
-                              {network.type} IPv4
-                            </div>
-                            <div className="flex items-center">
-                              <p className="text-gray-600 dark:text-white">
-                                {network.ip_address}
-                              </p>
-                              <IconChevronRight size={16} className="ml-4" />
-                            </div>
+                          <li key={network.ip_address} className="">
+                            <Link
+                              href={`${droplet.id}/networking`}
+                              className="flex justify-between items-center px-4 py-2"
+                            >
+                              <div className="capitalize text-sm">
+                                {network.type === "public"
+                                  ? `${network.type} IPv6`
+                                  : `${network.type} Network`}
+                              </div>
+                              <div className="flex items-center">
+                                <p className="text-gray-600 dark:text-white text-sm">
+                                  {network.ip_address}
+                                </p>
+                                <IconChevronRight size={16} className="ml-2" />
+                              </div>
+                            </Link>
                           </li>
                         );
                       })}
@@ -282,7 +230,7 @@ export default function DropletDetailPage() {
                       <IconHistory className="" size={20} strokeWidth={1.5} />
                       <span className="ml-2 uppercase">History</span>
                     </p>
-                    <ul className="">
+                    <ul className="text-sm">
                       {actions?.map((action) => {
                         return (
                           <li key={action.id} className="">

@@ -57,13 +57,15 @@ function ActionSheetLabel({
 function ActionSheetButton({
   children,
   className,
+  border = true,
   ...props
-}: React.ComponentPropsWithoutRef<"button">) {
+}: React.ComponentPropsWithoutRef<"button"> & { border?: boolean }) {
   return (
     <button
       className={classNames(
-        "flex items-center justify-center text-center w-full p-4 h-16 border-b font-semibold dark:text-white",
-        className ?? ""
+        "flex items-center justify-center text-center w-full p-4 h-16 font-semibold dark:text-white",
+        className ?? "",
+        border ? "border-b" : ""
       )}
       {...props}
     >

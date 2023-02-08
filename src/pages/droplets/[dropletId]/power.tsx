@@ -1,6 +1,7 @@
 import { ActionSheet } from "@/components/ActionSheet";
 import { Button } from "@/components/Button";
 import { MainNavbar } from "@/components/MainNavbar";
+import { inProgressAtom } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import {
   useGetDropletDetails,
@@ -19,6 +20,7 @@ import {
   IRebootDropletApiRequest,
   IShutdownDropletApiRequest,
 } from "dots-wrapper/dist/droplet";
+import { useSetAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -67,10 +69,12 @@ type Action =
 export default function DropletPowerPage() {
   const [opened, { open, close }] = useDisclosure(false);
   const { query } = useRouter();
+
   const { data: droplet, isLoading } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
   });
-  const router = useRouter();
+  const setInProgressData = useSetAtom(inProgressAtom);
+
   const rebootDroplet = useRebootDroplet();
   const cycleDroplet = usePowerCycleDroplet();
   const shutdownDroplet = useShutdownDroplet();
@@ -241,8 +245,11 @@ export default function DropletPowerPage() {
                     droplet_id: droplet.id,
                   },
                   {
-                    onSuccess: () => {
-                      router.back();
+                    onSuccess: (data) => {
+                      setInProgressData({
+                        action: data,
+                        droplet: droplet,
+                      });
                     },
                   }
                 );
@@ -251,7 +258,11 @@ export default function DropletPowerPage() {
           >
             Confirm
           </ActionSheet.Button>
-          <ActionSheet.Button className="text-red-600" onClick={close}>
+          <ActionSheet.Button
+            className="text-red-600"
+            onClick={close}
+            border={false}
+          >
             Cancel
           </ActionSheet.Button>
         </ActionSheet>

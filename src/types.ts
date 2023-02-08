@@ -1,3 +1,5 @@
+import { NextPage } from "next";
+
 export type PropsOf<
   C extends keyof JSX.IntrinsicElements | React.JSXElementConstructor<any>
 > = JSX.LibraryManagedAttributes<C, React.ComponentPropsWithoutRef<C>>;
@@ -30,3 +32,7 @@ export type PolymorphicRef<C extends React.ElementType> =
   React.ComponentPropsWithRef<C>["ref"];
 
 export type GenericSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
+};
