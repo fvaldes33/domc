@@ -13,12 +13,14 @@ import {
   IconCamera,
   IconChevronRight,
   IconCloudUpload,
+  IconHistory,
   IconLoader,
   IconNetwork,
   IconPower,
   IconResize,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -43,7 +45,7 @@ export default function DropletDetailPage() {
   const { data: actions } = useListDropletActions(
     {
       page: 1,
-      per_page: 10,
+      per_page: 50,
       droplet_id: Number(query.dropletId),
     },
     {
@@ -254,6 +256,43 @@ export default function DropletDetailPage() {
                                 {network.ip_address}
                               </p>
                               <IconChevronRight size={16} className="ml-4" />
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </section>
+
+                <section className="mt-4">
+                  <div className="mb-6">
+                    <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">
+                      <IconHistory className="" size={20} strokeWidth={1.5} />
+                      <span className="ml-2 uppercase">History</span>
+                    </p>
+                    <ul className="">
+                      {actions?.map((action) => {
+                        return (
+                          <li key={action.id} className="">
+                            <div className="flex justify-between items-center px-4 py-2">
+                              <div className="capitalize">
+                                <p>{action.type.replace("_", " ")}</p>
+                                <p className="text-xs text-gray-600 dark:text-white">
+                                  {timeAgo(action.started_at)}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-gray-600 dark:text-white capitalize">
+                                  {action.status}
+                                </p>
+                                <p className="text-xs text-gray-600 dark:text-white">
+                                  {dayjs(action.completed_at).diff(
+                                    dayjs(action.started_at),
+                                    "s"
+                                  )}{" "}
+                                  seconds
+                                </p>
+                              </div>
                             </div>
                           </li>
                         );
