@@ -56,6 +56,9 @@ export default function DropletDetailPage() {
       onSuccess(data) {
         if (shutdownAttempt) {
           const shutdownAction = data.find((a) => a.id === shutdownAttempt);
+          console.log({
+            shutdownAction,
+          });
           if (shutdownAction && shutdownAction.status === "errored") {
             forcePowerOff.mutate({
               droplet_id: droplet!.id,
@@ -63,9 +66,10 @@ export default function DropletDetailPage() {
           }
           if (shutdownAction && shutdownAction.status === "completed") {
             setTimeout(() => {
+              console.log("INVALIDATE");
               setShutdownAttempt(undefined);
               queryClient.invalidateQueries(["droplets", droplet?.id]);
-            }, 3000);
+            }, 5000);
           }
         }
 
