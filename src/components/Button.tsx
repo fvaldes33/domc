@@ -5,7 +5,7 @@ import { classNames } from "@/utils/classNames";
 import type { PolymorphicRef, PolymorphicComponentProps } from "@/types";
 
 export interface ButtonBaseProps {
-  variant?: "primary" | "outline";
+  variant?: "primary" | "outline" | "danger";
   size?: "sm" | "md" | "lg";
   square?: boolean;
   loading?: boolean;
@@ -47,13 +47,18 @@ const variantClasses = {
   primary: [
     "bg-ocean-2",
     "text-white",
-    "focus:ring-ocean-2-400 focus:ring-offset-2 focus:ring-offset-ocean-2-50",
+    "focus:ring-ocean-2 focus:ring-offset-2 focus:ring-ocean-2",
+  ],
+  danger: [
+    "bg-red-600",
+    "text-white",
+    "focus:ring-red-600 focus:ring-offset-2 focus:ring-ocean-2",
   ],
   outline: [
     "border",
     "border-ocean-2",
     "text-ocean-2",
-    "focus:ring-ocean-2-400 focus:ring-offset-2 focus:ring-offset-ocean-2-50",
+    "focus:ring-ocean-2 focus:ring-offset-2 focus:ring-ocean-2",
   ],
 };
 

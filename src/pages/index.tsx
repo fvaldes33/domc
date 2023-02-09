@@ -14,9 +14,11 @@ import { AppListing } from "@/components/AppListing";
 import { DropletListing } from "@/components/DropletListing";
 import { DomainListing } from "@/components/DomainListing";
 import { Button } from "@/components/Button";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Home() {
-  const { data: projects } = useGetProjects({
+  const queryClient = useQueryClient();
+  const { data: projects, refetch } = useGetProjects({
     page: 1,
     per_page: 10,
   });
@@ -42,7 +44,13 @@ export default function Home() {
       </Head>
       <Page>
         <MainNavbar />
-        <Page.Content>
+        <Page.Content
+          onRefresh={async (complete) => {
+            await refetch();
+            await queryClient.invalidateQueries(["balance"]);
+            complete();
+          }}
+        >
           <div className="p-4 flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center">

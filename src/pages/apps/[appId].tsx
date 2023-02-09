@@ -48,20 +48,7 @@ export default function AppDetailPage() {
     }
   }, [app, active, start, stop]);
 
-  if (isLoading) {
-    return (
-      <Page>
-        <MainNavbar />
-        <Page.Content>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <IconLoader size={24} className="animate-spin" />
-          </div>
-        </Page.Content>
-      </Page>
-    );
-  }
-
-  if (!app || isError) {
+  if (isError) {
     return (
       <Page>
         <MainNavbar />
@@ -85,92 +72,105 @@ export default function AppDetailPage() {
   return (
     <Page>
       <MainNavbar />
-      <Page.Content>
-        <section className="p-4 flex flex-col">
-          <header className="flex items-center justify-start">
-            <div className="w-2/3">
-              <span className="inline-block mb-1 px-2 py-1 bg-slate-200 text-slate-600 text-xs rounded-md capitalize">
-                {app.tier_slug}
-              </span>
-              <h1 className="text-xl font-bold truncate overflow-hidden">
-                {app.spec.name}
-              </h1>
-              <div className="flex items-center">
-                <p className="mr-2 text-sm">
-                  {app.region.label},{" "}
-                  <span className="uppercase">{app.region.flag}</span>
-                </p>
-
-                <img
-                  alt={`flag of ${app.region.flag}`}
-                  src={`https://countryflagsapi.com/svg/${app.region.flag}`}
-                  crossOrigin="anonymous"
-                  className="w-4"
-                />
-              </div>
-            </div>
-            <div className="ml-auto">
-              <AppActions app={app} />
-            </div>
-          </header>
-
-          <div className="grid grid-cols-3 border rounded-lg divide-x mt-2">
-            <div className="p-2">
-              <p className="text-xs mb-1 font-medium">Status</p>
-              <AppStatus app={app} />
-            </div>
-            <div className="p-2">
-              <p className="text-xs mb-1 font-medium">Last Update</p>
-              <div className="flex items-center text-xs">
-                {timeAgo(app.last_deployment_created_at)}
-              </div>
-            </div>
-            <div className="p-2">
-              <p className="text-xs mb-1 font-medium">Live Domain</p>
-              <div className="text-xs overflow-hidden truncate">
-                {app.live_domain}
-              </div>
-            </div>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          await refetchDeployments();
+          complete();
+        }}
+      >
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <IconLoader size={24} className="animate-spin" />
           </div>
-        </section>
+        ) : (
+          <>
+            <section className="p-4 flex flex-col">
+              <header className="flex items-center justify-start">
+                <div className="w-2/3">
+                  <span className="inline-block mb-1 px-2 py-1 bg-slate-200 text-slate-600 text-xs rounded-md capitalize">
+                    {app.tier_slug}
+                  </span>
+                  <h1 className="text-xl font-bold truncate overflow-hidden">
+                    {app.spec.name}
+                  </h1>
+                  <div className="flex items-center">
+                    <p className="mr-2 text-sm">
+                      {app.region.label},{" "}
+                      <span className="uppercase">{app.region.flag}</span>
+                    </p>
 
-        <div className="mb-6">
-          <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">
-            <IconList className="" size={20} strokeWidth={1.5} />
-            <span className="ml-2 uppercase">Recent Activity</span>
-          </p>
-          <ul className="">
-            {deployments?.deployByDayKeys.map((date) => {
-              const dailyDeployments = deployments.deployByDay[date];
-              return (
-                <li key={date}>
-                  <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-600 z-[1] text-sm font-medium">
-                    <p>{dayjs(date).format("MMM DD, YYYY")}</p>
+                    <img
+                      alt={`flag of ${app.region.flag}`}
+                      src={`https://countryflagsapi.com/svg/${app.region.flag}`}
+                      crossOrigin="anonymous"
+                      className="w-4"
+                    />
                   </div>
-                  <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-gray-200">
-                    {dailyDeployments.map((deployment) => {
-                      return (
-                        <AppDeploymentRecord
-                          key={deployment.id}
-                          deployment={deployment}
-                          appId={app.id}
-                        />
-                      );
-                    })}
-                  </ul>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="flex justify-center my-4">
-            <Link
-              href={`/apps/${query.appId}/deployments`}
-              className="text-sm px-6 bg-ocean-2 text-white rounded-md h-11 flex items-center justify-center font-semibold transform transition-transform duration-75 active:scale-95"
-            >
-              See All
-            </Link>
-          </div>
-        </div>
+                </div>
+                <div className="ml-auto">
+                  <AppActions app={app} />
+                </div>
+              </header>
+
+              <div className="grid grid-cols-3 border rounded-lg divide-x mt-2">
+                <div className="p-2">
+                  <p className="text-xs mb-1 font-medium">Status</p>
+                  <AppStatus app={app} />
+                </div>
+                <div className="p-2">
+                  <p className="text-xs mb-1 font-medium">Last Update</p>
+                  <div className="flex items-center text-xs">
+                    {timeAgo(app.last_deployment_created_at)}
+                  </div>
+                </div>
+                <div className="p-2">
+                  <p className="text-xs mb-1 font-medium">Live Domain</p>
+                  <div className="text-xs overflow-hidden truncate">
+                    {app.live_domain}
+                  </div>
+                </div>
+              </div>
+            </section>
+            <div className="mb-6">
+              <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">
+                <IconList className="" size={20} strokeWidth={1.5} />
+                <span className="ml-2 uppercase">Recent Activity</span>
+              </p>
+              <ul className="">
+                {deployments?.deployByDayKeys.map((date) => {
+                  const dailyDeployments = deployments.deployByDay[date];
+                  return (
+                    <li key={date}>
+                      <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-600 z-[1] text-sm font-medium">
+                        <p>{dayjs(date).format("MMM DD, YYYY")}</p>
+                      </div>
+                      <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-gray-200">
+                        {dailyDeployments.map((deployment) => {
+                          return (
+                            <AppDeploymentRecord
+                              key={deployment.id}
+                              deployment={deployment}
+                              appId={app.id}
+                            />
+                          );
+                        })}
+                      </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="flex justify-center my-4">
+                <Link
+                  href={`/apps/${query.appId}/deployments`}
+                  className="text-sm px-6 bg-ocean-2 text-white rounded-md h-11 flex items-center justify-center font-semibold transform transition-transform duration-75 active:scale-95"
+                >
+                  See All
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
       </Page.Content>
     </Page>
   );

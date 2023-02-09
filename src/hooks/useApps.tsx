@@ -263,6 +263,7 @@ export function useGetAppDeployments({
         per_page,
       }),
     enabled: Boolean(app_id),
+    keepPreviousData: true,
   });
 }
 

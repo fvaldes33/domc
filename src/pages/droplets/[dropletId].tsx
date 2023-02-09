@@ -1,15 +1,19 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import {
+  useGetDropletDestroyStatus,
   useGetDropletDetails,
   useListDropletActions,
 } from "@/hooks/useDroplets";
+import { useGetPreference } from "@/hooks/usePreferences";
 import { classNames } from "@/utils/classNames";
+import { DO_DESTROY_DROPLET } from "@/utils/const";
 import { timeAgo } from "@/utils/timeAgo";
 import {
   IconCamera,
   IconChevronRight,
   IconCloudUpload,
+  IconFileShredder,
   IconHistory,
   IconLoader,
   IconNetwork,
@@ -17,6 +21,7 @@ import {
   IconResize,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { IDroplet } from "dots-wrapper/dist/droplet";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
@@ -30,13 +35,20 @@ const dropletNavigationItems = [
 
 export default function DropletDetailPage() {
   const { query } = useRouter();
-  const { data: droplet, isLoading } = useGetDropletDetails({
+  const {
+    data: droplet,
+    isLoading,
+    refetch,
+  } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
   });
-  const { data: actions } = useListDropletActions({
+  const { data: actions, refetch: refetchActions } = useListDropletActions({
     page: 1,
     per_page: 10,
     droplet_id: Number(query.dropletId),
+  });
+  const { data: dropletDestroy } = useGetPreference<{ droplet_id: number }>({
+    key: DO_DESTROY_DROPLET,
   });
 
   const region = useMemo(() => {
@@ -52,14 +64,16 @@ export default function DropletDetailPage() {
     return droplet.image;
   }, [droplet]);
 
-  const inProgress = useMemo(() => {
-    return actions?.find((a) => a.status === "in-progress");
-  }, [actions]);
-
   return (
     <Page>
       <MainNavbar />
-      <Page.Content>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          await refetchActions();
+          complete();
+        }}
+      >
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <IconLoader size={24} className="animate-spin" />
@@ -68,6 +82,9 @@ export default function DropletDetailPage() {
           <>
             {droplet && (
               <>
+                {dropletDestroy && dropletDestroy.droplet_id === droplet.id && (
+                  <DropletDestroyingWarning droplet={droplet} />
+                )}
                 <section className="px-4 flex flex-col">
                   <header className="flex items-center justify-start">
                     <div className="">
@@ -137,22 +154,6 @@ export default function DropletDetailPage() {
                     </div>
                   </div>
                 </section>
-
-                {inProgress && (
-                  <section className="mt-4 mx-4 p-4 flex items-center bg-ocean-2/10 rounded-lg">
-                    <div className="flex-none">
-                      <IconLoader className="animate-spin" />
-                    </div>
-                    <div className="pl-4">
-                      <p className="text-sm font-semibold capitalize">
-                        {inProgress.type.replace("_", " ")} in progress
-                      </p>
-                      <p className="text-xs">
-                        {timeAgo(inProgress.started_at)}
-                      </p>
-                    </div>
-                  </section>
-                )}
 
                 <section className="mt-4 px-4 grid grid-cols-4 gap-4">
                   {dropletNavigationItems.map((item) => (
@@ -268,5 +269,27 @@ export default function DropletDetailPage() {
         )}
       </Page.Content>
     </Page>
+  );
+}
+
+function DropletDestroyingWarning({ droplet }: { droplet: IDroplet }) {
+  const { data } = useGetDropletDestroyStatus({
+    droplet_id: droplet.id,
+  });
+
+  console.log(data);
+
+  return (
+    <div className="fixed inset-0 py-safe backdrop-blur-md flex items-center justify-center">
+      <section className="p-4 flex items-center bg-red-600 text-white rounded-lg w-full max-w-xs">
+        <div className="flex-none">
+          <IconFileShredder />
+        </div>
+        <div className="pl-4">
+          <p className="text-sm font-semibold capitalize">{`${droplet.name} is being destroyed`}</p>
+          <p className="text-xs">In Progress</p>
+        </div>
+      </section>
+    </div>
   );
 }

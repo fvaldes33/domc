@@ -15,7 +15,7 @@ import { Page } from "@/components/Page";
 import Link from "next/link";
 
 export default function AppListingPage() {
-  const { data: apps } = useGetApps({
+  const { data: apps, refetch } = useGetApps({
     page: 1,
     per_page: 10,
   });
@@ -23,7 +23,12 @@ export default function AppListingPage() {
   return (
     <Page>
       <MainNavbar />
-      <Page.Content>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          complete();
+        }}
+      >
         <div className="p-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Apps</h1>

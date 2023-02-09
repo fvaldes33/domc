@@ -4,17 +4,21 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { inProgressAtom } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import {
+  useDestroyDropletAndAllAssociatedResources,
   useGetDropletDetails,
   usePowerCycleDroplet,
   usePowerOnDroplet,
   useRebootDroplet,
   useShutdownDroplet,
 } from "@/hooks/useDroplets";
+import { useSetPreference } from "@/hooks/usePreferences";
+import { DO_DESTROY_DROPLET } from "@/utils/const";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAlertTriangle, IconLoader } from "@tabler/icons-react";
 import { UseMutationResult } from "@tanstack/react-query";
 import { IAction } from "dots-wrapper/dist/action";
 import {
+  IdestroyDropletAndAllAssociatedResourcesApiRequest,
   IPowerCycleDropletApiRequest,
   IPowerOnDropletApiRequest,
   IRebootDropletApiRequest,
@@ -23,6 +27,7 @@ import {
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 type Action =
   | {
@@ -64,11 +69,23 @@ type Action =
         IPowerOnDropletApiRequest,
         unknown
       >;
+    }
+  | {
+      title: string;
+      type: "destroy";
+      action: UseMutationResult<
+        void,
+        unknown,
+        IdestroyDropletAndAllAssociatedResourcesApiRequest,
+        unknown
+      >;
     };
 
 export default function DropletPowerPage() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { query } = useRouter();
+  const setPreference = useSetPreference<{ droplet_id: number }>();
+  const router = useRouter();
+  const { query } = router;
 
   const { data: droplet, isLoading } = useGetDropletDetails({
     droplet_id: Number(query.dropletId),
@@ -79,6 +96,7 @@ export default function DropletPowerPage() {
   const cycleDroplet = usePowerCycleDroplet();
   const shutdownDroplet = useShutdownDroplet();
   const poweronDroplet = usePowerOnDroplet();
+  const destroyDroplet = useDestroyDropletAndAllAssociatedResources();
 
   const [action, setAction] = useState<Action>();
 
@@ -192,6 +210,33 @@ export default function DropletPowerPage() {
                     Power Cycle
                   </Button>
                 </section>
+
+                <section className="p-4 border rounded-lg mb-4">
+                  <div className="prose dark:prose-invert">
+                    <p className="lead">Destroy Droplet</p>
+                    <p className="">
+                      This is irreversible. We will destroy your Droplet and all
+                      associated backups. All Droplet data will be scrubbed and
+                      irretrievable.
+                    </p>
+                    <p>Do you wish to proceed?</p>
+                  </div>
+                  <Button
+                    className="mt-4"
+                    full
+                    variant="danger"
+                    onClick={() => {
+                      setAction({
+                        type: "destroy",
+                        title: "Detroy Droplet",
+                        action: destroyDroplet,
+                      });
+                      open();
+                    }}
+                  >
+                    Destroy
+                  </Button>
+                </section>
               </>
             ) : (
               <>
@@ -203,7 +248,7 @@ export default function DropletPowerPage() {
                     </p>
                   </div>
                 </section>
-                <section className="p-4 border rounded-lg mt-4">
+                <section className="p-4 border rounded-lg mt-4 mb-4">
                   <div className="prose dark:prose-invert">
                     <p className="lead">Power On</p>
                     <p className="">Powers on your droplet.</p>
@@ -223,6 +268,32 @@ export default function DropletPowerPage() {
                     Power On
                   </Button>
                 </section>
+                <section className="p-4 border rounded-lg ">
+                  <div className="prose dark:prose-invert">
+                    <p className="lead">Destroy Droplet</p>
+                    <p className="">
+                      This is irreversible. We will destroy your Droplet and all
+                      associated backups. All Droplet data will be scrubbed and
+                      irretrievable.
+                    </p>
+                    <p>Do you wish to proceed?</p>
+                  </div>
+                  <Button
+                    className="mt-4"
+                    full
+                    variant="danger"
+                    onClick={() => {
+                      setAction({
+                        type: "destroy",
+                        title: "Detroy Droplet",
+                        action: destroyDroplet,
+                      });
+                      open();
+                    }}
+                  >
+                    Destroy
+                  </Button>
+                </section>
               </>
             )}
           </>
@@ -240,19 +311,46 @@ export default function DropletPowerPage() {
             onClick={() => {
               if (droplet) {
                 close();
-                action?.action.mutate(
-                  {
-                    droplet_id: droplet.id,
-                  },
-                  {
-                    onSuccess: (data) => {
-                      setInProgressData({
-                        action: data,
-                        droplet: droplet,
-                      });
+                if (action?.type === "destroy") {
+                  action.action.mutate(
+                    {
+                      droplet_id: droplet.id,
+                      acknowledge: true,
                     },
-                  }
-                );
+                    {
+                      onSuccess: () => {
+                        toast.success("Destroy droplet scheduled");
+                        setPreference.mutate(
+                          {
+                            key: DO_DESTROY_DROPLET,
+                            value: {
+                              droplet_id: droplet.id,
+                            },
+                          },
+                          {
+                            onSuccess: () => {
+                              router.back();
+                            },
+                          }
+                        );
+                      },
+                    }
+                  );
+                } else {
+                  action?.action.mutate(
+                    {
+                      droplet_id: droplet.id,
+                    },
+                    {
+                      onSuccess: (data) => {
+                        setInProgressData({
+                          action: data,
+                          droplet: droplet,
+                        });
+                      },
+                    }
+                  );
+                }
               }
             }}
           >

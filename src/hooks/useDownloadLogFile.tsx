@@ -24,15 +24,18 @@ async function downloadLogFile({
     throw new Error("URL is required");
   }
 
-  const res = await fetch(`https://domc.vercel.app/api/download-logs`, {
-    headers: {
-      "Content-type": "application/json",
-    },
-    method: "post",
-    body: JSON.stringify({
-      url,
-    }),
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/download-logs`,
+    {
+      headers: {
+        "Content-type": "application/json",
+      },
+      method: "post",
+      body: JSON.stringify({
+        url,
+      }),
+    }
+  );
 
   if (!res.ok) {
     throw await res.json();

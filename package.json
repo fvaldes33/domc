@@ -29,6 +29,7 @@
     "dots-wrapper": "^3.8.1",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
+    "framer-motion": "^9.0.2",
     "jotai": "^2.0.0",
     "konsta": "^1.0.2",
     "next": "13.1.6",

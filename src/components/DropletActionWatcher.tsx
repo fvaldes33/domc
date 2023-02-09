@@ -37,7 +37,7 @@ export function DropletActionWatcher({
           setMsg("Updating Droplet Information");
           setTimeout(async () => {
             setInProgressData(undefined);
-            await queryClient.invalidateQueries(["droplets", droplet!.id]);
+            await queryClient.invalidateQueries(["droplets", droplet.id]);
           }, 5000);
         } else if (data.status === "errored" && data.type === "shutdown") {
           forcePowerOff.mutate(

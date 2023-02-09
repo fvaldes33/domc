@@ -1,3 +1,4 @@
+import { DO_DESTROY_DROPLET } from "@/utils/const";
 import {
   useMutation,
   useQuery,
@@ -7,9 +8,13 @@ import {
 import { createApiClient } from "dots-wrapper";
 import { IAction } from "dots-wrapper/dist/action";
 import {
+  IdestroyDropletAndAllAssociatedResourcesApiRequest,
+  IDisableDropletBackupsApiRequest,
+  IEnableDropletBackupsApiRequest,
   IEnableDropletIpv6ApiRequest,
   IGetDropletActionApiRequest,
   IGetDropletApiRequest,
+  IGetDropletDestroyStatusApiRequest,
   IListDropletActionsApiRequest,
   IPowerCycleDropletApiRequest,
   IPowerOffDropletApiRequest,
@@ -19,7 +24,11 @@ import {
 } from "dots-wrapper/dist/droplet";
 import { IListRequest } from "dots-wrapper/dist/types";
 import { atom, useSetAtom } from "jotai";
-import { useGetPreference } from "./usePreferences";
+import {
+  useClearPreference,
+  useGetPreference,
+  useSetPreference,
+} from "./usePreferences";
 
 async function getDroplets({
   token,
@@ -61,6 +70,34 @@ async function listDropletActions({
   } = await dots.droplet.listDropletActions(input);
 
   return actions;
+}
+
+async function enableDropletBackups({
+  token,
+  ...input
+}: IEnableDropletBackupsApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { action },
+  } = await dots.droplet.enableDropletBackups(input);
+
+  return action;
+}
+
+async function disableDropletBackups({
+  token,
+  ...input
+}: IDisableDropletBackupsApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { action },
+  } = await dots.droplet.disableDropletBackups(input);
+
+  return action;
 }
 
 async function shutdownDroplet({
@@ -117,6 +154,50 @@ async function powerCycleDroplet({
   } = await dots.droplet.powerCycleDroplet(input);
 
   return action;
+}
+
+async function destroyDropletAndAllAssociatedResources({
+  token,
+  ...input
+}: IdestroyDropletAndAllAssociatedResourcesApiRequest & {
+  token?: string | null;
+}): Promise<void> {
+  if (!token) throw new Error("Token is required");
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/destroy-droplet`,
+      {
+        method: "post",
+        body: JSON.stringify({
+          droplet_id: input.droplet_id,
+          token,
+        }),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw res;
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getDropletDestroyStatus({
+  token,
+  ...input
+}: IGetDropletDestroyStatusApiRequest & {
+  token?: string | null;
+}) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const { data } = await dots.droplet.getDropletDestroyStatus(input);
+
+  return data;
 }
 
 async function powerOnDroplet({
@@ -194,11 +275,45 @@ export function useGetDropletDetails({ droplet_id }: IGetDropletApiRequest) {
   });
   return useQuery({
     queryKey: ["droplets", droplet_id],
+    enabled: Boolean(droplet_id),
     queryFn: () =>
       getDropletDetails({
         token,
         droplet_id,
       }),
+  });
+}
+
+export function useGetDropletDestroyStatus({
+  droplet_id,
+}: IGetDropletDestroyStatusApiRequest) {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const clearPreference = useClearPreference();
+
+  return useQuery({
+    queryKey: ["destroy", droplet_id],
+    queryFn: () =>
+      getDropletDestroyStatus({
+        token,
+        droplet_id,
+      }),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchInterval(data) {
+      if (!data) {
+        return false;
+      }
+      return data.completed_at ? false : 2500;
+    },
+    onSuccess(data) {
+      if (data && data.completed_at) {
+        clearPreference.mutate({
+          key: DO_DESTROY_DROPLET,
+        });
+      }
+    },
   });
 }
 
@@ -310,6 +425,27 @@ export function usePowerCycleDroplet() {
   });
 }
 
+export function useDestroyDropletAndAllAssociatedResources() {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: IdestroyDropletAndAllAssociatedResourcesApiRequest) =>
+      destroyDropletAndAllAssociatedResources({
+        token,
+        ...input,
+      }),
+    onSuccess: async (_, vars) => {
+      void (await queryClient.invalidateQueries([
+        "droplet-actions",
+        vars.droplet_id,
+      ]));
+    },
+  });
+}
+
 export function usePowerOnDroplet() {
   const { data: token } = useGetPreference<string | null>({
     key: "token",
@@ -366,7 +502,6 @@ export function useWaitForAction(
     key: "token",
   });
   const queryClient = useQueryClient();
-  const setLatestAction = useSetAtom(latestActionAtom);
   return useQuery({
     queryKey: ["droplet-actions", input.action_id ?? ""],
     queryFn: () =>
@@ -390,6 +525,48 @@ export function useWaitForAction(
       if (options.onSuccess) {
         options.onSuccess(data, ...args);
       }
+    },
+  });
+}
+
+export function useEnableDropletBackups() {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: IEnableDropletBackupsApiRequest) =>
+      enableDropletBackups({
+        token,
+        ...input,
+      }),
+    onSuccess: async (_, vars) => {
+      void (await queryClient.invalidateQueries([
+        "droplet-actions",
+        vars.droplet_id,
+      ]));
+    },
+  });
+}
+
+export function useDisableDropletBackups() {
+  const { data: token } = useGetPreference<string | null>({
+    key: "token",
+  });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: IDisableDropletBackupsApiRequest) =>
+      disableDropletBackups({
+        token,
+        ...input,
+      }),
+    onSuccess: async (_, vars) => {
+      void (await queryClient.invalidateQueries([
+        "droplet-actions",
+        vars.droplet_id,
+      ]));
     },
   });
 }

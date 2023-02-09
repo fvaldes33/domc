@@ -24,7 +24,7 @@ export default function AppDetailDeployments() {
     app_id: query.appId as string,
   });
 
-  const { data, isLoading, isError } = useGetAppDeployments({
+  const { data, isLoading, isError, refetch } = useGetAppDeployments({
     app_id: query.appId as string,
     page,
     per_page: 10,
@@ -36,20 +36,7 @@ export default function AppDetailDeployments() {
     });
   }, [page]);
 
-  if (isLoading) {
-    return (
-      <Page>
-        <MainNavbar />
-        <Page.Content>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <IconLoader size={24} className="animate-spin" />
-          </div>
-        </Page.Content>
-      </Page>
-    );
-  }
-
-  if (!data || isError) {
+  if (isError) {
     return (
       <Page>
         <MainNavbar />
@@ -73,34 +60,47 @@ export default function AppDetailDeployments() {
   return (
     <Page>
       <MainNavbar title={app?.spec.name ?? ""} />
-      <Page.Content>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          complete();
+        }}
+      >
         <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">
           <IconList className="" size={20} strokeWidth={1.5} />
           <span className="ml-2 uppercase">All Activity ({data?.total})</span>
         </p>
-        <ul className="">
-          {data?.deployByDayKeys.map((date) => {
-            const dailyDeployments = data.deployByDay[date];
-            return (
-              <li key={date}>
-                <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-600 z-[1] text-sm font-medium">
-                  <p>{dayjs(date).format("MMM DD, YYYY")}</p>
-                </div>
-                <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-gray-200">
-                  {dailyDeployments.map((deployment) => {
-                    return (
-                      <AppDeploymentRecord
-                        key={deployment.id}
-                        deployment={deployment}
-                        appId={query.appId as string}
-                      />
-                    );
-                  })}
-                </ul>
-              </li>
-            );
-          })}
-        </ul>
+        {isLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <IconLoader size={24} className="animate-spin" />
+          </div>
+        ) : (
+          <>
+            <ul className="">
+              {data?.deployByDayKeys.map((date) => {
+                const dailyDeployments = data.deployByDay[date];
+                return (
+                  <li key={date}>
+                    <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-600 z-[1] text-sm font-medium">
+                      <p>{dayjs(date).format("MMM DD, YYYY")}</p>
+                    </div>
+                    <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-gray-200">
+                      {dailyDeployments.map((deployment) => {
+                        return (
+                          <AppDeploymentRecord
+                            key={deployment.id}
+                            deployment={deployment}
+                            appId={query.appId as string}
+                          />
+                        );
+                      })}
+                    </ul>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
       </Page.Content>
       {data?.hasMore && (
         <Footer>
