@@ -14,6 +14,11 @@ import { SetupScreen } from "@/components/SetupScreen";
 import { MissonControlProvider } from "@/components/MissionControlProvider";
 import { classNames } from "@/utils/classNames";
 import { Toaster } from "react-hot-toast";
+import {
+  DO_COLOR_SCHEME,
+  DO_COLOR_SCHEME_PREF,
+  DO_TOKEN_KEY,
+} from "@/utils/const";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,11 +55,16 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
 function AppWrapper({ children }: { children: React.ReactNode }) {
   const { data: token, isLoading } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const { data: colorScheme } = useGetPreference<"light" | "dark">({
-    key: "colorScheme",
+    key: DO_COLOR_SCHEME,
     defaultValue: "light",
+  });
+
+  const { data: colorSchemePref } = useGetPreference<"system" | "manual">({
+    key: DO_COLOR_SCHEME_PREF,
+    defaultValue: "manual",
   });
 
   return (
@@ -62,7 +72,11 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
       {isLoading ? (
         <LoadingScreen />
       ) : token ? (
-        <MissonControlProvider theme={colorScheme ?? "light"} token={token}>
+        <MissonControlProvider
+          theme={colorScheme ?? "light"}
+          token={token}
+          colorSchemePref={colorSchemePref ?? "manual"}
+        >
           {children}
         </MissonControlProvider>
       ) : (

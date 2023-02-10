@@ -1,4 +1,4 @@
-import { DO_BASE_URL } from "@/utils/const";
+import { DO_BASE_URL, DO_TOKEN_KEY } from "@/utils/const";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { createApiClient } from "dots-wrapper";
@@ -20,11 +20,12 @@ async function getApps({
   if (!token) throw new Error("Token is required");
 
   const dots = createApiClient({ token });
-  const {
-    data: { apps },
-  } = await dots.app.listApps(input);
+  const { data } = await dots.app.listApps(input);
 
-  return apps;
+  if (data.apps) {
+    return data.apps;
+  }
+  return [];
 }
 
 async function getAppDetail({
@@ -217,7 +218,7 @@ async function getAppDeploymentLogs({
 
 export function useGetApps({ page, per_page }: IListRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["apps", page, per_page],
@@ -232,7 +233,7 @@ export function useGetApps({ page, per_page }: IListRequest) {
 
 export function useGetAppDetails({ app_id }: IGetAppApiRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["apps", app_id],
@@ -251,7 +252,7 @@ export function useGetAppDeployments({
   per_page = 5,
 }: IListAppDeploymentsApiRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["deployments", app_id, page, per_page],
@@ -272,7 +273,7 @@ export function useGetAppDeployment({
   deployment_id,
 }: IGetAppDeploymentApiRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["deployments", app_id, deployment_id],
@@ -288,7 +289,7 @@ export function useGetAppDeployment({
 
 export function useCreateDeployment() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
   return useMutation({
@@ -306,7 +307,7 @@ export function useCreateDeployment() {
 
 export function useCreateRollback() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
   return useMutation({
@@ -335,7 +336,7 @@ export function useCreateRollback() {
 
 export function useGetAppDeploymentLogs() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useMutation({
     mutationFn: async (input: IGetAppDeploymentLogsApiRequest) =>

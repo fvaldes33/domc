@@ -105,7 +105,7 @@ const Button: ButtonComponent = forwardRef(function Button<
           ? `aspect-square ${sizeClass.slice(0, 1).join(" ")}`
           : sizeClass.join(" "),
         className,
-        full ? "!w-full" : ""
+        full ? "!w-full !rounded-none" : ""
       )}
     >
       <div

@@ -9,6 +9,7 @@ import { useGetPreference } from "@/hooks/usePreferences";
 import { classNames } from "@/utils/classNames";
 import { DO_DESTROY_DROPLET } from "@/utils/const";
 import { timeAgo } from "@/utils/timeAgo";
+import { truncate } from "@/utils/truncate";
 import {
   IconCamera,
   IconChevronRight,
@@ -28,7 +29,7 @@ import { useMemo } from "react";
 
 const dropletNavigationItems = [
   { label: "Power", icon: IconPower, href: "power" },
-  { label: "Resize", icon: IconResize, href: "resize" },
+  // { label: "Resize", icon: IconResize, href: "resize" },
   { label: "Backups", icon: IconCloudUpload, href: "backups" },
   { label: "Snapshots", icon: IconCamera, href: "snapshots" },
 ];
@@ -99,7 +100,7 @@ export default function DropletDetailPage() {
                         {droplet.status}
                       </span>
                       <h1 className="text-xl font-bold truncate overflow-hidden">
-                        {droplet.name}
+                        {truncate(droplet.name, 25)}
                       </h1>
                       <div className="flex items-center space-x-1 text-sm">
                         <p className="capitalize">
@@ -155,7 +156,7 @@ export default function DropletDetailPage() {
                   </div>
                 </section>
 
-                <section className="mt-4 px-4 grid grid-cols-4 gap-4">
+                <section className="mt-4 px-4 grid grid-cols-3 gap-4">
                   {dropletNavigationItems.map((item) => (
                     <Link
                       key={item.href}

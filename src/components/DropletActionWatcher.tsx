@@ -1,6 +1,8 @@
 import {
   latestActionAtom,
   usePowerOffDroplet,
+  usePowerOnDroplet,
+  useSnapshotDroplet,
   useWaitForAction,
 } from "@/hooks/useDroplets";
 import { timeAgo } from "@/utils/timeAgo";
@@ -8,9 +10,12 @@ import { IconLoader } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { IAction } from "dots-wrapper/dist/action";
 import { IDroplet } from "dots-wrapper/dist/droplet";
-import { useSetAtom } from "jotai";
-import { useState } from "react";
-import { inProgressAtom } from "./MissionControlProvider";
+import { useAtom, useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+import {
+  inProgressAtom,
+  postShutdownActionAtom,
+} from "./MissionControlProvider";
 
 export function DropletActionWatcher({
   droplet,
@@ -20,11 +25,21 @@ export function DropletActionWatcher({
   action: IAction;
 }) {
   const setInProgressData = useSetAtom(inProgressAtom);
+  const [postShutdownAction, setPostShutdownAction] = useAtom(
+    postShutdownActionAtom
+  );
   const queryClient = useQueryClient();
   const forcePowerOff = usePowerOffDroplet();
+  const powerOn = usePowerOnDroplet();
+
   const [msg, setMsg] = useState<string>(
     () => `${action.type.replace("_", " ")} in progress`
   );
+  const snapshotDroplet = useSnapshotDroplet();
+
+  useEffect(() => {
+    setMsg(`${action.type.replace("_", " ")} in progress`);
+  }, [action]);
 
   useWaitForAction(
     {
@@ -36,8 +51,42 @@ export function DropletActionWatcher({
         if (data.status === "completed") {
           setMsg("Updating Droplet Information");
           setTimeout(async () => {
-            setInProgressData(undefined);
             await queryClient.invalidateQueries(["droplets", droplet.id]);
+
+            if (postShutdownAction) {
+              if (data.type === "shutdown" || data.type === "power_off") {
+                //
+                snapshotDroplet.mutate(postShutdownAction, {
+                  onSuccess: (data) => {
+                    setInProgressData({
+                      droplet,
+                      action: data,
+                    });
+                  },
+                });
+              } else if (data.type === "snapshot") {
+                await queryClient.invalidateQueries([
+                  "droplet-snapshots",
+                  droplet.id,
+                ]);
+                powerOn.mutate(
+                  {
+                    droplet_id: droplet.id,
+                  },
+                  {
+                    onSuccess: (data) => {
+                      setPostShutdownAction(undefined);
+                      setInProgressData({
+                        droplet,
+                        action: data,
+                      });
+                    },
+                  }
+                );
+              }
+            } else {
+              setInProgressData(undefined);
+            }
           }, 5000);
         } else if (data.status === "errored" && data.type === "shutdown") {
           forcePowerOff.mutate(

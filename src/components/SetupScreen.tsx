@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { Page } from "@/components/Page";
 import { useSetPreference } from "@/hooks/usePreferences";
+import { DO_TOKEN_KEY } from "@/utils/const";
 
 const SetupSchema = z.object({
   token: z.string({ required_error: "A token is required to continue " }),
@@ -21,7 +22,7 @@ export function SetupScreen() {
 
   const handleSubmit = ({ token }: z.infer<typeof SetupSchema>) => {
     setPreference.mutate({
-      key: "token",
+      key: DO_TOKEN_KEY,
       value: token,
     });
   };

@@ -12,6 +12,9 @@ import {
 import { Page } from "@/components/Page";
 import Link from "next/link";
 import { useGetDroplets } from "@/hooks/useDroplets";
+import { truncate } from "@/utils/truncate";
+import { Button } from "@/components/Button";
+import empty from "@/assets/droplets.png";
 
 export default function AppListingPage() {
   const {
@@ -44,6 +47,17 @@ export default function AppListingPage() {
           </div>
         ) : (
           <div className="px-4 space-y-4">
+            {droplets && droplets.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-96">
+                <img src={empty.src} alt="" className="w-40" />
+                <p className="text-2xl font-bold text-center my-4">
+                  {`Looks like you don't have any droplets`}
+                </p>
+                <Button component={Link} href="/" className="flex-shrink-0">
+                  Back
+                </Button>
+              </div>
+            )}
             {droplets?.map((droplet) => {
               return (
                 <div
@@ -65,7 +79,7 @@ export default function AppListingPage() {
                           <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
                         )}
                         <p className="font-medium leading-none">
-                          {droplet.name}
+                          {truncate(droplet.name, 30)}
                         </p>
                       </div>
 
@@ -90,7 +104,7 @@ export default function AppListingPage() {
                           )}
                       </div>
                     </div>
-                    <div className="flex">
+                    <div className="flex flex-none">
                       <IconArrowRight size={20} />
                     </div>
                   </div>

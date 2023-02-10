@@ -13,6 +13,8 @@ import {
 } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
 import Link from "next/link";
+import rocket from "@/assets/code.png";
+import { Button } from "@/components/Button";
 
 export default function AppListingPage() {
   const { data: apps, refetch } = useGetApps({
@@ -36,6 +38,17 @@ export default function AppListingPage() {
         </div>
 
         <div className="px-4">
+          {apps && apps.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-96">
+              <img src={rocket.src} alt="" className="w-40" />
+              <p className="text-2xl font-bold text-center my-4">
+                {`Looks like you don't have any apps`}
+              </p>
+              <Button component={Link} href="/" className="flex-shrink-0">
+                Back
+              </Button>
+            </div>
+          )}
           {apps?.map((app) => (
             <div
               key={app.id}

@@ -22,5 +22,6 @@ module.exports = {
   plugins: [
     require("tailwindcss-safe-area"),
     require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
   ],
 };

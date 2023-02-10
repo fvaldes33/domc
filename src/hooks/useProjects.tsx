@@ -1,3 +1,4 @@
+import { DO_TOKEN_KEY } from "@/utils/const";
 import { useQuery } from "@tanstack/react-query";
 import { createApiClient } from "dots-wrapper";
 import { IProject, IProjectResource } from "dots-wrapper/dist/project";
@@ -33,7 +34,7 @@ async function getProjects({
 
 export function useGetProjects({ page, per_page }: IListRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["projects", page, per_page],

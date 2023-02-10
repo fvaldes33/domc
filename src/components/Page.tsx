@@ -1,6 +1,6 @@
 import { classNames } from "@/utils/classNames";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useState } from "react";
+import { animate, motion, useMotionValue } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Refresher } from "./Refresher";
 
 function Page({ children }: { children: React.ReactNode }) {
@@ -17,6 +17,10 @@ function Page({ children }: { children: React.ReactNode }) {
   );
 }
 
+const RESISTANCE = 1.5;
+const PULLDOWNTHRESHOLD = 64;
+const MAXPULLDOWNDISTANCE = 90;
+
 function Content({
   onRefresh,
   children,
@@ -25,11 +29,122 @@ function Content({
 }: React.ComponentPropsWithoutRef<"main"> & {
   onRefresh?: (complete: () => void) => Promise<void> | void;
 }) {
-  const y = useMotionValue(0);
-  const rotate = useTransform(y, [0, 64], [0, 360], { clamp: false });
   const [isPulling, setIsPulling] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const enableRefresh = Boolean(onRefresh);
+
+  const y = useMotionValue(0);
+
+  const isRefreshedEnabled = Boolean(onRefresh);
+
+  const mainRef = useRef<HTMLElement>(null);
+  const refresherRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef<boolean>(false);
+  const shouldTriggerRefresh = useRef<boolean>(false);
+  const touchStart = useRef<number>(0);
+
+  const onTouchStart = (event: MouseEvent | TouchEvent) => {
+    if (!isRefreshedEnabled) return;
+
+    isDragging.current = false;
+
+    if (mainRef.current!.getBoundingClientRect().top < 0) {
+      return;
+    }
+
+    touchStart.current =
+      event instanceof MouseEvent ? event.pageY : event.touches[0].pageY;
+
+    isDragging.current = true;
+  };
+
+  const onTouchMove = (event: MouseEvent | TouchEvent) => {
+    if (!isRefreshedEnabled) return;
+
+    if (!isDragging.current) {
+      return;
+    }
+
+    const newY =
+      event instanceof MouseEvent ? event.pageY : event.touches[0].pageY;
+
+    if (newY < touchStart.current) {
+      isDragging.current = false;
+      return;
+    }
+
+    setIsPulling(true);
+
+    const yDistanceMoved = Math.min(
+      (newY - touchStart.current) / RESISTANCE,
+      MAXPULLDOWNDISTANCE
+    );
+
+    if (yDistanceMoved >= PULLDOWNTHRESHOLD) {
+      isDragging.current = true;
+      shouldTriggerRefresh.current = true;
+    } else {
+      shouldTriggerRefresh.current = false;
+    }
+
+    if (yDistanceMoved >= MAXPULLDOWNDISTANCE) {
+      return;
+    }
+
+    animate(y, yDistanceMoved);
+
+    refresherRef.current!.style.setProperty(
+      "--refresh-opacity",
+      (yDistanceMoved / 65).toString()
+    );
+    refresherRef.current!.style.setProperty(
+      "--refresh-rotation",
+      `${(yDistanceMoved / 65) * 360}deg`
+    );
+  };
+
+  const onTouchEnd = () => {
+    if (!isRefreshedEnabled) return;
+
+    if (!shouldTriggerRefresh.current) {
+      animate(y, 0);
+      refresherRef.current!.style.setProperty("--refresh-opacity", "0");
+      refresherRef.current!.style.setProperty("--refresh-rotation", "0deg");
+      isDragging.current = false;
+      setIsPulling(false);
+    } else {
+      animate(y, PULLDOWNTHRESHOLD);
+      setIsRefreshing(true);
+
+      onRefresh!(() => {
+        shouldTriggerRefresh.current = false;
+        isDragging.current = false;
+        animate(y, 0);
+        // mainRef.current!.style.setProperty("--drag-y", `0px`);
+        refresherRef.current!.style.setProperty("--refresh-opacity", "0");
+        refresherRef.current!.style.setProperty("--refresh-rotation", "0deg");
+        setIsPulling(false);
+        setIsRefreshing(false);
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!mainRef.current) {
+      return;
+    }
+
+    const mainEl = mainRef.current;
+    mainEl.addEventListener("touchstart", onTouchStart, { passive: true });
+    mainEl.addEventListener("touchmove", onTouchMove, { passive: true });
+    mainEl.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      mainEl.removeEventListener("touchstart", onTouchStart);
+      mainEl.removeEventListener("touchmove", onTouchMove);
+      mainEl.removeEventListener("touchend", onTouchEnd);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
@@ -39,44 +154,26 @@ function Content({
         contain: "size style",
       }}
     >
-      {enableRefresh && (
-        <div className="absolute inset-0 pointer-events-none z-[-1]">
-          <Refresher
-            r={rotate}
-            isPulling={isPulling}
-            isRefreshing={isRefreshing}
-          />
-        </div>
-      )}
+      <div className="absolute inset-0 pointer-events-none z-[-1]">
+        <Refresher
+          ref={refresherRef}
+          isPulling={isPulling}
+          isRefreshing={isRefreshing}
+        />
+      </div>
       <motion.main
-        drag={enableRefresh && "y"}
-        dragConstraints={{ top: 0, bottom: isRefreshing ? 64 : 0 }}
-        onDragStart={(e, info) => {
-          setIsPulling(true);
-        }}
-        onDragEnd={(e, info) => {
-          if (info.offset.y >= 160) {
-            y.updateAndNotify(64, true);
-            setIsRefreshing(true);
-            if (onRefresh) {
-              onRefresh(() => {
-                setIsRefreshing(false);
-              });
-            } else {
-              setTimeout(() => {
-                setIsRefreshing(false);
-              }, 2000);
-            }
-          } else {
-            setIsPulling(false);
-          }
-        }}
-        style={{ y }}
+        ref={mainRef}
         className={classNames(
           "bg-white dark:bg-black absolute inset-0 overflow-hidden touch-pan-x touch-pan-y touch-pinch-zoom overflow-y-auto overscroll-y-contain z-0 will-change-scroll",
           className ?? ""
         )}
-        // {...props}
+        style={{
+          y,
+        }}
+        transition={{
+          type: "spring",
+          bounce: 0.5,
+        }}
       >
         {children}
       </motion.main>

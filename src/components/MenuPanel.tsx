@@ -6,10 +6,10 @@ import {
   IconDatabase,
   IconDroplet,
   IconHome,
+  IconSettings2,
   IconWorld,
   IconX,
 } from "@tabler/icons-react";
-import { List, ListInput, ListItem, Panel } from "konsta/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
@@ -27,9 +27,10 @@ interface MenuPanelProps {
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
-  { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
+  // { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
+  { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
 ];
 
 export function MenuPanel({ opened, close }: MenuPanelProps) {
@@ -101,7 +102,11 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                 {account && (
                   <Footer>
                     <Toolbar border position="bottom">
-                      <div className="px-2 py-2 flex items-center">
+                      <Link
+                        href="/settings"
+                        className="px-2 py-2 flex items-center"
+                        onClick={close}
+                      >
                         <img
                           className="w-10 object-cover rounded-full bg-ocean flex-shrink-0"
                           src={`https://avatars.dicebear.com/api/miniavs/${account.email}.svg`}
@@ -116,7 +121,7 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                             {account.email}
                           </p>
                         </div>
-                      </div>
+                      </Link>
                     </Toolbar>
                   </Footer>
                 )}

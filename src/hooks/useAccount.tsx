@@ -1,3 +1,4 @@
+import { DO_TOKEN_KEY } from "@/utils/const";
 import { useQuery } from "@tanstack/react-query";
 import { createApiClient } from "dots-wrapper";
 import { useGetPreference } from "./usePreferences";
@@ -15,7 +16,7 @@ async function getAccount({ token }: { token?: string | null }) {
 
 export function useGetAccount() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["account"],

@@ -7,12 +7,15 @@ import {
   useDisableDropletBackups,
   useEnableDropletBackups,
   useGetDropletDetails,
+  useListDropletBackups,
 } from "@/hooks/useDroplets";
 import { BACKUP_COST } from "@/utils/const";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { truncate } from "@/utils/truncate";
 import { useDisclosure } from "@mantine/hooks";
-import { IconLoader } from "@tabler/icons-react";
+import { IconBackpack, IconLoader } from "@tabler/icons-react";
 import { UseMutationResult } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { IAction } from "dots-wrapper/dist/action";
 import {
   IDisableDropletBackupsApiRequest,
@@ -49,6 +52,9 @@ export default function DropletBackupsPage() {
   const [opened, { open, close }] = useDisclosure(false);
   const [action, setAction] = useState<Action>();
   const { data: droplet, isLoading } = useGetDropletDetails({
+    droplet_id: Number(query.dropletId),
+  });
+  const { data: backups } = useListDropletBackups({
     droplet_id: Number(query.dropletId),
   });
   const setInProgressData = useSetAtom(inProgressAtom);
@@ -96,6 +102,12 @@ export default function DropletBackupsPage() {
                     Backup Calculation:
                     <br />
                     5% Droplet cost per backup (4 backups per month)
+                  </p>
+                  <p>
+                    Next Backup:{" "}
+                    {dayjs((droplet?.next_backup_window as any).start).format(
+                      "MM/DD/YYYY"
+                    )}
                   </p>
                 </div>
                 <Button
@@ -149,6 +161,36 @@ export default function DropletBackupsPage() {
                 </Button>
               </section>
             )}
+          </div>
+        )}
+
+        {backups && backups.length > 0 && (
+          <div className="mb-6">
+            <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-800 flex items-center px-4">
+              <IconBackpack className="" size={20} strokeWidth={1.5} />
+              <span className="ml-2 uppercase">Backups</span>
+            </p>
+            <ul className="px-4">
+              {backups?.map((backup) => (
+                <li
+                  key={backup.id}
+                  className="py-2 flex items-start justify-between"
+                >
+                  <div>
+                    <p>{truncate(backup.name, 25)}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-200">
+                      {backup.size_gigabytes}GB /{" "}
+                      <span className="uppercase">
+                        {backup.regions.join("*")}
+                      </span>
+                    </p>
+                  </div>
+                  <span className="text-sm mt-1">
+                    {dayjs(backup.created_at).format("MM/DD/YYYY")}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 

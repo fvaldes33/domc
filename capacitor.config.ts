@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: "out",
   bundledWebRuntime: false,
   // server: {
-  //   url: "https://1b95-136-57-130-168.ngrok.io",
+  //   url: "https://9b85-136-57-130-168.ngrok.io",
   //   cleartext: true,
   // },
 };

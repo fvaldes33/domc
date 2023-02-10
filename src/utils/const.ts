@@ -12,6 +12,8 @@ export const DEFAULT_GEO = {
 };
 
 export const DO_TOKEN_KEY = "__do_token_key";
+export const DO_COLOR_SCHEME = "__do_color_scheme";
+export const DO_COLOR_SCHEME_PREF = "__do_color_scheme_pref";
 export const DO_ACTIVE_PROJECT = "__do_active_project";
 export const DO_BASE_URL = "https://api.digitalocean.com/v2";
 export const DO_DESTROY_DROPLET = "__do_dropletDestroy";

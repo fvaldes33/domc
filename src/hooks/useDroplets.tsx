@@ -1,4 +1,4 @@
-import { DO_DESTROY_DROPLET } from "@/utils/const";
+import { DO_DESTROY_DROPLET, DO_TOKEN_KEY } from "@/utils/const";
 import {
   useMutation,
   useQuery,
@@ -16,11 +16,14 @@ import {
   IGetDropletApiRequest,
   IGetDropletDestroyStatusApiRequest,
   IListDropletActionsApiRequest,
+  IListDropletBackupsApiRequest,
+  IListDropletSnapshotsApiRequest,
   IPowerCycleDropletApiRequest,
   IPowerOffDropletApiRequest,
   IPowerOnDropletApiRequest,
   IRebootDropletApiRequest,
   IShutdownDropletApiRequest,
+  ISnapshotDropletApiRequest,
 } from "dots-wrapper/dist/droplet";
 import { IListRequest } from "dots-wrapper/dist/types";
 import { atom, useSetAtom } from "jotai";
@@ -72,6 +75,34 @@ async function listDropletActions({
   return actions;
 }
 
+async function listDropletBackups({
+  token,
+  ...input
+}: IListDropletBackupsApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { backups },
+  } = await dots.droplet.listDropletBackups(input);
+
+  return backups;
+}
+
+async function listDropletSnapshots({
+  token,
+  ...input
+}: IListDropletSnapshotsApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { snapshots },
+  } = await dots.droplet.listDropletSnapshots(input);
+
+  return snapshots;
+}
+
 async function enableDropletBackups({
   token,
   ...input
@@ -96,6 +127,20 @@ async function disableDropletBackups({
   const {
     data: { action },
   } = await dots.droplet.disableDropletBackups(input);
+
+  return action;
+}
+
+async function snapshotDroplet({
+  token,
+  ...input
+}: ISnapshotDropletApiRequest & { token?: string | null }) {
+  if (!token) throw new Error("Token is required");
+
+  const dots = createApiClient({ token });
+  const {
+    data: { action },
+  } = await dots.droplet.snapshotDroplet(input);
 
   return action;
 }
@@ -256,7 +301,7 @@ async function waitForAction({
 
 export function useGetDroplets({ page, per_page }: IListRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["droplets", page, per_page],
@@ -271,7 +316,7 @@ export function useGetDroplets({ page, per_page }: IListRequest) {
 
 export function useGetDropletDetails({ droplet_id }: IGetDropletApiRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["droplets", droplet_id],
@@ -288,7 +333,7 @@ export function useGetDropletDestroyStatus({
   droplet_id,
 }: IGetDropletDestroyStatusApiRequest) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const clearPreference = useClearPreference();
 
@@ -326,7 +371,7 @@ export function useListDropletActions(
   options: UseListDropletActionsQueryOptions = {}
 ) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   return useQuery({
     queryKey: ["droplet-actions", input.droplet_id],
@@ -343,6 +388,34 @@ export function useListDropletActions(
   });
 }
 
+export function useListDropletBackups(input: IListDropletActionsApiRequest) {
+  const { data: token } = useGetPreference<string | null>({
+    key: DO_TOKEN_KEY,
+  });
+  return useQuery({
+    queryKey: ["droplet-backups", input.droplet_id],
+    queryFn: () =>
+      listDropletBackups({
+        token,
+        ...input,
+      }),
+  });
+}
+
+export function useListDropletSnapshots(input: IListDropletActionsApiRequest) {
+  const { data: token } = useGetPreference<string | null>({
+    key: DO_TOKEN_KEY,
+  });
+  return useQuery({
+    queryKey: ["droplet-snapshots", input.droplet_id],
+    queryFn: () =>
+      listDropletSnapshots({
+        token,
+        ...input,
+      }),
+  });
+}
+
 export const latestActionAtom = atom<IAction | undefined>(undefined);
 export const shutdownAttemptAtom = atom<number | undefined>(undefined);
 export const powerOffAttemptAtom = atom<number | undefined>(undefined);
@@ -350,7 +423,7 @@ export const powerOnAttemptAtom = atom<number | undefined>(undefined);
 
 export function useShutdownDroplet() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const setShutdownAttempt = useSetAtom(shutdownAttemptAtom);
   return useMutation({
@@ -367,7 +440,7 @@ export function useShutdownDroplet() {
 
 export function usePowerOffDroplet() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const setPowerOffAttempt = useSetAtom(powerOffAttemptAtom);
 
@@ -385,7 +458,7 @@ export function usePowerOffDroplet() {
 
 export function useRebootDroplet() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
@@ -406,7 +479,7 @@ export function useRebootDroplet() {
 
 export function usePowerCycleDroplet() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
@@ -427,7 +500,7 @@ export function usePowerCycleDroplet() {
 
 export function useDestroyDropletAndAllAssociatedResources() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
@@ -448,7 +521,7 @@ export function useDestroyDropletAndAllAssociatedResources() {
 
 export function usePowerOnDroplet() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
   const setPowerOnAttempt = useSetAtom(powerOnAttemptAtom);
@@ -471,7 +544,7 @@ export function usePowerOnDroplet() {
 
 export function useEnableDropletIpv6() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
@@ -499,7 +572,7 @@ export function useWaitForAction(
   options: UseWaitForActionQueryOptions = {}
 ) {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
   return useQuery({
@@ -531,7 +604,7 @@ export function useWaitForAction(
 
 export function useEnableDropletBackups() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
@@ -552,13 +625,34 @@ export function useEnableDropletBackups() {
 
 export function useDisableDropletBackups() {
   const { data: token } = useGetPreference<string | null>({
-    key: "token",
+    key: DO_TOKEN_KEY,
   });
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (input: IDisableDropletBackupsApiRequest) =>
       disableDropletBackups({
+        token,
+        ...input,
+      }),
+    onSuccess: async (_, vars) => {
+      void (await queryClient.invalidateQueries([
+        "droplet-actions",
+        vars.droplet_id,
+      ]));
+    },
+  });
+}
+
+export function useSnapshotDroplet() {
+  const { data: token } = useGetPreference<string | null>({
+    key: DO_TOKEN_KEY,
+  });
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: ISnapshotDropletApiRequest) =>
+      snapshotDroplet({
         token,
         ...input,
       }),

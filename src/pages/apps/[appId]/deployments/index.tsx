@@ -24,11 +24,12 @@ export default function AppDetailDeployments() {
     app_id: query.appId as string,
   });
 
-  const { data, isLoading, isError, refetch } = useGetAppDeployments({
-    app_id: query.appId as string,
-    page,
-    per_page: 10,
-  });
+  const { data, isLoading, isRefetching, isError, refetch } =
+    useGetAppDeployments({
+      app_id: query.appId as string,
+      page,
+      per_page: 10,
+    });
 
   useEffect(() => {
     document.querySelector("#content")?.scrollTo({
@@ -66,10 +67,13 @@ export default function AppDetailDeployments() {
           complete();
         }}
       >
-        <p className="text-sm text-ocean dark:text-blue-400 font-medium py-2 border-b dark:border-gray-600 flex items-center px-4">
-          <IconList className="" size={20} strokeWidth={1.5} />
-          <span className="ml-2 uppercase">All Activity ({data?.total})</span>
-        </p>
+        <div className="flex items-center justify-between px-4 py-2 border-b dark:border-gray-600">
+          <p className="text-sm text-ocean dark:text-blue-400 font-medium flex items-center">
+            <IconList className="" size={20} strokeWidth={1.5} />
+            <span className="ml-2 uppercase">All Activity ({data?.total})</span>
+          </p>
+          {isRefetching && <IconLoader size={16} className="animate-spin" />}
+        </div>
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <IconLoader size={24} className="animate-spin" />
@@ -102,27 +106,27 @@ export default function AppDetailDeployments() {
           </>
         )}
       </Page.Content>
-      {data?.hasMore && (
-        <Footer>
-          <Toolbar position="bottom" border>
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((prev) => prev - 1)}
-              className="px-2 flex items-center"
-            >
-              <IconChevronLeft size={16} />
-              <span className="ml-2 text-sm">Prev</span>
-            </button>
-            <button
-              onClick={() => setPage((prev) => prev + 1)}
-              className="px-2 flex items-center flex-row-reverse"
-            >
-              <IconChevronRight size={16} />
-              <span className="mr-2 text-sm">Next</span>
-            </button>
-          </Toolbar>
-        </Footer>
-      )}
+
+      <Footer>
+        <Toolbar position="bottom" border>
+          <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => prev - 1)}
+            className="px-2 flex items-center disabled:opacity-30"
+          >
+            <IconChevronLeft size={16} />
+            <span className="ml-2 text-sm">Prev</span>
+          </button>
+          <button
+            disabled={!data?.hasMore}
+            onClick={() => setPage((prev) => prev + 1)}
+            className="px-2 flex items-center flex-row-reverse disabled:opacity-30"
+          >
+            <IconChevronRight size={16} />
+            <span className="mr-2 text-sm">Next</span>
+          </button>
+        </Toolbar>
+      </Footer>
     </Page>
   );
 }

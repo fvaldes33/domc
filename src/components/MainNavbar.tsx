@@ -10,20 +10,26 @@ import { useRouter } from "next/router";
 
 import { Navbar } from "@/components/Navbar";
 import { MenuPanel } from "@/components/MenuPanel";
+import { DO_COLOR_SCHEME, DO_COLOR_SCHEME_PREF } from "@/utils/const";
 
 export function MainNavbar({ title }: { title?: string }) {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const { data: colorScheme } = useGetPreference({
-    key: "colorScheme",
+    key: DO_COLOR_SCHEME,
     defaultValue: "light",
   });
+  const { data: colorSchemePref } = useGetPreference({
+    key: DO_COLOR_SCHEME_PREF,
+    defaultValue: "manual",
+  });
+
   const setPreference = useSetPreference();
 
   const toggleColorScheme = () => {
     const next = colorScheme === "light" ? "dark" : "light";
     setPreference.mutate({
-      key: "colorScheme",
+      key: DO_COLOR_SCHEME,
       value: next,
     });
   };
@@ -46,9 +52,12 @@ export function MainNavbar({ title }: { title?: string }) {
           )
         }
         right={
-          <button className="" onClick={toggleColorScheme}>
-            {colorScheme === "light" ? <IconMoon /> : <IconSun />}
-          </button>
+          colorSchemePref &&
+          colorSchemePref === "manual" && (
+            <button className="" onClick={toggleColorScheme}>
+              {colorScheme === "light" ? <IconMoon /> : <IconSun />}
+            </button>
+          )
         }
       />
       <MenuPanel opened={opened} close={close} />
