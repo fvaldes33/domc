@@ -85,6 +85,12 @@ export function DropletActionWatcher({
                 );
               }
             } else {
+              if (data.type === "snapshot") {
+                await queryClient.invalidateQueries([
+                  "droplet-snapshots",
+                  droplet.id,
+                ]);
+              }
               setInProgressData(undefined);
             }
           }, 5000);

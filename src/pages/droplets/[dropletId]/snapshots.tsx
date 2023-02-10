@@ -72,7 +72,7 @@ export default function DropletSnapshotsPage() {
             action: data,
             droplet: droplet!,
           });
-          toast.success("Your snapshot is being created");
+          toast.success("Your snapshot has started");
         },
       }
     );

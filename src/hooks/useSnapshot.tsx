@@ -67,11 +67,15 @@ export function useDestroySnapshot() {
   const { data: token } = useGetPreference<string | null>({
     key: DO_TOKEN_KEY,
   });
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: IDeleteSnapshotApiRequest) =>
       destroySnapshot({
         token,
         ...input,
       }),
+    onSuccess: async () => {
+      void (await queryClient.invalidateQueries(["droplet-snapshots"]));
+    },
   });
 }

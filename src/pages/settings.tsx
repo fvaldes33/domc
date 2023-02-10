@@ -117,7 +117,7 @@ export default function Settings() {
           </div>
         </form>
 
-        <div className="px-4 prose">
+        <div className="px-4 prose dark:prose-invert">
           <h2>About</h2>
           <p>
             <i>Mission Control</i> for Digital Ocean the &quot;go to&quot; tool
@@ -154,7 +154,7 @@ export default function Settings() {
             className="absolute inset-0"
             loading={setPreferences.isLoading}
           >
-            Take Snapshot
+            Save Settings
           </Button>
         </Toolbar>
       </Footer>
