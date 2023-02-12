@@ -4,7 +4,7 @@ import { IconFileUnknown, IconLoader } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { IAppDeployment } from "dots-wrapper/dist/app";
 import { Button, Checkbox, List, ListItem } from "konsta/react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { Fragment, useState } from "react";
 
 import { useCreateRollback } from "@/hooks/useApps";

@@ -1,4 +1,5 @@
 import { DO_DESTROY_DROPLET, DO_TOKEN_KEY } from "@/utils/const";
+import { getRemoteApiEndpoint } from "@/utils/endpoint";
 import {
   useMutation,
   useQuery,
@@ -27,11 +28,7 @@ import {
 } from "dots-wrapper/dist/droplet";
 import { IListRequest } from "dots-wrapper/dist/types";
 import { atom, useSetAtom } from "jotai";
-import {
-  useClearPreference,
-  useGetPreference,
-  useSetPreference,
-} from "./usePreferences";
+import { useClearPreference, useGetPreference } from "./usePreferences";
 
 async function getDroplets({
   token,
@@ -210,19 +207,18 @@ async function destroyDropletAndAllAssociatedResources({
   if (!token) throw new Error("Token is required");
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/destroy-droplet`,
-      {
-        method: "post",
-        body: JSON.stringify({
-          droplet_id: input.droplet_id,
-          token,
-        }),
-        headers: {
-          "Content-type": "application/json",
-        },
-      }
-    );
+    const remoteEndpoint = getRemoteApiEndpoint();
+
+    const res = await fetch(`${remoteEndpoint}/api/destroy-droplet`, {
+      method: "post",
+      body: JSON.stringify({
+        droplet_id: input.droplet_id,
+        token,
+      }),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
     if (!res.ok) {
       throw res;
     }
@@ -335,6 +331,7 @@ export function useGetDropletDestroyStatus({
   const { data: token } = useGetPreference<string | null>({
     key: DO_TOKEN_KEY,
   });
+  const queryClient = useQueryClient();
   const clearPreference = useClearPreference();
 
   return useQuery({
@@ -345,18 +342,18 @@ export function useGetDropletDestroyStatus({
         droplet_id,
       }),
     retry: false,
-    refetchOnWindowFocus: false,
     refetchInterval(data) {
       if (!data) {
         return false;
       }
       return data.completed_at ? false : 2500;
     },
-    onSuccess(data) {
+    onSuccess: async (data) => {
       if (data && data.completed_at) {
         clearPreference.mutate({
           key: DO_DESTROY_DROPLET,
         });
+        await queryClient.invalidateQueries(["droplets", data.droplet.id]);
       }
     },
   });

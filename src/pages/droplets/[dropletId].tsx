@@ -23,7 +23,7 @@ import {
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { IDroplet } from "dots-wrapper/dist/droplet";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
@@ -65,6 +65,8 @@ export default function DropletDetailPage() {
     return droplet.image;
   }, [droplet]);
 
+  const isDestroying =
+    dropletDestroy && dropletDestroy.droplet_id === droplet?.id;
   return (
     <Page>
       <MainNavbar />
@@ -92,12 +94,12 @@ export default function DropletDetailPage() {
                       <span
                         className={classNames(
                           "inline-block mb-1 px-2 py-1 text-xs rounded-md capitalize",
-                          droplet.status === "active"
+                          droplet.status === "active" && !isDestroying
                             ? "bg-green-600 text-white"
                             : "bg-red-600 text-white"
                         )}
                       >
-                        {droplet.status}
+                        {isDestroying ? <>Destroying</> : <>{droplet.status}</>}
                       </span>
                       <h1 className="text-xl font-bold truncate overflow-hidden">
                         {truncate(droplet.name, 25)}
@@ -278,10 +280,8 @@ function DropletDestroyingWarning({ droplet }: { droplet: IDroplet }) {
     droplet_id: droplet.id,
   });
 
-  console.log(data);
-
   return (
-    <div className="fixed inset-0 py-safe backdrop-blur-md flex items-center justify-center">
+    <div className="pt-safe pb-safe fixed z-[102] bottom-4 inset-x-0 flex items-end justify-center px-4">
       <section className="p-4 flex items-center bg-red-600 text-white rounded-lg w-full max-w-xs">
         <div className="flex-none">
           <IconFileShredder />

@@ -12,7 +12,7 @@ import {
   IconRocket,
 } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import rocket from "@/assets/code.png";
 import { Button } from "@/components/Button";
 
@@ -50,54 +50,52 @@ export default function AppListingPage() {
             </div>
           )}
           {apps?.map((app) => (
-            <div
+            <button
               key={app.id}
-              className="rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800"
+              className="w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
             >
-              <div className="relative flex items-center justify-between">
-                <Link href={`/apps/${app.id}`} className="absolute inset-0">
-                  <span className="sr-only">{app.spec.name}</span>
-                </Link>
-                <div>
-                  <div className="flex items-center mb-2">
-                    {app.active_deployment.phase === "ACTIVE" ? (
-                      <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
-                    ) : (
-                      <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
-                    )}
-                    <p className="font-medium leading-none">{app.spec.name}</p>
-                  </div>
-
-                  <div className="flex items-center mb-1">
-                    <p className="mr-2 text-sm">
-                      {app.region.label},{" "}
-                      <span className="uppercase">{app.region.flag}</span>
-                    </p>
-
-                    <img
-                      alt={`flag of ${app.region.flag}`}
-                      src={`https://countryflagsapi.com/svg/${app.region.flag}`}
-                      crossOrigin="anonymous"
-                      className="w-4"
-                    />
-                  </div>
-
-                  <div className="text-sm flex items-center">
-                    <IconRocket size={16} />
-                    <span className="block ml-1">
-                      {timeAgo(
-                        app.last_deployment_active_at ??
-                          app.last_deployment_created_at
-                      )}{" "}
-                      &bull; {app.live_domain}
-                    </span>
-                  </div>
+              <Link href={`/apps/${app.id}`} className="absolute inset-0">
+                <span className="sr-only">{app.spec.name}</span>
+              </Link>
+              <div>
+                <div className="flex items-center mb-2">
+                  {app.active_deployment.phase === "ACTIVE" ? (
+                    <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
+                  ) : (
+                    <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
+                  )}
+                  <p className="font-medium leading-none">{app.spec.name}</p>
                 </div>
-                <div className="flex items-center">
-                  <IconArrowRight size={20} />
+
+                <div className="flex items-center mb-1">
+                  <p className="mr-2 text-sm">
+                    {app.region.label},{" "}
+                    <span className="uppercase">{app.region.flag}</span>
+                  </p>
+
+                  <img
+                    alt={`flag of ${app.region.flag}`}
+                    src={`https://countryflagsapi.com/svg/${app.region.flag}`}
+                    crossOrigin="anonymous"
+                    className="w-4"
+                  />
+                </div>
+
+                <div className="text-sm flex items-center">
+                  <IconRocket size={16} />
+                  <span className="block ml-1">
+                    {timeAgo(
+                      app.last_deployment_active_at ??
+                        app.last_deployment_created_at
+                    )}{" "}
+                    &bull; {app.live_domain}
+                  </span>
                 </div>
               </div>
-            </div>
+              <div className="flex flex-none">
+                <IconArrowRight size={20} />
+              </div>
+            </button>
           ))}
         </div>
       </Page.Content>

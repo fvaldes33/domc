@@ -13,9 +13,9 @@ module.exports = {
         "ios-light-surface-2": "#fff",
       },
       fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
-        ios: ["Inter", ...defaultTheme.fontFamily.sans],
-        material: ["Inter", ...defaultTheme.fontFamily.sans],
+        sans: ["var(--nunito-font)", ...defaultTheme.fontFamily.sans],
+        ios: ["var(--nunito-font)", ...defaultTheme.fontFamily.sans],
+        material: ["var(--nunito-font)", ...defaultTheme.fontFamily.sans],
       },
     },
   },

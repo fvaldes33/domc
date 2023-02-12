@@ -5,7 +5,7 @@ import {
   IconLoader,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { Button } from "konsta/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -16,6 +16,8 @@ import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { Footer } from "@/components/Footer";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
+import { Capacitor } from "@capacitor/core";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 export default function AppDetailDeployments() {
   const { query } = useRouter();
@@ -36,6 +38,15 @@ export default function AppDetailDeployments() {
       top: 0,
     });
   }, [page]);
+
+  const onClick = (cb: Function) => {
+    if (Capacitor.isNativePlatform()) {
+      Haptics.impact({
+        style: ImpactStyle.Light,
+      });
+    }
+    cb();
+  };
 
   if (isError) {
     return (
@@ -107,11 +118,11 @@ export default function AppDetailDeployments() {
         )}
       </Page.Content>
 
-      <Footer>
+      <Footer className="bg-white dark:bg-black">
         <Toolbar position="bottom" border>
           <button
             disabled={page === 1}
-            onClick={() => setPage((prev) => prev - 1)}
+            onClick={() => onClick(() => setPage((prev) => prev - 1))}
             className="px-2 flex items-center disabled:opacity-30"
           >
             <IconChevronLeft size={16} />
@@ -119,7 +130,7 @@ export default function AppDetailDeployments() {
           </button>
           <button
             disabled={!data?.hasMore}
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={() => onClick(() => setPage((prev) => prev + 1))}
             className="px-2 flex items-center flex-row-reverse disabled:opacity-30"
           >
             <IconChevronRight size={16} />

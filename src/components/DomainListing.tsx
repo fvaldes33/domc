@@ -1,7 +1,7 @@
 import { useGetDomains } from "@/hooks/useDomains";
 import { IEnhancedProject } from "@/hooks/useProjects";
 import { IconApps, IconArrowRight } from "@tabler/icons-react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function DomainListing({ project }: { project?: IEnhancedProject }) {

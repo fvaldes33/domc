@@ -2,11 +2,11 @@ import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.appvents.domc",
-  appName: "DO Mission Control",
+  appName: "Mission Control",
   webDir: "out",
   bundledWebRuntime: false,
   // server: {
-  //   url: "https://9b85-136-57-130-168.ngrok.io",
+  //   url: "https://46f9-136-57-130-168.ngrok.io",
   //   cleartext: true,
   // },
 };

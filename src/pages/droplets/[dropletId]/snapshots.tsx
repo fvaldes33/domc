@@ -19,7 +19,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconCamera, IconLoader } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useSetAtom } from "jotai";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 

@@ -97,7 +97,11 @@ export function AppActions({ app }: AppActionsProps) {
         <ActionSheet.Button onClick={() => getLogsForComponent()}>
           View Runtime Logs
         </ActionSheet.Button>
-        <ActionSheet.Button className="text-red-600" onClick={close}>
+        <ActionSheet.Button
+          className="text-red-600 dark:text-red-600"
+          border={false}
+          onClick={close}
+        >
           Cancel
         </ActionSheet.Button>
       </ActionSheet>

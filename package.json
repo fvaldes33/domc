@@ -8,12 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
-    "build-mobile": "next build && next export && npx cap sync"
+    "build:mobile": "next build && next export && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^4.6.3",
     "@capacitor/browser": "^4.1.1",
     "@capacitor/core": "^4.6.3",
+    "@capacitor/haptics": "^4.1.0",
     "@capacitor/ios": "^4.6.3",
     "@capacitor/preferences": "^4.0.2",
     "@headlessui/react": "^1.7.9",

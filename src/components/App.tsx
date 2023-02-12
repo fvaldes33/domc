@@ -7,7 +7,8 @@ export function App({ children, ...props }: AppProps) {
     <div
       data-type="domc-app"
       className={classNames(
-        "absolute inset-0 flex flex-col justify-between overflow-hidden z-0 bg-white text-black dark:bg-black dark:text-white"
+        "absolute inset-0 flex flex-col justify-between overflow-hidden z-0 bg-white text-black dark:bg-black dark:text-white",
+        props.className ?? ""
       )}
       style={{
         contain: "layout size style",

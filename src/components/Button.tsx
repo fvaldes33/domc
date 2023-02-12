@@ -3,6 +3,8 @@ import React, { forwardRef } from "react";
 
 import { classNames } from "@/utils/classNames";
 import type { PolymorphicRef, PolymorphicComponentProps } from "@/types";
+import { Capacitor } from "@capacitor/core";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 export interface ButtonBaseProps {
   variant?: "primary" | "outline" | "danger";
@@ -93,9 +95,22 @@ const Button: ButtonComponent = forwardRef(function Button<
     return leftIcon;
   };
 
+  const onClick: React.MouseEventHandler = (...args) => {
+    if (Capacitor.isNativePlatform()) {
+      Haptics.impact({
+        style: ImpactStyle.Light,
+      });
+    }
+
+    if (props.onClick) {
+      props.onClick(...args);
+    }
+  };
+
   return (
     <Component
       {...props}
+      onClick={onClick}
       ref={ref}
       disabled={loading}
       className={classNames(

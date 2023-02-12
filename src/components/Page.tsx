@@ -1,4 +1,6 @@
 import { classNames } from "@/utils/classNames";
+import { Capacitor } from "@capacitor/core";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { animate, motion, useMotionValue } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Refresher } from "./Refresher";
@@ -37,6 +39,7 @@ function Content({
   const isRefreshedEnabled = Boolean(onRefresh);
 
   const mainRef = useRef<HTMLElement>(null);
+  const childRef = useRef<HTMLElement>();
   const refresherRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef<boolean>(false);
   const shouldTriggerRefresh = useRef<boolean>(false);
@@ -47,7 +50,7 @@ function Content({
 
     isDragging.current = false;
 
-    if (mainRef.current!.getBoundingClientRect().top < 0) {
+    if (childRef.current!.getBoundingClientRect().top < 44) {
       return;
     }
 
@@ -112,6 +115,11 @@ function Content({
       isDragging.current = false;
       setIsPulling(false);
     } else {
+      if (Capacitor.isNativePlatform()) {
+        Haptics.impact({
+          style: ImpactStyle.Medium,
+        });
+      }
       animate(y, PULLDOWNTHRESHOLD);
       setIsRefreshing(true);
 
@@ -134,6 +142,7 @@ function Content({
     }
 
     const mainEl = mainRef.current;
+    childRef.current = mainEl.querySelector<HTMLElement>(":first-child")!;
     mainEl.addEventListener("touchstart", onTouchStart, { passive: true });
     mainEl.addEventListener("touchmove", onTouchMove, { passive: true });
     mainEl.addEventListener("touchend", onTouchEnd, { passive: true });

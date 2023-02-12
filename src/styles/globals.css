@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body {
+    user-select: none;
+  }
+
   a {
     -webkit-touch-callout: none;
   }

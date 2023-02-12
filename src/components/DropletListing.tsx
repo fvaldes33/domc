@@ -1,7 +1,7 @@
 import { useGetDroplets } from "@/hooks/useDroplets";
 import { IEnhancedProject } from "@/hooks/useProjects";
 import { IconArrowRight, IconDroplet } from "@tabler/icons-react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function DropletListing({ project }: { project?: IEnhancedProject }) {

@@ -1,9 +1,5 @@
-import {
-  QueryOptions,
-  useMutation,
-  useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query";
+import { getRemoteApiEndpoint } from "@/utils/endpoint";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 type IDownloadLogResponse =
   | {
@@ -24,18 +20,17 @@ async function downloadLogFile({
     throw new Error("URL is required");
   }
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/download-logs`,
-    {
-      headers: {
-        "Content-type": "application/json",
-      },
-      method: "post",
-      body: JSON.stringify({
-        url,
-      }),
-    }
-  );
+  const remoteEndpoint = getRemoteApiEndpoint();
+
+  const res = await fetch(`${remoteEndpoint}/api/download-logs`, {
+    headers: {
+      "Content-type": "application/json",
+    },
+    method: "post",
+    body: JSON.stringify({
+      url,
+    }),
+  });
 
   if (!res.ok) {
     throw await res.json();

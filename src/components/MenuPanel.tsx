@@ -10,7 +10,7 @@ import {
   IconWorld,
   IconX,
 } from "@tabler/icons-react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { Footer } from "./Footer";

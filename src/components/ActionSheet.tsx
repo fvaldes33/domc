@@ -48,7 +48,7 @@ function ActionSheetLabel({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
-    <div className="flex items-center justify-center h-16 border-b text-center text-gray-600 dark:text-gray-200 px-4">
+    <div className="flex items-center justify-center h-16 border-b dark:border-gray-700 text-center text-gray-600 dark:text-gray-400 px-4">
       {children}
     </div>
   );
@@ -65,7 +65,7 @@ function ActionSheetButton({
       className={classNames(
         "flex items-center justify-center text-center w-full p-4 h-16 font-semibold dark:text-white",
         className ?? "",
-        border ? "border-b" : ""
+        border ? "border-b dark:border-gray-700" : ""
       )}
       {...props}
     >

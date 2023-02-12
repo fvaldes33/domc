@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import "xterm/css/xterm.css";
 
-import { Inter } from "@next/font/google";
+import { Nunito_Sans } from "@next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -12,7 +12,6 @@ import { App } from "@/components/App";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { SetupScreen } from "@/components/SetupScreen";
 import { MissonControlProvider } from "@/components/MissionControlProvider";
-import { classNames } from "@/utils/classNames";
 import { Toaster } from "react-hot-toast";
 import {
   DO_COLOR_SCHEME,
@@ -20,7 +19,13 @@ import {
   DO_TOKEN_KEY,
 } from "@/utils/const";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
+const nunito = Nunito_Sans({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--nunito-font",
+});
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(
@@ -44,6 +49,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
         />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `:root {
+          --nunito-font: ${nunito.style.fontFamily}
+        }`,
+          }}
+        ></style>
       </Head>
       <AppWrapper>
         <Component {...pageProps} />

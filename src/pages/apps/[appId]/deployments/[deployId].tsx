@@ -10,7 +10,7 @@ import {
 import dayjs from "dayjs";
 import { AppDeploymentLogType } from "dots-wrapper/dist/app";
 import { Button } from "konsta/react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 
 import { AppRollback } from "@/components/AppRollback";

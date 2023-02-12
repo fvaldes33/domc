@@ -1,7 +1,7 @@
 import { useGetApps } from "@/hooks/useApps";
 import { IEnhancedProject } from "@/hooks/useProjects";
 import { IconApps, IconArrowRight } from "@tabler/icons-react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function AppListing({ project }: { project?: IEnhancedProject }) {

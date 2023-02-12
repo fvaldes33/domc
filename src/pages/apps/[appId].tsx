@@ -3,7 +3,7 @@ import { useInterval } from "@mantine/hooks";
 import { IconList, IconLoader } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { Button } from "konsta/react";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 

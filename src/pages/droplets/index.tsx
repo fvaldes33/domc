@@ -1,16 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { MainNavbar } from "@/components/MainNavbar";
-import { useGetApps } from "@/hooks/useApps";
-import { timeAgo } from "@/utils/timeAgo";
 import {
   IconArrowRight,
   IconLoader,
   IconMapPin,
-  IconRocket,
   IconServer,
 } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
-import Link from "next/link";
+import Link from "@/components/HapticLink";
 import { useGetDroplets } from "@/hooks/useDroplets";
 import { truncate } from "@/utils/truncate";
 import { Button } from "@/components/Button";
@@ -60,55 +57,53 @@ export default function AppListingPage() {
             )}
             {droplets?.map((droplet) => {
               return (
-                <div
+                <button
                   key={droplet.id}
-                  className="rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800"
+                  className="w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
                 >
-                  <div className="relative flex justify-between">
-                    <Link
-                      href={`/droplets/${droplet.id}`}
-                      className="absolute inset-0"
-                    >
-                      <span className="sr-only">{droplet.name}</span>
-                    </Link>
-                    <div className="flex-1">
-                      <div className="flex items-center mb-4">
-                        {droplet.status === "active" ? (
-                          <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
-                        ) : (
-                          <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
-                        )}
-                        <p className="font-medium leading-none">
-                          {truncate(droplet.name, 30)}
-                        </p>
-                      </div>
+                  <Link
+                    href={`/droplets/${droplet.id}`}
+                    className="absolute inset-0"
+                  >
+                    <span className="sr-only">{droplet.name}</span>
+                  </Link>
+                  <div className="flex-1">
+                    <div className="flex items-center mb-4">
+                      {droplet.status === "active" ? (
+                        <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
+                      ) : (
+                        <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
+                      )}
+                      <p className="font-medium leading-none">
+                        {truncate(droplet.name, 30)}
+                      </p>
+                    </div>
 
-                      <div className="flex items-center space-x-4">
-                        {typeof droplet.region !== "string" && (
+                    <div className="grid grid-cols-2 gap-4">
+                      {typeof droplet.region !== "string" && (
+                        <div className="flex items-center">
+                          <IconMapPin size={16} className="flex-none" />
+                          <p className="ml-1 text-sm capitalize">
+                            {droplet.region.name.toLowerCase()}
+                          </p>
+                        </div>
+                      )}
+
+                      {typeof droplet.image !== "string" &&
+                        typeof droplet.image !== "number" && (
                           <div className="flex items-center">
-                            <IconMapPin size={16} />
-                            <p className="ml-1 text-sm capitalize">
-                              {droplet.region.name.toLowerCase()}
+                            <IconServer size={16} className="flex-none" />
+                            <p className="ml-1 text-sm capitalize truncate">
+                              {droplet.image.name.toLowerCase()}
                             </p>
                           </div>
                         )}
-
-                        {typeof droplet.image !== "string" &&
-                          typeof droplet.image !== "number" && (
-                            <div className="flex items-center">
-                              <IconServer size={16} />
-                              <p className="ml-1 text-sm capitalize truncate">
-                                {droplet.image.name.toLowerCase()}
-                              </p>
-                            </div>
-                          )}
-                      </div>
-                    </div>
-                    <div className="flex flex-none">
-                      <IconArrowRight size={20} />
                     </div>
                   </div>
-                </div>
+                  <div className="flex flex-none">
+                    <IconArrowRight size={20} />
+                  </div>
+                </button>
               );
             })}
           </div>
