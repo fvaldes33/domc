@@ -1,5 +1,6 @@
 import { DO_DESTROY_DROPLET, DO_TOKEN_KEY } from "@/utils/const";
 import { getRemoteApiEndpoint } from "@/utils/endpoint";
+import { fireEvent } from "@/utils/fire-event";
 import {
   useMutation,
   useQuery,
@@ -111,6 +112,13 @@ async function enableDropletBackups({
     data: { action },
   } = await dots.droplet.enableDropletBackups(input);
 
+  fireEvent({
+    name: "enableDropletBackups",
+    params: {
+      ...input,
+    },
+  });
+
   return action;
 }
 
@@ -139,6 +147,13 @@ async function snapshotDroplet({
     data: { action },
   } = await dots.droplet.snapshotDroplet(input);
 
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "snapshotDroplet",
+    },
+  });
+
   return action;
 }
 
@@ -152,6 +167,13 @@ async function shutdownDroplet({
   const {
     data: { action },
   } = await dots.droplet.shutdownDroplet(input);
+
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "shutdownDroplet",
+    },
+  });
 
   return action;
 }
@@ -167,6 +189,13 @@ async function powerOffDroplet({
     data: { action },
   } = await dots.droplet.powerOffDroplet(input);
 
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "powerOffDroplet",
+    },
+  });
+
   return action;
 }
 
@@ -181,6 +210,13 @@ async function rebootDroplet({
     data: { action },
   } = await dots.droplet.rebootDroplet(input);
 
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "rebootDroplet",
+    },
+  });
+
   return action;
 }
 
@@ -194,6 +230,13 @@ async function powerCycleDroplet({
   const {
     data: { action },
   } = await dots.droplet.powerCycleDroplet(input);
+
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "powerCycleDroplet",
+    },
+  });
 
   return action;
 }
@@ -219,6 +262,15 @@ async function destroyDropletAndAllAssociatedResources({
         "Content-type": "application/json",
       },
     });
+
+    fireEvent({
+      name: "action_taken",
+      params: {
+        action_type: "destroyDropletAndAllAssociatedResources",
+        action_result: res.ok,
+      },
+    });
+
     if (!res.ok) {
       throw res;
     }
@@ -252,6 +304,13 @@ async function powerOnDroplet({
     data: { action },
   } = await dots.droplet.powerOnDroplet(input);
 
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "powerOnDroplet",
+    },
+  });
+
   return action;
 }
 
@@ -265,6 +324,13 @@ async function enableDropletIpv6({
   const {
     data: { action },
   } = await dots.droplet.enableDropletIpv6(input);
+
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "enableDropletIpv6",
+    },
+  });
 
   return action;
 }

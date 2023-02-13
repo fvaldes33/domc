@@ -1,19 +1,28 @@
+/* eslint-disable @next/next/no-img-element */
 import { useForm, zodResolver } from "@mantine/form";
 import { IconLoader, IconLock } from "@tabler/icons-react";
 import { z } from "zod";
 
 import { Page } from "@/components/Page";
 import { useSetPreference } from "@/hooks/usePreferences";
+import { useBrowser } from "@/hooks/useBrowser";
 import { DO_TOKEN_KEY } from "@/utils/const";
+import logo from "@/assets/logo.png";
+import { Button } from "./Button";
+import { format } from "path";
+import { fireEvent } from "@/utils/fire-event";
 
 const SetupSchema = z.object({
-  token: z.string({ required_error: "A token is required to continue " }),
+  token: z
+    .string({ required_error: "A token is required to continue" })
+    .min(1, "A token is required to continue"),
 });
 
 export function SetupScreen() {
   const setPreference = useSetPreference<string>();
+  const navigate = useBrowser();
 
-  const { getInputProps, onSubmit } = useForm({
+  const { getInputProps, onSubmit, ...form } = useForm({
     validate: zodResolver(SetupSchema),
     initialValues: {
       token: "",
@@ -21,6 +30,12 @@ export function SetupScreen() {
   });
 
   const handleSubmit = ({ token }: z.infer<typeof SetupSchema>) => {
+    fireEvent({
+      name: "signup",
+      params: {
+        method: "token",
+      },
+    });
     setPreference.mutate({
       key: DO_TOKEN_KEY,
       value: token,
@@ -36,9 +51,32 @@ export function SetupScreen() {
             className="container px-4 max-w-sm flex flex-col items-center justify-center"
             onSubmit={onSubmit(handleSubmit)}
           >
-            <h1 className="text-3xl font-bold text-center mb-6">
-              Digital Ocean Mobile
-            </h1>
+            <div className="flex items-center w-full mb-4">
+              <img src={logo.src} alt="" className="h-24 w-24 flex-none" />
+              <h1 className="text-2xl font-bold ml-4">
+                Mission Control
+                <em className="block font-normal">for Digital Ocean</em>
+              </h1>
+            </div>
+
+            <div className="mb-6">
+              <p>
+                To get started, get your personal access token from{" "}
+                <span
+                  className="font-bold"
+                  onClick={() =>
+                    navigate(
+                      "https://cloud.digitalocean.com/account/api/tokens"
+                    )
+                  }
+                >
+                  here
+                </span>
+                . If you have not created one, click on &quot;Generate New
+                Token&quot;. When copied, paste it below to continue.
+              </p>
+            </div>
+
             <div className="w-full mb-4">
               <label className="block font-medium text-indigo-200">Token</label>
               <div className="relative mt-1">
@@ -53,14 +91,13 @@ export function SetupScreen() {
                   {...getInputProps("token")}
                 />
               </div>
-            </div>
-            <button className="bg-white h-10 px-4 rounded-md flex items-center justify-center text-indigo-800 font-bold">
-              {setPreference.isLoading ? (
-                <IconLoader size={20} className="animate-spin" />
-              ) : (
-                <span>Save</span>
+              {form.errors.token && (
+                <span className="italic text-red-300">{form.errors.token}</span>
               )}
-            </button>
+            </div>
+            <Button variant="light" loading={setPreference.isLoading}>
+              <span>Get Started</span>
+            </Button>
           </form>
         </div>
       </Page.Content>

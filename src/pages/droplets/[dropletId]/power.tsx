@@ -13,6 +13,7 @@ import {
 } from "@/hooks/useDroplets";
 import { useSetPreference } from "@/hooks/usePreferences";
 import { DO_DESTROY_DROPLET } from "@/utils/const";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { useDisclosure } from "@mantine/hooks";
 import { IconAlertTriangle, IconLoader } from "@tabler/icons-react";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -26,7 +27,7 @@ import {
 } from "dots-wrapper/dist/droplet";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 type Action =
@@ -82,6 +83,13 @@ type Action =
     };
 
 export default function DropletPowerPage() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "dropletDetailPower",
+      nameOverride: "DropletDetailPowerScreen",
+    });
+  }, []);
+
   const [opened, { open, close }] = useDisclosure(false);
   const setPreference = useSetPreference<{ droplet_id: number }>();
   const router = useRouter();

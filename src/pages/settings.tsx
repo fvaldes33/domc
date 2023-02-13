@@ -14,11 +14,19 @@ import {
   DO_COLOR_SCHEME_PREF,
   DO_TOKEN_KEY,
 } from "@/utils/const";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { useForm } from "@mantine/form";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 export default function Settings() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "settings",
+      nameOverride: "SettingsScreen",
+    });
+  }, []);
+
   const navigate = useBrowser();
 
   const { data: token } = useGetPreference<string>({

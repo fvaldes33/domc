@@ -1,4 +1,5 @@
 import { DO_BASE_URL, DO_TOKEN_KEY } from "@/utils/const";
+import { fireEvent } from "@/utils/fire-event";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { createApiClient } from "dots-wrapper";
@@ -130,6 +131,13 @@ async function createDeployment({
     force_build,
   });
 
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "createDeployment",
+    },
+  });
+
   return {
     deployment,
   };
@@ -157,6 +165,13 @@ async function createRollback({
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+    },
+  });
+
+  fireEvent({
+    name: "action_taken",
+    params: {
+      action_type: "createRollback",
     },
   });
 

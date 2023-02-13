@@ -5,6 +5,12 @@ const config: CapacitorConfig = {
   appName: "Mission Control",
   webDir: "out",
   bundledWebRuntime: false,
+  plugins: {
+    SplashScreen: {
+      launchAutoHide: false,
+      backgroundColor: "#ffffffff",
+    },
+  },
   // server: {
   //   url: "https://46f9-136-57-130-168.ngrok.io",
   //   cleartext: true,

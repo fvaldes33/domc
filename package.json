@@ -11,12 +11,14 @@
     "build:mobile": "next build && next export && npx cap sync"
   },
   "dependencies": {
+    "@capacitor-community/firebase-analytics": "^4.0.0",
     "@capacitor/android": "^4.6.3",
     "@capacitor/browser": "^4.1.1",
     "@capacitor/core": "^4.6.3",
     "@capacitor/haptics": "^4.1.0",
     "@capacitor/ios": "^4.6.3",
     "@capacitor/preferences": "^4.0.2",
+    "@capacitor/splash-screen": "^4.1.4",
     "@headlessui/react": "^1.7.9",
     "@mantine/form": "^5.10.3",
     "@mantine/hooks": "^5.10.3",

@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { Button } from "konsta/react";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { AppActions } from "@/components/AppActions";
 import { AppDeploymentRecord } from "@/components/AppDeploymentRecord";
@@ -14,8 +14,16 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
 import { timeAgo } from "@/utils/timeAgo";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 export default function AppDetailPage() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "appDetail",
+      nameOverride: "AppDetailScreen",
+    });
+  }, []);
+
   const { query } = useRouter();
   const {
     data: app,

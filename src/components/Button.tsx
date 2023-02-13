@@ -7,7 +7,7 @@ import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 export interface ButtonBaseProps {
-  variant?: "primary" | "outline" | "danger";
+  variant?: "primary" | "outline" | "light" | "danger";
   size?: "sm" | "md" | "lg";
   square?: boolean;
   loading?: boolean;
@@ -49,6 +49,11 @@ const variantClasses = {
   primary: [
     "bg-ocean-2",
     "text-white",
+    "focus:ring-ocean-2 focus:ring-offset-2 focus:ring-ocean-2",
+  ],
+  light: [
+    "text-ocean-2",
+    "bg-white",
     "focus:ring-ocean-2 focus:ring-offset-2 focus:ring-ocean-2",
   ],
   danger: [

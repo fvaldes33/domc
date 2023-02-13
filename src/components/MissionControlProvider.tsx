@@ -1,6 +1,7 @@
 import { useGetAccount } from "@/hooks/useAccount";
 import { useGetPreference } from "@/hooks/usePreferences";
 import { DO_COLOR_SCHEME_PREF } from "@/utils/const";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { IAccount } from "dots-wrapper/dist/account";
 import { IAction } from "dots-wrapper/dist/action";
 import {
@@ -61,6 +62,18 @@ export function MissonControlProvider({
       }
     }
   }, [colorSchemePref, theme]);
+
+  useEffect(() => {
+    if (account) {
+      // FirebaseAnalytics.setUserId({
+      //   userId: account.uuid,
+      // });
+      // FirebaseAnalytics.setUserProperty({
+      //   name: "email",
+      //   value: account.email,
+      // });
+    }
+  }, [account]);
 
   return (
     <MissionControlContext.Provider

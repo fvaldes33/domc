@@ -22,8 +22,17 @@ import { useSetAtom } from "jotai";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
+import { useMemo } from "react";
 
 export default function DropletSnapshotsPage() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "dropletDetailSnapshots",
+      nameOverride: "DropletDetailSnapshotsScreen",
+    });
+  }, []);
+
   const { query } = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const { data: droplet, isLoading } = useGetDropletDetails({

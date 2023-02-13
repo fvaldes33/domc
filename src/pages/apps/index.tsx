@@ -15,8 +15,17 @@ import { Page } from "@/components/Page";
 import Link from "@/components/HapticLink";
 import rocket from "@/assets/code.png";
 import { Button } from "@/components/Button";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
+import { useMemo } from "react";
 
 export default function AppListingPage() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "appListing",
+      nameOverride: "AppListingpage",
+    });
+  }, []);
+
   const { data: apps, refetch } = useGetApps({
     page: 1,
     per_page: 10,

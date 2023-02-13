@@ -15,8 +15,17 @@ import { DropletListing } from "@/components/DropletListing";
 import { DomainListing } from "@/components/DomainListing";
 import { Button } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
+import { fireEvent } from "@/utils/fire-event";
 
 export default function Home() {
+  useMemo(async () => {
+    await FirebaseAnalytics.setScreenName({
+      screenName: "home",
+      nameOverride: "HomeScreen",
+    });
+  }, []);
+
   const queryClient = useQueryClient();
   const { data: projects, refetch } = useGetProjects({
     page: 1,
@@ -75,7 +84,19 @@ export default function Home() {
               )}
             </div>
             {projects && projects.length > 1 && (
-              <Button onClick={open} size="sm" square>
+              <Button
+                onClick={() => {
+                  fireEvent({
+                    name: "action_taken",
+                    params: {
+                      action_type: "switchAccounts",
+                    },
+                  });
+                  open();
+                }}
+                size="sm"
+                square
+              >
                 <IconSwitch2 size={20} />
               </Button>
             )}
