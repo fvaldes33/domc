@@ -15,18 +15,8 @@ import { DropletListing } from "@/components/DropletListing";
 import { DomainListing } from "@/components/DomainListing";
 import { Button } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
-import * as Sentry from "@sentry/capacitor";
 
 export default function Home() {
-  throw new Error("Test Thrown Error");
-
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "home",
-  //     nameOverride: "HomeScreen",
-  //   });
-  // }, []);
-
   const queryClient = useQueryClient();
   const { data: projects, refetch } = useGetProjects({
     page: 1,
