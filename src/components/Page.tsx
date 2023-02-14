@@ -5,11 +5,20 @@ import { animate, motion, useMotionValue } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Refresher } from "./Refresher";
 
-function Page({ children }: { children: React.ReactNode }) {
+function Page({
+  children,
+  main = true,
+}: {
+  main?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div
       data-type="domc-page"
-      className="absolute inset-0 flex flex-col justify-between overflow-hidden select-none z-10"
+      className={classNames(
+        "absolute inset-0 flex flex-col justify-between overflow-hidden select-none z-10",
+        main ? "md:pl-64" : ""
+      )}
       style={{
         contain: "layout size style",
       }}

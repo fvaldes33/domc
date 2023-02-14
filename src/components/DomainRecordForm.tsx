@@ -253,8 +253,6 @@ export function DomainRecordForm({
       };
     }, values);
 
-    console.log({ cleanValues });
-
     onSave({
       ...(cleanValues as IDomainRecord),
       data:

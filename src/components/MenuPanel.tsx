@@ -61,7 +61,7 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <Dialog.Panel className="relative h-full w-2/3 bg-white dark:bg-gray-700/50">
+            <Dialog.Panel className="relative h-full w-64 bg-white dark:bg-gray-700/50">
               <Page>
                 <Navbar
                   title={"Mission Control"}

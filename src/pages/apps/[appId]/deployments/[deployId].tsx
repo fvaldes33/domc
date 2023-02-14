@@ -100,7 +100,6 @@ export default function DeploymentDetails() {
           }
         },
         onError: (error: any) => {
-          console.log("getLogsForComponent", error);
           toast.error(error.message);
         },
       }

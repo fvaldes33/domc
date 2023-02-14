@@ -33,7 +33,7 @@ function ActionSheet({ show, onClose, children }: ActionSheetProps) {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-full"
           >
-            <Dialog.Panel className="w-full max-w-md transform overflow-hidden border dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-left transition-all">
+            <Dialog.Panel className="w-full mx-auto max-w-md transform overflow-hidden border dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-left transition-all">
               {children}
             </Dialog.Panel>
           </Transition.Child>

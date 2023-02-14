@@ -37,7 +37,6 @@ export default function DomainRecordNewPage() {
           router.back();
         },
         onError: (error: any) => {
-          console.log(error);
           if ("response" in error) {
             return toast.error(error.response.data.message);
           }

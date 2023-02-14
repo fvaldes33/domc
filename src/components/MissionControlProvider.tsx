@@ -8,6 +8,7 @@ import {
 import { atom, useAtomValue } from "jotai";
 import { createContext, useContext, useEffect } from "react";
 import { DropletActionWatcher } from "./DropletActionWatcher";
+import { MenuPanelLarge } from "./MenuPanelLarge";
 
 interface MissionControlContextProps {
   theme: "light" | "dark";
@@ -70,6 +71,7 @@ export function MissonControlProvider({
           action={inProgress.action}
         />
       )}
+      <MenuPanelLarge />
       {children}
     </MissionControlContext.Provider>
   );

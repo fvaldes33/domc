@@ -23,7 +23,7 @@ export function LogModal({ url, show, type, onClose }: LogModalProps) {
         if (data.success) {
           instance.clear();
           instance.write(data.content);
-          instance.scrollToBottom();
+          // instance.scrollToBottom();
         }
       } else {
         const Terminal = (await import("xterm")).Terminal;

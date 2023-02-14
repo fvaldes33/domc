@@ -163,7 +163,7 @@ export default function DropletDetailPage() {
                   </div>
                 </section>
 
-                <section className="mt-4 px-4 grid grid-cols-3 gap-4">
+                <section className="sm mt-4 px-4 grid grid-cols-3 lg:grid-cols-6 gap-4">
                   {dropletNavigationItems.map((item) => (
                     <Link
                       key={item.href}

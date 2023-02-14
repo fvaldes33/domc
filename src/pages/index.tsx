@@ -116,7 +116,7 @@ export default function Home() {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-full"
             >
-              <Dialog.Panel className="w-full py-4 max-w-md transform overflow-hidden border dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-left transition-all">
+              <Dialog.Panel className="w-full py-4 max-w-md mx-auto transform overflow-hidden border dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 text-left transition-all">
                 {projects?.map((project) => (
                   <div
                     className="p-4 flex items-center justify-start"
