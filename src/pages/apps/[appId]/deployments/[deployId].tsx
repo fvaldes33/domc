@@ -23,17 +23,16 @@ import {
 } from "@/hooks/useApps";
 import { DeploymentPhaseMap } from "@/utils/deployment-phases";
 import toast from "react-hot-toast";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { LogModal, LogModalProps } from "@/components/LogModal";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 export default function DeploymentDetails() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "appDetailDeploymentDetail",
-      nameOverride: "AppDetailDeploymentDetailScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "appDetailDeploymentDetail",
+  //     nameOverride: "AppDetailDeploymentDetailScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const { data: app } = useGetAppDetails({

@@ -1,5 +1,4 @@
 import { getRemoteApiEndpoint } from "@/utils/endpoint";
-import { fireEvent } from "@/utils/fire-event";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 type IDownloadLogResponse =
@@ -31,14 +30,6 @@ async function downloadLogFile({
     body: JSON.stringify({
       url,
     }),
-  });
-
-  fireEvent({
-    name: "action_taken",
-    params: {
-      action_type: "downloadLogFile",
-      action_result: res.ok,
-    },
   });
 
   if (!res.ok) {

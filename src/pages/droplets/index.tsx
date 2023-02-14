@@ -12,16 +12,14 @@ import { useGetDroplets } from "@/hooks/useDroplets";
 import { truncate } from "@/utils/truncate";
 import { Button } from "@/components/Button";
 import empty from "@/assets/droplets.png";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
-import { useMemo } from "react";
 
 export default function DropletListingPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "dropletListing",
-      nameOverride: "DropletListingScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "dropletListing",
+  //     nameOverride: "DropletListingScreen",
+  //   });
+  // }, []);
 
   const {
     data: droplets,

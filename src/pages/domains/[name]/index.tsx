@@ -5,25 +5,18 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useGetDomain, useGetDomainRecords } from "@/hooks/useDomains";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
-import {
-  IconDotsVertical,
-  IconEdit,
-  IconLoader,
-  IconWorld,
-} from "@tabler/icons-react";
+import { IconEdit, IconLoader, IconWorld } from "@tabler/icons-react";
 import { IDomain, IDomainRecord } from "dots-wrapper/dist/domain";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
 
 export default function DomainDetailPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "domainDetail",
-      nameOverride: "DomainDetailScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "domainDetail",
+  //     nameOverride: "DomainDetailScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const { data: domain, isLoading: domainLoading } = useGetDomain({

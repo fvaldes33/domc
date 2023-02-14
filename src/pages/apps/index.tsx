@@ -2,29 +2,19 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { useGetApps } from "@/hooks/useApps";
 import { timeAgo } from "@/utils/timeAgo";
-import {
-  IconArrowRight,
-  IconClock,
-  IconCreditCard,
-  IconWorld,
-  IconExternalLink,
-  IconShip,
-  IconRocket,
-} from "@tabler/icons-react";
+import { IconArrowRight, IconRocket } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
 import Link from "@/components/HapticLink";
 import rocket from "@/assets/code.png";
 import { Button } from "@/components/Button";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
-import { useMemo } from "react";
 
 export default function AppListingPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "appListing",
-      nameOverride: "AppListingpage",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "appListing",
+  //     nameOverride: "AppListingpage",
+  //   });
+  // }, []);
 
   const { data: apps, refetch } = useGetApps({
     page: 1,

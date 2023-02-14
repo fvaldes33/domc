@@ -19,14 +19,12 @@ import {
   IconLoader,
   IconNetwork,
   IconPower,
-  IconResize,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { IDroplet } from "dots-wrapper/dist/droplet";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 const dropletNavigationItems = [
   { label: "Power", icon: IconPower, href: "power" },
@@ -36,12 +34,12 @@ const dropletNavigationItems = [
 ];
 
 export default function DropletDetailPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "dropletDetail",
-      nameOverride: "DropletDetailScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "dropletDetail",
+  //     nameOverride: "DropletDetailScreen",
+  //   });
+  // }, []);
   const { query } = useRouter();
   const {
     data: droplet,

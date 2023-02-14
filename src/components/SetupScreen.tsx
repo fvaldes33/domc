@@ -9,8 +9,6 @@ import { useBrowser } from "@/hooks/useBrowser";
 import { DO_TOKEN_KEY } from "@/utils/const";
 import logo from "@/assets/logo.png";
 import { Button } from "./Button";
-import { format } from "path";
-import { fireEvent } from "@/utils/fire-event";
 
 const SetupSchema = z.object({
   token: z
@@ -30,12 +28,6 @@ export function SetupScreen() {
   });
 
   const handleSubmit = ({ token }: z.infer<typeof SetupSchema>) => {
-    fireEvent({
-      name: "signup",
-      params: {
-        method: "token",
-      },
-    });
     setPreference.mutate({
       key: DO_TOKEN_KEY,
       value: token,

@@ -18,15 +18,14 @@ import { Footer } from "@/components/Footer";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 export default function AppDetailDeployments() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "appDetailDeployments",
-      nameOverride: "AppDetailDeploymentsScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "appDetailDeployments",
+  //     nameOverride: "AppDetailDeploymentsScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const [page, setPage] = useState<number>(1);

@@ -1,5 +1,4 @@
 import { DO_TOKEN_KEY } from "@/utils/const";
-import { fireEvent } from "@/utils/fire-event";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createApiClient } from "dots-wrapper";
 import {
@@ -80,13 +79,6 @@ async function updateDomainRecord({
     data: { domain_record },
   } = await dots.domain.updateDomainRecord(input);
 
-  fireEvent({
-    name: "action_taken",
-    params: {
-      action_type: "updateDomainRecord",
-    },
-  });
-
   return domain_record;
 }
 
@@ -101,13 +93,6 @@ async function createDomainRecord({
     data: { domain_record },
   } = await dots.domain.createDomainRecord(input);
 
-  fireEvent({
-    name: "action_taken",
-    params: {
-      action_type: "createDomainRecord",
-    },
-  });
-
   return domain_record;
 }
 
@@ -119,13 +104,6 @@ async function deleteDomainRecord({
 
   const dots = createApiClient({ token });
   await dots.domain.deleteDomainRecord(input);
-
-  fireEvent({
-    name: "action_taken",
-    params: {
-      action_type: "deleteDomainRecord",
-    },
-  });
 
   return true;
 }

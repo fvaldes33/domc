@@ -5,21 +5,19 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useCreateDomainRecord, useGetDomain } from "@/hooks/useDomains";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { IDomainRecord } from "dots-wrapper/dist/domain";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function DomainRecordNewPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "domainNew",
-      nameOverride: "DomainNewScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "domainNew",
+  //     nameOverride: "DomainNewScreen",
+  //   });
+  // }, []);
   const router = useRouter();
-  const { name, recordId } = router.query as { name: string; recordId: string };
+  const { name } = router.query as { name: string };
 
   const { data: domain, isLoading: domainIsLoading } = useGetDomain({
     name,

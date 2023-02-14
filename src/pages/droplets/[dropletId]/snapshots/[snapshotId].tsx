@@ -5,21 +5,18 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useDestroySnapshot, useGetSnapshot } from "@/hooks/useSnapshot";
-import { timeAgo } from "@/utils/timeAgo";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
 import { toast } from "react-hot-toast";
 
 export default function SnapshotDetail() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "dropletDetailSnapshotDetail",
-      nameOverride: "DropletDetailSnapshotDetailScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "dropletDetailSnapshotDetail",
+  //     nameOverride: "DropletDetailSnapshotDetailScreen",
+  //   });
+  // }, []);
 
   const router = useRouter();
   const { snapshotId } = router.query as { snapshotId: string };

@@ -12,7 +12,6 @@ import {
 import { BACKUP_COST } from "@/utils/const";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { truncate } from "@/utils/truncate";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { useDisclosure } from "@mantine/hooks";
 import { IconBackpack, IconLoader } from "@tabler/icons-react";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -49,12 +48,12 @@ type Action =
     };
 
 export default function DropletBackupsPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "dropletDetailBackups",
-      nameOverride: "DropletDetailBackupsScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "dropletDetailBackups",
+  //     nameOverride: "DropletDetailBackupsScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const [opened, { open, close }] = useDisclosure(false);

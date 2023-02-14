@@ -6,20 +6,18 @@ import {
   useEnableDropletIpv6,
   useGetDropletDetails,
 } from "@/hooks/useDroplets";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { IconCopy, IconLoader, IconNetwork } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
 import { toast } from "react-hot-toast";
 
 export default function DropletNetworkingPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "dropletDetailNetworking",
-      nameOverride: "DropletDetailNetworkingScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "dropletDetailNetworking",
+  //     nameOverride: "DropletDetailNetworkingScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const queryClient = useQueryClient();

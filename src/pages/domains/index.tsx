@@ -5,15 +5,14 @@ import { IconArrowRight, IconLoader } from "@tabler/icons-react";
 import { IDomain, IDomainRecord } from "dots-wrapper/dist/domain";
 import { useMemo, useState } from "react";
 import Link from "@/components/HapticLink";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 export default function DomainListingPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "domainListing",
-      nameOverride: "DomainListingScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "domainListing",
+  //     nameOverride: "DomainListingScreen",
+  //   });
+  // }, []);
 
   const [page, setPage] = useState<number>(1);
   const { data, isLoading, refetch } = useGetDomains({

@@ -14,15 +14,14 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
 import { timeAgo } from "@/utils/timeAgo";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 export default function AppDetailPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "appDetail",
-      nameOverride: "AppDetailScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "appDetail",
+  //     nameOverride: "AppDetailScreen",
+  //   });
+  // }, []);
 
   const { query } = useRouter();
   const {

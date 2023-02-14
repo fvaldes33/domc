@@ -5,7 +5,7 @@ import { useGetProjects } from "@/hooks/useProjects";
 import { useDisclosure } from "@mantine/hooks";
 import { useGetPreference, useSetPreference } from "@/hooks/usePreferences";
 import { DO_ACTIVE_PROJECT } from "@/utils/const";
-import { Fragment, useMemo } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import { Page } from "@/components/Page";
 import { timeAgo } from "@/utils/timeAgo";
 import { Dialog, Transition } from "@headlessui/react";
@@ -15,16 +15,17 @@ import { DropletListing } from "@/components/DropletListing";
 import { DomainListing } from "@/components/DomainListing";
 import { Button } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
-import { fireEvent } from "@/utils/fire-event";
+import * as Sentry from "@sentry/capacitor";
 
 export default function Home() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "home",
-      nameOverride: "HomeScreen",
-    });
-  }, []);
+  throw new Error("Test Thrown Error");
+
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "home",
+  //     nameOverride: "HomeScreen",
+  //   });
+  // }, []);
 
   const queryClient = useQueryClient();
   const { data: projects, refetch } = useGetProjects({
@@ -86,12 +87,6 @@ export default function Home() {
             {projects && projects.length > 1 && (
               <Button
                 onClick={() => {
-                  fireEvent({
-                    name: "action_taken",
-                    params: {
-                      action_type: "switchAccounts",
-                    },
-                  });
                   open();
                 }}
                 size="sm"

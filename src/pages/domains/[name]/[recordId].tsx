@@ -10,22 +10,21 @@ import {
   useGetDomainRecord,
   useUpdateDomainRecord,
 } from "@/hooks/useDomains";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 import { useTimeout } from "@mantine/hooks";
 import { IconTrash } from "@tabler/icons-react";
 import { IDomainRecord } from "dots-wrapper/dist/domain";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function DomainRecordEditPage() {
-  useMemo(async () => {
-    await FirebaseAnalytics.setScreenName({
-      screenName: "domainEdit",
-      nameOverride: "DomainEditScreen",
-    });
-  }, []);
+  // useMemo(async () => {
+  //   await FirebaseAnalytics.setScreenName({
+  //     screenName: "domainEdit",
+  //     nameOverride: "DomainEditScreen",
+  //   });
+  // }, []);
 
   const router = useRouter();
   const { name, recordId } = router.query as { name: string; recordId: string };

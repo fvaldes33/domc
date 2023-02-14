@@ -6,7 +6,7 @@ import { Nunito_Sans } from "@next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useGetPreference } from "@/hooks/usePreferences";
 import { App } from "@/components/App";
@@ -20,7 +20,6 @@ import {
   DO_TOKEN_KEY,
 } from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
-import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 // const inter = Inter({ subsets: ["latin"] });
 const nunito = Nunito_Sans({
@@ -69,7 +68,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 }
 
 function AppWrapper({ children }: { children: React.ReactNode }) {
-  const fbRef = useRef();
   const [appReady, setAppReady] = useState<boolean>(false);
 
   const { data: token, isLoading } = useGetPreference<string | null>({
@@ -89,30 +87,8 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
     (async () => {
       if (Capacitor.isNativePlatform()) {
         await SplashScreen.hide();
-        setAppReady(true);
-      } else {
-        if (fbRef.current) return;
-
-        try {
-          fbRef.current = await FirebaseAnalytics.initializeFirebase({
-            apiKey: "AIzaSyBEismkBVCIHrRG7k9Czw0xMlnDZsXR6GI",
-            authDomain: "mission-control-1b51b.firebaseapp.com",
-            projectId: "mission-control-1b51b",
-            storageBucket: "mission-control-1b51b.appspot.com",
-            messagingSenderId: "661231837452",
-            appId: "1:661231837452:web:f11e064cac1ea19fb4a929",
-            measurementId: "G-WBKXHBW84Q",
-          });
-
-          await FirebaseAnalytics.setCollectionEnabled({
-            enabled: false,
-          });
-        } catch (error) {
-          // shhhh
-        } finally {
-          setAppReady(true);
-        }
       }
+      setAppReady(true);
     })();
   }, []);
 
