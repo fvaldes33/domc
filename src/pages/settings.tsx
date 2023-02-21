@@ -90,7 +90,7 @@ export default function Settings() {
         toast.success("Purchase restored");
       },
       onError: (error: any) => {
-        toast.success(error?.message!);
+        toast.error(error?.message!);
       },
     });
   };

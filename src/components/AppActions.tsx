@@ -88,7 +88,7 @@ export function AppActions({ app }: AppActionsProps) {
       </button>
 
       <ActionSheet show={opened} onClose={close}>
-        <ActionSheet.Label>Actions</ActionSheet.Label>
+        {/* <ActionSheet.Label>Actions</ActionSheet.Label> */}
         <ActionSheet.Button onClick={() => deploy(false)}>
           Deploy
         </ActionSheet.Button>

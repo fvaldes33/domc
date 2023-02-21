@@ -13,7 +13,11 @@ function Toolbar({
     <div
       className={classNames(
         position === "top" ? "pt-safe" : "pb-safe",
-        border ? (position === "top" ? "border-b" : "border-t") : ""
+        border
+          ? position === "top"
+            ? "border-b border-ocean-2"
+            : "border-t border-ocean-2"
+          : ""
       )}
     >
       <div

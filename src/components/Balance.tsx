@@ -25,7 +25,7 @@ export function Balance() {
       <div className="px-4 grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
         <HapticLink
           href="/billing"
-          className="p-2 h-20 flex flex-col border border-ocean-2 bg-ocean-2/10 rounded-md shadow-lg shadow-ocean/25"
+          className="p-2 h-20 flex flex-col border border-ocean-2 bg-ocean-2/10 rounded-md"
         >
           <p className="text-xs font-mono">Balance</p>
           <p className="text-lg font-bold mt-auto">
@@ -38,7 +38,7 @@ export function Balance() {
         </HapticLink>
         <HapticLink
           href="/billing"
-          className="p-2 h-20 flex flex-col border border-ocean-2 bg-ocean-2/10 rounded-md shadow-lg shadow-ocean/25"
+          className="p-2 h-20 flex flex-col border border-ocean-2 bg-ocean-2/10 rounded-md"
         >
           <p className="text-xs font-mono">MTD</p>
           <p className="text-lg font-bold mt-auto">

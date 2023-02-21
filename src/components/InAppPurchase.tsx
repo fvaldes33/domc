@@ -9,7 +9,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconLoader } from "@tabler/icons-react";
 import { Package } from "@capgo/capacitor-purchases";
 import { classNames } from "@/utils/classNames";
 import { Capacitor } from "@capacitor/core";
@@ -71,7 +71,7 @@ export function InAppPurchase() {
         onSuccess: () => {
           toast.success("Your free trial as started!");
           setTimeout(() => {
-            close();
+            onClose();
           }, 1000);
         },
         onError: (error: any) => {
@@ -84,7 +84,10 @@ export function InAppPurchase() {
   const onRestorePurchases = () => {
     restorePurchases.mutate(undefined, {
       onSuccess: () => {
-        close();
+        toast.success("Your purchase was restored!");
+        setTimeout(() => {
+          onClose();
+        }, 1000);
       },
       onError: (error: any) => {
         toast.error(error?.message);
@@ -229,7 +232,19 @@ export function InAppPurchase() {
                     </div>
                   </>
                 )}
-                {/* <pre>{JSON.stringify(offerings, null, 2)}</pre> */}
+
+                {(purchasePackage.isLoading || restorePurchases.isLoading) && (
+                  <div className="backdrop-blur-lg fixed inset-0 flex items-center justify-center">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl w-32 h-32 flex flex-col items-center justify-center shadow-2xl">
+                      <IconLoader className="animate-spin" />
+                      <p className="text-center text-xs mt-2">
+                        {purchasePackage.isLoading
+                          ? "Setting up your subscription"
+                          : "Restoring your subscription"}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>
