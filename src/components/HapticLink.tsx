@@ -27,14 +27,14 @@ const HapticLink: LinkComponent = forwardRef(function HapticLink(
         style: ImpactStyle.Light,
       });
 
-      // if (
-      //   forcePaid &&
-      //   !isPaid &&
-      //   !["/", "/settings"].includes(props.href as string)
-      // ) {
-      //   e.preventDefault();
-      //   setForceIAP(true);
-      // }
+      if (
+        forcePaid &&
+        !isPaid &&
+        !["/", "/settings"].includes(props.href as string)
+      ) {
+        e.preventDefault();
+        setForceIAP(true);
+      }
     }
 
     if (props.onClick) {
