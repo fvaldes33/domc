@@ -23,6 +23,6 @@ export const DeploymentPhaseMap = new Map<string, React.FC>([
   ["BUILDING", () => <IconLoader className="animate-spin" />],
   ["DEPLOYING", () => <IconLoader className="animate-spin" />],
   ["SUPERSEDED", () => <IconCheck />],
-  ["ERROR", () => <IconX />],
-  ["CANCELED", () => <IconClockCancel />],
+  ["ERROR", () => <IconX className="text-red-600" />],
+  ["CANCELED", () => <IconClockCancel className="text-red-600" />],
 ]);

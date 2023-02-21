@@ -31,6 +31,7 @@
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
+    "cordova-plugin-screen-orientation": "^3.0.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "dots-wrapper": "^3.8.1",

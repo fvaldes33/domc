@@ -17,7 +17,7 @@ function Toolbar({
       )}
     >
       <div
-        className="p-1 w-full min-h-[44px] relative flex flex-row items-center justify-between overflow-hidden z-10"
+        className="p-1 w-full min-h-[44px] relative flex flex-row items-center justify-between overflow-hidden z-10 md:px-safe"
         style={{
           contain: "content",
         }}

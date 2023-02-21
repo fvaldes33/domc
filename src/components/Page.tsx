@@ -19,7 +19,7 @@ function Page({
       data-type="domc-page"
       className={classNames(
         "absolute inset-0 flex flex-col justify-between overflow-hidden select-none z-10",
-        main && withSidebar ? "md:pl-64" : ""
+        main && withSidebar ? "lg:pl-64" : ""
       )}
       style={{
         contain: "layout size style",
@@ -184,7 +184,7 @@ function Content({
       <motion.main
         ref={mainRef}
         className={classNames(
-          "bg-white dark:bg-black absolute inset-0 overflow-hidden touch-pan-x touch-pan-y touch-pinch-zoom overflow-y-auto overscroll-y-contain z-0 will-change-scroll",
+          "md:px-safe bg-white dark:bg-black absolute inset-0 overflow-hidden touch-pan-x touch-pan-y touch-pinch-zoom overflow-y-auto overscroll-y-contain z-0 will-change-scroll",
           className ?? ""
         )}
         style={{

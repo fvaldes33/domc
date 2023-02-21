@@ -3,6 +3,7 @@ import { classNames } from "@/utils/classNames";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   IconApps,
+  IconCreditCard,
   IconDatabase,
   IconDroplet,
   IconHome,
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
+  { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
   { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
 ];
 

@@ -2,6 +2,7 @@
 import { classNames } from "@/utils/classNames";
 import {
   IconApps,
+  IconCreditCard,
   IconDatabase,
   IconDroplet,
   IconHome,
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
+  { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
   { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
 ];
 
@@ -35,7 +37,7 @@ export function MenuPanelLarge() {
   const { account } = useMissionControl();
 
   return (
-    <div className="hidden md:block fixed inset-y-0 left-0 border-r h-full w-64 bg-white dark:bg-gray-700/50 z-50">
+    <div className="hidden lg:block fixed inset-y-0 left-0 border-r h-full w-64 bg-white dark:bg-gray-700/50 z-50">
       <Page main={false}>
         <Navbar
           title={"Mission Control"}

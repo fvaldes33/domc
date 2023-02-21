@@ -36,3 +36,5 @@ export type GenericSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: React.ReactElement) => React.ReactNode;
 };
+
+export type WithToken<T> = T & { token?: string | null };

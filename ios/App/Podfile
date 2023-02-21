@@ -17,6 +17,7 @@ def capacitor_pods
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
   pod 'CapgoCapacitorPurchases', :path => '../../node_modules/@capgo/capacitor-purchases'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
+  pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
 end
 
 target 'App' do

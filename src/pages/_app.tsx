@@ -87,6 +87,7 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       if (Capacitor.isNativePlatform()) {
+        window.screen.orientation.lock("portrait");
         await SplashScreen.hide();
         CapacitorPurchases.setDebugLogsEnabled({
           enabled: process.env.NODE_ENV !== "production",
