@@ -20,6 +20,7 @@ import {
   DO_TOKEN_KEY,
 } from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
+import { CapacitorPurchases } from "@capgo/capacitor-purchases";
 
 // const inter = Inter({ subsets: ["latin"] });
 const nunito = Nunito_Sans({
@@ -61,8 +62,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <AppWrapper>
         <Component {...pageProps} />
-        <Toaster containerClassName="mt-safe" />
       </AppWrapper>
+      <Toaster containerClassName="mt-safe z-[999]" />
     </QueryClientProvider>
   );
 }
@@ -87,6 +88,15 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
     (async () => {
       if (Capacitor.isNativePlatform()) {
         await SplashScreen.hide();
+        CapacitorPurchases.setDebugLogsEnabled({
+          enabled: process.env.NODE_ENV !== "production",
+        });
+        if (Capacitor.getPlatform() === "ios") {
+          CapacitorPurchases.setup({
+            apiKey: "appl_TvgfielhyfmviHVWafRxdDrqDWM", // prod
+          });
+        } else {
+        }
       }
       setAppReady(true);
     })();

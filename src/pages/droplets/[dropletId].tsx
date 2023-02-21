@@ -124,7 +124,7 @@ export default function DropletDetailPage() {
                   </header>
                 </section>
                 <section className="px-4">
-                  <div className="grid grid-cols-2 border rounded-lg divide-x mt-2">
+                  <div className="grid grid-cols-2 border border-ocean-2 bg-ocean-2/10 rounded-md divide-x divide-ocean-2 font-mono mt-2">
                     <div className="p-2">
                       <p className="text-xs mb-1 font-medium">Size</p>
                       <div className="text-xs">
@@ -168,7 +168,7 @@ export default function DropletDetailPage() {
                     <Link
                       key={item.href}
                       href={`${droplet.id}/${item.href}`}
-                      className="flex items-center justify-center aspect-square rounded-lg bg-ocean-2/10 dark:bg-ocean-2/40 text-ocean-2 dark:text-white"
+                      className="flex items-center justify-center aspect-square rounded-md border border-ocean-2 bg-ocean-2/10 text-ocean-2 dark:text-white"
                     >
                       <span className="flex flex-col items-center">
                         <item.icon size={24} strokeWidth={1} />

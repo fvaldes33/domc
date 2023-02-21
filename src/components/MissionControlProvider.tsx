@@ -1,4 +1,5 @@
 import { useGetAccount } from "@/hooks/useAccount";
+import { useGetStatus } from "@/hooks/useGetOfferings";
 import { IAccount } from "dots-wrapper/dist/account";
 import { IAction } from "dots-wrapper/dist/action";
 import {
@@ -6,8 +7,9 @@ import {
   ISnapshotDropletApiRequest,
 } from "dots-wrapper/dist/droplet";
 import { atom, useAtomValue } from "jotai";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { DropletActionWatcher } from "./DropletActionWatcher";
+import { InAppPurchase } from "./InAppPurchase";
 import { MenuPanelLarge } from "./MenuPanelLarge";
 
 interface MissionControlContextProps {
@@ -15,11 +17,13 @@ interface MissionControlContextProps {
   colorSchemePref: "manual" | "system";
   token?: string;
   account?: IAccount;
+  isPaid: boolean;
 }
 
 const MissionControlContext = createContext<MissionControlContextProps>({
   theme: "light",
   colorSchemePref: "manual",
+  isPaid: false,
 });
 
 interface InProgress {
@@ -44,6 +48,7 @@ export function MissonControlProvider({
 }) {
   const { data: account } = useGetAccount();
   const inProgress = useAtomValue(inProgressAtom);
+  const { data: customerInfo } = useGetStatus();
 
   useEffect(() => {
     if (colorSchemePref === "system") {
@@ -61,9 +66,13 @@ export function MissonControlProvider({
     }
   }, [colorSchemePref, theme]);
 
+  const isPaid = useMemo(() => {
+    return Boolean(customerInfo?.activeSubscriptions.length);
+  }, [customerInfo]);
+
   return (
     <MissionControlContext.Provider
-      value={{ theme, token, account, colorSchemePref }}
+      value={{ theme, token, account, colorSchemePref, isPaid }}
     >
       {inProgress && (
         <DropletActionWatcher
@@ -73,6 +82,7 @@ export function MissonControlProvider({
       )}
       <MenuPanelLarge />
       {children}
+      <InAppPurchase />
     </MissionControlContext.Provider>
   );
 }

@@ -4,6 +4,7 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useBrowser } from "@/hooks/useBrowser";
+import { useRestorePurchases } from "@/hooks/useGetOfferings";
 import {
   useClearPreference,
   useGetPreference,
@@ -17,6 +18,7 @@ import {
 import { useForm } from "@mantine/form";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
+import { toast } from "react-hot-toast";
 
 export default function Settings() {
   // useMemo(async () => {
@@ -38,6 +40,7 @@ export default function Settings() {
 
   const setPreferences = useSetPreference();
   const clearPreference = useClearPreference();
+  const restorePurchases = useRestorePurchases();
 
   const { getInputProps, onSubmit, setFieldValue, ...form } = useForm({
     initialValues: {
@@ -59,10 +62,17 @@ export default function Settings() {
       value: values.token,
     });
 
-    setPreferences.mutate({
-      key: DO_COLOR_SCHEME_PREF,
-      value: values.colorScheme,
-    });
+    setPreferences.mutate(
+      {
+        key: DO_COLOR_SCHEME_PREF,
+        value: values.colorScheme,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Settings Saved");
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -74,6 +84,16 @@ export default function Settings() {
     }
   }, [setFieldValue, token, colorScheme]);
 
+  const onRestorePurchases = () => {
+    restorePurchases.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Purchase restored");
+      },
+      onError: (error: any) => {
+        toast.success(error?.message!);
+      },
+    });
+  };
   return (
     <Page>
       <MainNavbar title="Settings" />
@@ -85,7 +105,7 @@ export default function Settings() {
         </div>
         <form
           id="settings"
-          className="px-4 mb-8"
+          className="px-4 pb-4"
           onSubmit={onSubmit(handleFormSubmit)}
         >
           <div className="mb-4">
@@ -122,13 +142,28 @@ export default function Settings() {
               <option value="system">System</option>
             </select>
           </div>
+          <Button size="sm" type="submit" loading={setPreferences.isLoading}>
+            Save Settings
+          </Button>
         </form>
 
-        <div className="px-4 prose dark:prose-invert">
+        <div className="border-t p-4 flex items-center justify-between">
+          <p>Subscription</p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onRestorePurchases}
+            loading={restorePurchases.isLoading}
+          >
+            Restore Purchases
+          </Button>
+        </div>
+
+        <div className="border-t p-4 pb-safe prose dark:prose-invert">
           <h2>About</h2>
           <p>
-            <i>Mission Control</i> for Digital Ocean the &quot;go to&quot; tool
-            for developers to manage their resources on the go. From the App
+            <i>Mission Control</i> for Digital Ocean is the &quot;go to&quot;
+            app for developers to manage their resources on the go. From the App
             Platform to individual Droplets, you can keep an eye on all your
             mission critical resources.
           </p>
@@ -153,18 +188,6 @@ export default function Settings() {
           </p>
         </div>
       </Page.Content>
-      <Footer className="bg-ocean-2">
-        <Toolbar position="bottom">
-          <Button
-            full
-            form="settings"
-            className="absolute inset-0"
-            loading={setPreferences.isLoading}
-          >
-            Save Settings
-          </Button>
-        </Toolbar>
-      </Footer>
     </Page>
   );
 }

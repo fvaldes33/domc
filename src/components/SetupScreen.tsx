@@ -35,7 +35,7 @@ export function SetupScreen() {
   };
 
   return (
-    <Page>
+    <Page withSidebar={false}>
       <Page.Content>
         <div className="h-screen w-screen flex items-center justify-center bg-indigo-800 text-white">
           <form
@@ -47,7 +47,7 @@ export function SetupScreen() {
               <img src={logo.src} alt="" className="h-24 w-24 flex-none" />
               <h1 className="text-2xl font-bold ml-4">
                 Mission Control
-                <em className="block font-normal">for Digital Ocean</em>
+                <em className="block font-normal">for DigitalOcean</em>
               </h1>
             </div>
 
@@ -55,7 +55,7 @@ export function SetupScreen() {
               <p>
                 To get started, get your personal access token from{" "}
                 <span
-                  className="font-bold"
+                  className="font-bold underline"
                   onClick={() =>
                     navigate(
                       "https://cloud.digitalocean.com/account/api/tokens"

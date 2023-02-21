@@ -15,6 +15,7 @@ def capacitor_pods
   pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorPreferences', :path => '../../node_modules/@capacitor/preferences'
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
+  pod 'CapgoCapacitorPurchases', :path => '../../node_modules/@capgo/capacitor-purchases'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
 end
 

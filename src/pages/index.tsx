@@ -15,6 +15,7 @@ import { DropletListing } from "@/components/DropletListing";
 import { DomainListing } from "@/components/DomainListing";
 import { Button } from "@/components/Button";
 import { useQueryClient } from "@tanstack/react-query";
+import { DatabaseListing } from "@/components/DatabaseListing";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -90,6 +91,7 @@ export default function Home() {
           {project && <AppListing project={project} />}
           {project && <DropletListing project={project} />}
           {project && <DomainListing project={project} />}
+          {project && <DatabaseListing project={project} />}
         </Page.Content>
       </Page>
 

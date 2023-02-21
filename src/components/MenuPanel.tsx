@@ -27,7 +27,7 @@ interface MenuPanelProps {
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
-  // { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
+  { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
   { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
@@ -77,7 +77,7 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                 <Page.Content>
                   <div className="flex flex-col h-full">
                     <nav className="flex flex-col">
-                      {NAV_ITEMS.map(({ label, to, end, icon: Icon }) => {
+                      {NAV_ITEMS.map(({ label, to, icon: Icon }) => {
                         const isActive = router.route === to;
                         return (
                           <Link

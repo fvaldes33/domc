@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { classNames } from "@/utils/classNames";
-import { Dialog, Transition } from "@headlessui/react";
 import {
   IconApps,
   IconDatabase,
@@ -12,7 +11,6 @@ import {
 } from "@tabler/icons-react";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
 import { Footer } from "./Footer";
 import { useMissionControl } from "./MissionControlProvider";
 import { Navbar } from "./Navbar";

@@ -18,6 +18,7 @@
     "@capacitor/ios": "^4.6.3",
     "@capacitor/preferences": "^4.0.2",
     "@capacitor/splash-screen": "^4.1.4",
+    "@capgo/capacitor-purchases": "^2.0.24",
     "@headlessui/react": "^1.7.9",
     "@mantine/form": "^5.10.3",
     "@mantine/hooks": "^5.10.3",
