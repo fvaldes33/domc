@@ -7,7 +7,6 @@ import {
   IconHome,
   IconSettings2,
   IconWorld,
-  IconX,
 } from "@tabler/icons-react";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
@@ -25,7 +24,7 @@ interface MenuPanelProps {
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
-  // { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
+  { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
   { label: "Settings", icon: IconSettings2, to: "/settings", end: false },

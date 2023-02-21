@@ -243,7 +243,7 @@ export default function DeploymentDetails() {
           </>
         )}
       </Page.Content>
-      {data && (
+      {data && data.deployment.phase === "SUPERSEDED" && (
         <AppRollback
           appId={query.appId as string}
           deployment={data.deployment}
