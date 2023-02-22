@@ -1,4 +1,5 @@
 import { PlausibleContext } from "@/components/PlausibleProvider";
+import { getRemoteApiEndpoint } from "@/utils/endpoint";
 import { Capacitor } from "@capacitor/core";
 import { Device, DeviceInfo } from "@capacitor/device";
 import { useMutation } from "@tanstack/react-query";
@@ -39,29 +40,28 @@ export function usePlausibleEvent() {
       }
       const { model, operatingSystem, platform, osVersion } = deviceData;
 
-      const res = await fetch(
-        `https://b59f-136-57-130-168.ngrok.io/api/event`,
-        {
-          method: "post",
-          body: JSON.stringify({
-            name,
-            url,
-            domain,
-            screen_width: window.innerWidth,
-            props: {
-              ...props,
-              model,
-              operatingSystem,
-              platform,
-              osVersion,
-            },
-          }),
-          headers: {
-            "User-Agent": window.navigator.userAgent,
-            "Content-Type": "application/json",
+      const remoteEndpoint = getRemoteApiEndpoint();
+
+      const res = await fetch(`${remoteEndpoint}/api/event`, {
+        method: "post",
+        body: JSON.stringify({
+          name,
+          url,
+          domain,
+          screen_width: window.innerWidth,
+          props: {
+            ...props,
+            model,
+            operatingSystem,
+            platform,
+            osVersion,
           },
-        }
-      );
+        }),
+        headers: {
+          "User-Agent": window.navigator.userAgent,
+          "Content-Type": "application/json",
+        },
+      });
       if (!res.ok) throw res;
       return res.ok;
     },
