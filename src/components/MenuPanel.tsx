@@ -103,7 +103,7 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                       <Link
                         href="/settings"
                         className={classNames(
-                          "px-4 pt-2 text-sm",
+                          "px-4 pt-2 text-sm dark:text-white",
                           router.route === "/settings" ? "font-bold" : ""
                         )}
                         onClick={close}
@@ -113,7 +113,7 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                       <Link
                         href="/about"
                         className={classNames(
-                          "px-4 py-2 text-sm",
+                          "px-4 py-2 text-sm dark:text-white",
                           router.route === "/about" ? "font-bold" : ""
                         )}
                         onClick={close}
