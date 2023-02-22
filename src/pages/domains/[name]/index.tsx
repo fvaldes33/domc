@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Footer } from "@/components/Footer";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
@@ -33,7 +34,18 @@ export default function DomainDetailPage() {
 
   return (
     <Page>
-      <MainNavbar title={domain?.name} />
+      <MainNavbar
+        title={domain?.name}
+        right={
+          <FavoriteButton
+            resource={{
+              id: query.name as string,
+              type: "domains",
+              title: domain?.name,
+            }}
+          />
+        }
+      />
       <Page.Content>
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">

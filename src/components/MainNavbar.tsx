@@ -14,7 +14,13 @@ import { DO_COLOR_SCHEME, DO_COLOR_SCHEME_PREF } from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
-export function MainNavbar({ title }: { title?: string }) {
+export function MainNavbar({
+  title,
+  right,
+}: {
+  title?: string;
+  right?: React.ReactNode;
+}) {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const { data: colorScheme } = useGetPreference({
@@ -63,12 +69,14 @@ export function MainNavbar({ title }: { title?: string }) {
           )
         }
         right={
-          colorSchemePref &&
-          colorSchemePref === "manual" && (
-            <button className="" onClick={() => onClick(toggleColorScheme)}>
-              {colorScheme === "light" ? <IconMoon /> : <IconSun />}
-            </button>
-          )
+          <>
+            {right && right}
+            {colorSchemePref && colorSchemePref === "manual" && (
+              <button className="" onClick={() => onClick(toggleColorScheme)}>
+                {colorScheme === "light" ? <IconMoon /> : <IconSun />}
+              </button>
+            )}
+          </>
         }
       />
       <MenuPanel opened={opened} close={close} />

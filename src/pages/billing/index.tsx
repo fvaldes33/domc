@@ -59,9 +59,9 @@ export default function BillingIndexPage() {
           </p>
 
           <ul>
-            {data?.billing_history?.map((bill) => {
+            {data?.billing_history?.map((bill, index) => {
               return (
-                <li key={bill.invoice_id}>
+                <li key={`bill-${index}`}>
                   {bill.invoice_uuid ? (
                     <HapticLink
                       href={`/billing/history/${bill.invoice_uuid}`}

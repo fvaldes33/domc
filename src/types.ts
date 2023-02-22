@@ -38,3 +38,10 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 };
 
 export type WithToken<T> = T & { token?: string | null };
+
+export type FavoriteType = "apps" | "droplets" | "databases" | "domains";
+export type FavoritedResource = {
+  id: string | number;
+  title?: string;
+  type: FavoriteType;
+};

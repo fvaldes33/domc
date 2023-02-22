@@ -25,6 +25,7 @@ import { IDroplet } from "dots-wrapper/dist/droplet";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 const dropletNavigationItems = [
   { label: "Power", icon: IconPower, href: "power" },
@@ -74,7 +75,17 @@ export default function DropletDetailPage() {
     dropletDestroy && dropletDestroy.droplet_id === droplet?.id;
   return (
     <Page>
-      <MainNavbar />
+      <MainNavbar
+        right={
+          <FavoriteButton
+            resource={{
+              id: query.dropletId as string,
+              type: "droplets",
+              title: droplet?.name,
+            }}
+          />
+        }
+      />
       <Page.Content
         onRefresh={async (complete) => {
           await refetch();

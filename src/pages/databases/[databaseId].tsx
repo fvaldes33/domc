@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button";
 import { ClusterHero } from "@/components/ClusterHero";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
@@ -37,7 +38,17 @@ export default function DatabaseDetailPage() {
 
   return (
     <Page>
-      <MainNavbar />
+      <MainNavbar
+        right={
+          <FavoriteButton
+            resource={{
+              id: query.databaseId as string,
+              type: "databases",
+              title: cluster?.name,
+            }}
+          />
+        }
+      />
       <Page.Content
         onRefresh={async (complete) => {
           await Promise.all([refetch]);

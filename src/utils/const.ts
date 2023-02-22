@@ -18,3 +18,4 @@ export const DO_ACTIVE_PROJECT = "__do_active_project";
 export const DO_BASE_URL = "https://api.digitalocean.com/v2";
 export const DO_DESTROY_DROPLET = "__do_dropletDestroy";
 export const BACKUP_COST = 0.05;
+export const DO_FAVORITES = "__do_favorites";

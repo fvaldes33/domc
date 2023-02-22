@@ -14,6 +14,7 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
 import { timeAgo } from "@/utils/timeAgo";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 export default function AppDetailPage() {
   // useMemo(async () => {
@@ -78,7 +79,17 @@ export default function AppDetailPage() {
 
   return (
     <Page>
-      <MainNavbar />
+      <MainNavbar
+        right={
+          <FavoriteButton
+            resource={{
+              id: query.appId as string,
+              type: "apps",
+              title: app?.spec.name,
+            }}
+          />
+        }
+      />
       <Page.Content
         onRefresh={async (complete) => {
           await refetch();

@@ -7,6 +7,7 @@ import {
   IconDatabase,
   IconDroplet,
   IconHome,
+  IconStar,
   IconWorld,
   IconX,
 } from "@tabler/icons-react";
@@ -26,6 +27,7 @@ interface MenuPanelProps {
 
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
+  { label: "Favorites", icon: IconStar, to: "/favorites", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
   { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
   { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
