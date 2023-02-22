@@ -1,6 +1,6 @@
 import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
 import { useRouter } from "next/router";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useEffect } from "react";
 
 interface PlausibleContextProps {
   domain: string;
