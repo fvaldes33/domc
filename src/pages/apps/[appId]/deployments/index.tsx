@@ -85,7 +85,7 @@ export default function AppDetailDeployments() {
           complete();
         }}
       >
-        <div className="flex items-center justify-between px-4 py-2 border-b dark:border-gray-600">
+        <div className="flex items-center justify-between px-4 py-2 border-b dark:border-ocean-2">
           <p className="text-sm text-ocean dark:text-blue-400 font-medium flex items-center">
             <IconList className="" size={20} strokeWidth={1.5} />
             <span className="ml-2 uppercase">All Activity ({data?.total})</span>
@@ -103,10 +103,10 @@ export default function AppDetailDeployments() {
                 const dailyDeployments = data.deployByDay[date];
                 return (
                   <li key={date}>
-                    <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-600 z-[1] text-sm font-medium">
+                    <div className="py-2 px-4 sticky top-0 bg-white dark:bg-gray-800 border-b border-ocean-2 z-[1] text-sm font-medium">
                       <p>{dayjs(date).format("MMM DD, YYYY")}</p>
                     </div>
-                    <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-gray-200">
+                    <ul className="px-4 relative before:content-[''] before:absolute before:z-0 before:top-10 before:left-10 before:h-[80%] before:border-l-2 before:border-ocean-2">
                       {dailyDeployments.map((deployment) => {
                         return (
                           <AppDeploymentRecord

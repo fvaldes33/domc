@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
     },
   },
   // server: {
-  //   url: "https://46f9-136-57-130-168.ngrok.io",
+  //   url: "https://b59f-136-57-130-168.ngrok.io",
   //   cleartext: true,
   // },
 };

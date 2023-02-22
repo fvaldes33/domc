@@ -56,12 +56,14 @@ export function AppActions({ app }: AppActionsProps) {
         onSuccess: (data) => {
           if (data.historic_urls?.length) {
             const [url] = data.historic_urls;
+            window.screen.orientation.unlock();
             setLogModalProps({
               show: true,
               url,
               type: "RUN",
             });
           } else if (data.live_url) {
+            window.screen.orientation.unlock();
             setLogModalProps({
               show: true,
               url: data.live_url,
@@ -86,7 +88,7 @@ export function AppActions({ app }: AppActionsProps) {
       </button>
 
       <ActionSheet show={opened} onClose={close}>
-        <ActionSheet.Label>Actions</ActionSheet.Label>
+        {/* <ActionSheet.Label>Actions</ActionSheet.Label> */}
         <ActionSheet.Button onClick={() => deploy(false)}>
           Deploy
         </ActionSheet.Button>
@@ -114,6 +116,7 @@ export function AppActions({ app }: AppActionsProps) {
       <LogModal
         {...logModalProps}
         onClose={() => {
+          window.screen.orientation.lock("portrait");
           setLogModalProps({
             show: false,
             url: undefined,

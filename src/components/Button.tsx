@@ -8,11 +8,12 @@ import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 export interface ButtonBaseProps {
   variant?: "primary" | "outline" | "light" | "danger";
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   square?: boolean;
   loading?: boolean;
   leftIcon?: React.ReactNode;
   full?: boolean;
+  block?: boolean;
 }
 
 export type ButtonProps<C extends React.ElementType> =
@@ -40,6 +41,7 @@ const defaultWrapperClass = [
 ];
 
 const sizeMap = {
+  xs: ["h-6", "text-xs", "px-3"],
   sm: ["h-8", "text-xs", "px-4"],
   md: ["h-11", "text-sm", "px-6"],
   lg: ["h-12", "text-base", "px-8"],
@@ -82,6 +84,7 @@ const Button: ButtonComponent = forwardRef(function Button<
     leftIcon,
     className,
     full,
+    block,
     ...props
   }: ButtonProps<C>,
   ref: PolymorphicRef<C>
@@ -125,7 +128,8 @@ const Button: ButtonComponent = forwardRef(function Button<
           ? `aspect-square ${sizeClass.slice(0, 1).join(" ")}`
           : sizeClass.join(" "),
         className,
-        full ? "!w-full !rounded-none" : ""
+        full ? "!w-full !rounded-none" : "",
+        block ? "!w-full" : ""
       )}
     >
       <div

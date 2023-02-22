@@ -1,18 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import { classNames } from "@/utils/classNames";
-import { Dialog, Transition } from "@headlessui/react";
 import {
   IconApps,
+  IconCreditCard,
   IconDatabase,
   IconDroplet,
   IconHome,
-  IconSettings2,
   IconWorld,
-  IconX,
 } from "@tabler/icons-react";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
-import { Fragment } from "react";
 import { Footer } from "./Footer";
 import { useMissionControl } from "./MissionControlProvider";
 import { Navbar } from "./Navbar";
@@ -27,10 +24,11 @@ interface MenuPanelProps {
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
-  // { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
+  { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
+  { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
-  { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
+  // { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
 ];
 
 export function MenuPanelLarge() {
@@ -38,7 +36,7 @@ export function MenuPanelLarge() {
   const { account } = useMissionControl();
 
   return (
-    <div className="hidden md:block fixed inset-y-0 left-0 border-r h-full w-64 bg-white dark:bg-gray-700/50 z-50">
+    <div className="hidden lg:block fixed inset-y-0 left-0 border-r h-full w-64 bg-white dark:bg-gray-700/50 z-50">
       <Page main={false}>
         <Navbar
           title={"Mission Control"}
@@ -68,6 +66,29 @@ export function MenuPanelLarge() {
                 );
               })}
             </nav>
+
+            <div className="pt-6 border-t flex flex-col">
+              <Link
+                href="/settings"
+                className={classNames(
+                  "px-4 pt-2 text-sm",
+                  router.route === "/settings" ? "font-bold" : ""
+                )}
+                onClick={close}
+              >
+                Settings
+              </Link>
+              <Link
+                href="/about"
+                className={classNames(
+                  "px-4 py-2 text-sm",
+                  router.route === "/about" ? "font-bold" : ""
+                )}
+                onClick={close}
+              >
+                About
+              </Link>
+            </div>
           </div>
         </Page.Content>
         {account && (

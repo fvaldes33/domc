@@ -152,7 +152,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     onClick={() => {
                       setAction({
                         type: "poweroff",
@@ -177,7 +177,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     onClick={() => {
                       setAction({
                         type: "reboot",
@@ -204,7 +204,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     onClick={() => {
                       setAction({
                         type: "cycle",
@@ -230,7 +230,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     variant="danger"
                     onClick={() => {
                       setAction({
@@ -262,7 +262,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     onClick={() => {
                       setAction({
                         type: "poweron",
@@ -287,7 +287,7 @@ export default function DropletPowerPage() {
                   </div>
                   <Button
                     className="mt-4"
-                    full
+                    block
                     variant="danger"
                     onClick={() => {
                       setAction({

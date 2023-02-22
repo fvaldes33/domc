@@ -57,7 +57,7 @@ export function MainNavbar({ title }: { title?: string }) {
               <IconArrowLeft />
             </button>
           ) : (
-            <button className="md:hidden" onClick={() => onClick(open)}>
+            <button className="lg:hidden" onClick={() => onClick(open)}>
               <IconMenu2 />
             </button>
           )

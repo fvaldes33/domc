@@ -4,6 +4,7 @@ import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useBrowser } from "@/hooks/useBrowser";
+import { useRestorePurchases } from "@/hooks/useGetOfferings";
 import {
   useClearPreference,
   useGetPreference,
@@ -14,9 +15,12 @@ import {
   DO_COLOR_SCHEME_PREF,
   DO_TOKEN_KEY,
 } from "@/utils/const";
+import { Capacitor } from "@capacitor/core";
 import { useForm } from "@mantine/form";
+import { RateApp } from "capacitor-rate-app";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
+import { toast } from "react-hot-toast";
 
 export default function Settings() {
   // useMemo(async () => {
@@ -38,6 +42,7 @@ export default function Settings() {
 
   const setPreferences = useSetPreference();
   const clearPreference = useClearPreference();
+  const restorePurchases = useRestorePurchases();
 
   const { getInputProps, onSubmit, setFieldValue, ...form } = useForm({
     initialValues: {
@@ -59,10 +64,17 @@ export default function Settings() {
       value: values.token,
     });
 
-    setPreferences.mutate({
-      key: DO_COLOR_SCHEME_PREF,
-      value: values.colorScheme,
-    });
+    setPreferences.mutate(
+      {
+        key: DO_COLOR_SCHEME_PREF,
+        value: values.colorScheme,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Settings Saved");
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -74,9 +86,26 @@ export default function Settings() {
     }
   }, [setFieldValue, token, colorScheme]);
 
+  const onRestorePurchases = () => {
+    restorePurchases.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Purchase restored");
+      },
+      onError: (error: any) => {
+        toast.error(error?.message!);
+      },
+    });
+  };
+
+  const triggerAppRate = () => {
+    if (Capacitor.isNativePlatform()) {
+      RateApp.requestReview();
+    }
+  };
+
   return (
     <Page>
-      <MainNavbar title="Settings" />
+      <MainNavbar />
       <Page.Content>
         <div className="p-4 flex items-center justify-between">
           <div>
@@ -85,7 +114,7 @@ export default function Settings() {
         </div>
         <form
           id="settings"
-          className="px-4 mb-8"
+          className="px-4 pb-4"
           onSubmit={onSubmit(handleFormSubmit)}
         >
           <div className="mb-4">
@@ -95,14 +124,14 @@ export default function Settings() {
             >
               API Token
             </label>
-            <input
-              type="text"
+            <textarea
               name="token"
               id="token"
               autoComplete="none"
+              rows={3}
               className="mt-1 block w-full dark:text-black rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
               {...getInputProps("token")}
-            />
+            ></textarea>
           </div>
 
           <div className="mb-4">
@@ -122,49 +151,34 @@ export default function Settings() {
               <option value="system">System</option>
             </select>
           </div>
-        </form>
-
-        <div className="px-4 prose dark:prose-invert">
-          <h2>About</h2>
-          <p>
-            <i>Mission Control</i> for Digital Ocean the &quot;go to&quot; tool
-            for developers to manage their resources on the go. From the App
-            Platform to individual Droplets, you can keep an eye on all your
-            mission critical resources.
-          </p>
-          <p>
-            Icons and Illustrations by{" "}
-            <span
-              className="font-bold"
-              onClick={() => navigate("https://icons8.com")}
-            >
-              Icons8
-            </span>
-            .
-          </p>
-          <p>
-            <strong>
-              &copy; {dayjs().format("YYYY")} Appvents, LLC. All Rights
-              Reserved.
-            </strong>
-          </p>
-          <p>
-            Developed by <strong>Franco Valdes</strong>.
-          </p>
-        </div>
-      </Page.Content>
-      <Footer className="bg-ocean-2">
-        <Toolbar position="bottom">
-          <Button
-            full
-            form="settings"
-            className="absolute inset-0"
-            loading={setPreferences.isLoading}
-          >
+          <Button size="sm" type="submit" loading={setPreferences.isLoading}>
             Save Settings
           </Button>
-        </Toolbar>
-      </Footer>
+        </form>
+
+        <section className="px-4 border-t border-ocean-2 pt-6">
+          <div className="flex items-center justify-center p-6 border border-ocean-2 bg-ocean-2/10 rounded-md ">
+            <div className="text-center">
+              <p className="mb-1">Already have a subscription?</p>
+              <Button
+                size="sm"
+                variant="light"
+                onClick={onRestorePurchases}
+                loading={restorePurchases.isLoading}
+              >
+                Restore
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-6 border-t border-ocean-2 p-4 flex items-center justify-between">
+          <p>Rate App</p>
+          <Button size="sm" variant="outline" onClick={triggerAppRate}>
+            Leave Review
+          </Button>
+        </div>
+      </Page.Content>
     </Page>
   );
 }

@@ -92,6 +92,7 @@ export default function DeploymentDetails() {
         onSuccess: (data) => {
           if (data.historic_urls.length) {
             const [url] = data.historic_urls;
+            window.screen.orientation.unlock();
             setLogModalProps({
               show: true,
               url,
@@ -243,7 +244,7 @@ export default function DeploymentDetails() {
           </>
         )}
       </Page.Content>
-      {data && (
+      {data && data.deployment.phase === "SUPERSEDED" && (
         <AppRollback
           appId={query.appId as string}
           deployment={data.deployment}
@@ -252,6 +253,7 @@ export default function DeploymentDetails() {
       <LogModal
         {...logModalProps}
         onClose={() => {
+          window.screen.orientation.lock("portrait");
           setLogModalProps({
             show: false,
             url: undefined,

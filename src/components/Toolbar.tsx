@@ -13,11 +13,15 @@ function Toolbar({
     <div
       className={classNames(
         position === "top" ? "pt-safe" : "pb-safe",
-        border ? (position === "top" ? "border-b" : "border-t") : ""
+        border
+          ? position === "top"
+            ? "border-b border-ocean-2"
+            : "border-t border-ocean-2"
+          : ""
       )}
     >
       <div
-        className="p-1 w-full min-h-[44px] relative flex flex-row items-center justify-between overflow-hidden z-10"
+        className="p-1 w-full min-h-[44px] relative flex flex-row items-center justify-between overflow-hidden z-10 md:px-safe"
         style={{
           contain: "content",
         }}
