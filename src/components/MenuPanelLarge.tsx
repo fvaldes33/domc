@@ -6,7 +6,6 @@ import {
   IconDatabase,
   IconDroplet,
   IconHome,
-  IconSettings2,
   IconWorld,
 } from "@tabler/icons-react";
 import Link from "@/components/HapticLink";
@@ -25,11 +24,11 @@ interface MenuPanelProps {
 const NAV_ITEMS = [
   { label: "Home", icon: IconHome, to: "/", end: true },
   { label: "Apps", icon: IconApps, to: "/apps", end: false },
+  { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
   { label: "Databases", icon: IconDatabase, to: "/databases", end: false },
   { label: "Domains", icon: IconWorld, to: "/domains", end: false },
   { label: "Droplets", icon: IconDroplet, to: "/droplets", end: false },
-  { label: "Billing", icon: IconCreditCard, to: "/billing", end: false },
-  { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
+  // { label: "Settings", icon: IconSettings2, to: "/settings", end: false },
 ];
 
 export function MenuPanelLarge() {
@@ -67,6 +66,29 @@ export function MenuPanelLarge() {
                 );
               })}
             </nav>
+
+            <div className="pt-6 border-t flex flex-col">
+              <Link
+                href="/settings"
+                className={classNames(
+                  "px-4 pt-2 text-sm",
+                  router.route === "/settings" ? "font-bold" : ""
+                )}
+                onClick={close}
+              >
+                Settings
+              </Link>
+              <Link
+                href="/about"
+                className={classNames(
+                  "px-4 py-2 text-sm",
+                  router.route === "/about" ? "font-bold" : ""
+                )}
+                onClick={close}
+              >
+                About
+              </Link>
+            </div>
           </div>
         </Page.Content>
         {account && (

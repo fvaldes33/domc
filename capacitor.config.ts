@@ -11,10 +11,10 @@ const config: CapacitorConfig = {
       backgroundColor: "#ffffffff",
     },
   },
-  // server: {
-  //   url: "https://8f7d-136-57-130-168.ngrok.io",
-  //   cleartext: true,
-  // },
+  server: {
+    url: "https://b59f-136-57-130-168.ngrok.io",
+    cleartext: true,
+  },
 };
 
 export default config;

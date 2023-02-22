@@ -1,3 +1,4 @@
+import { StatusBar, Style } from "@capacitor/status-bar";
 import { useGetAccount } from "@/hooks/useAccount";
 import { useGetStatus } from "@/hooks/useGetOfferings";
 import { IAccount } from "dots-wrapper/dist/account";
@@ -11,6 +12,7 @@ import { createContext, useContext, useEffect, useMemo } from "react";
 import { DropletActionWatcher } from "./DropletActionWatcher";
 import { InAppPurchase } from "./InAppPurchase";
 import { MenuPanelLarge } from "./MenuPanelLarge";
+import { Capacitor } from "@capacitor/core";
 
 interface MissionControlContextProps {
   theme: "light" | "dark";
@@ -51,17 +53,33 @@ export function MissonControlProvider({
   const { data: customerInfo } = useGetStatus();
 
   useEffect(() => {
+    const setStatusBarStyleDark = async () => {
+      if (Capacitor.isNativePlatform()) {
+        await StatusBar.setStyle({ style: Style.Dark });
+      }
+    };
+
+    const setStatusBarStyleLight = async () => {
+      if (Capacitor.isNativePlatform()) {
+        await StatusBar.setStyle({ style: Style.Light });
+      }
+    };
+
     if (colorSchemePref === "system") {
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         document.documentElement.classList.add("dark");
+        setStatusBarStyleDark();
       } else {
         document.documentElement.classList.remove("dark");
+        setStatusBarStyleLight();
       }
     } else {
       if (theme === "dark") {
         document.documentElement.classList.add("dark");
+        setStatusBarStyleDark();
       } else {
         document.documentElement.classList.remove("dark");
+        setStatusBarStyleLight();
       }
     }
   }, [colorSchemePref, theme]);

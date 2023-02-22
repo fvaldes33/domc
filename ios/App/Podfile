@@ -12,11 +12,14 @@ def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorBrowser', :path => '../../node_modules/@capacitor/browser'
+  pod 'CapacitorDevice', :path => '../../node_modules/@capacitor/device'
   pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorPreferences', :path => '../../node_modules/@capacitor/preferences'
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
+  pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'CapgoCapacitorPurchases', :path => '../../node_modules/@capgo/capacitor-purchases'
   pod 'SentryCapacitor', :path => '../../node_modules/@sentry/capacitor'
+  pod 'CapacitorRateApp', :path => '../../node_modules/capacitor-rate-app'
   pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
 end
 

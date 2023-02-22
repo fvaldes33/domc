@@ -18,6 +18,7 @@ import { Button } from "./Button";
 import { toast } from "react-hot-toast";
 import { useAtom, useAtomValue } from "jotai";
 import { forceIapAtom } from "@/utils/iap";
+import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
 
 export function InAppPurchase() {
   const [forceOpen, setForceOpen] = useAtom(forceIapAtom);
@@ -41,6 +42,7 @@ export function InAppPurchase() {
 
   const purchasePackage = usePurchasePackage();
   const restorePurchases = useRestorePurchases();
+  const plausible = usePlausibleEvent();
 
   useEffect(() => {
     if (forceOpen) {
@@ -62,6 +64,13 @@ export function InAppPurchase() {
       return;
     }
 
+    plausible.mutate({
+      name: "subscribe_start",
+      url: window.location.pathname,
+      props: {
+        package: selectedPkg.identifier,
+      },
+    });
     purchasePackage.mutate(
       {
         offeringIdentifier: selectedPkg.offeringIdentifier,
@@ -70,6 +79,14 @@ export function InAppPurchase() {
       {
         onSuccess: () => {
           toast.success("Your free trial as started!");
+          plausible.mutate({
+            name: "subscribe_complete",
+            url: window.location.pathname,
+            props: {
+              package: selectedPkg.identifier,
+            },
+          });
+
           setTimeout(() => {
             onClose();
           }, 1000);

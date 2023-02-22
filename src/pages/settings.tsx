@@ -15,7 +15,9 @@ import {
   DO_COLOR_SCHEME_PREF,
   DO_TOKEN_KEY,
 } from "@/utils/const";
+import { Capacitor } from "@capacitor/core";
 import { useForm } from "@mantine/form";
+import { RateApp } from "capacitor-rate-app";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
 import { toast } from "react-hot-toast";
@@ -94,9 +96,16 @@ export default function Settings() {
       },
     });
   };
+
+  const triggerAppRate = () => {
+    if (Capacitor.isNativePlatform()) {
+      RateApp.requestReview();
+    }
+  };
+
   return (
     <Page>
-      <MainNavbar title="Settings" />
+      <MainNavbar />
       <Page.Content>
         <div className="p-4 flex items-center justify-between">
           <div>
@@ -115,14 +124,14 @@ export default function Settings() {
             >
               API Token
             </label>
-            <input
-              type="text"
+            <textarea
               name="token"
               id="token"
               autoComplete="none"
+              rows={3}
               className="mt-1 block w-full dark:text-black rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
               {...getInputProps("token")}
-            />
+            ></textarea>
           </div>
 
           <div className="mb-4">
@@ -147,45 +156,27 @@ export default function Settings() {
           </Button>
         </form>
 
-        <div className="border-t p-4 flex items-center justify-between">
-          <p>Subscription</p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onRestorePurchases}
-            loading={restorePurchases.isLoading}
-          >
-            Restore Purchases
-          </Button>
-        </div>
+        <section className="px-4 border-t border-ocean-2 pt-6">
+          <div className="flex items-center justify-center p-6 border border-ocean-2 bg-ocean-2/10 rounded-md ">
+            <div className="text-center">
+              <p className="mb-1">Already have a subscription?</p>
+              <Button
+                size="sm"
+                variant="light"
+                onClick={onRestorePurchases}
+                loading={restorePurchases.isLoading}
+              >
+                Restore
+              </Button>
+            </div>
+          </div>
+        </section>
 
-        <div className="border-t p-4 pb-safe prose dark:prose-invert">
-          <h2>About</h2>
-          <p>
-            <i>Mission Control</i> for Digital Ocean is the &quot;go to&quot;
-            app for developers to manage their resources on the go. From the App
-            Platform to individual Droplets, you can keep an eye on all your
-            mission critical resources.
-          </p>
-          <p>
-            Icons and Illustrations by{" "}
-            <span
-              className="font-bold"
-              onClick={() => navigate("https://icons8.com")}
-            >
-              Icons8
-            </span>
-            .
-          </p>
-          <p>
-            <strong>
-              &copy; {dayjs().format("YYYY")} Appvents, LLC. All Rights
-              Reserved.
-            </strong>
-          </p>
-          <p>
-            Developed by <strong>Franco Valdes</strong>.
-          </p>
+        <div className="mt-6 border-t border-ocean-2 p-4 flex items-center justify-between">
+          <p>Rate App</p>
+          <Button size="sm" variant="outline" onClick={triggerAppRate}>
+            Leave Review
+          </Button>
         </div>
       </Page.Content>
     </Page>

@@ -30,7 +30,7 @@ const HapticLink: LinkComponent = forwardRef(function HapticLink(
       if (
         forcePaid &&
         !isPaid &&
-        !["/", "/settings"].includes(props.href as string)
+        !["/", "/about", "/settings"].includes(props.href as string)
       ) {
         e.preventDefault();
         setForceIAP(true);
