@@ -100,6 +100,9 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
             apiKey: "appl_TvgfielhyfmviHVWafRxdDrqDWM", // prod
           });
         } else {
+          CapacitorPurchases.setup({
+            apiKey: "goog_pKBkxaOJfEEEnuVrMTjwJlxKCOE", // prod
+          });
         }
       }
       setAppReady(true);

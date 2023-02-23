@@ -37,3 +37,8 @@ next-env.d.ts
 
 # Sentry
 .sentryclirc
+
+# adnroid
+domc-keystore
+private_key.pepk
+android/app/release/*
