@@ -30,26 +30,42 @@ export default function AboutPage() {
             >
               Icons8
             </span>
-            .
-          </p>
-          <p>
-            Data provided by the{" "}
+            . Data provided by the{" "}
             <span
               className="font-bold"
               onClick={() => navigate("https://docs.digitalocean.com/")}
             >
               DigitalOcean API
             </span>
-            .
+            . Developed by <strong>Franco Valdes</strong>.
+          </p>
+
+          <p>
+            <span
+              className="underline"
+              onClick={() =>
+                navigate("https://www.appvents.com/work/mission-control")
+              }
+            >
+              Privacy
+            </span>
+            <span className="inline-block mx-2">|</span>
+            <span
+              className="underline"
+              onClick={() =>
+                navigate(
+                  "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+                )
+              }
+            >
+              Terms of Use
+            </span>
           </p>
           <p>
             <strong>
               &copy; {dayjs().format("YYYY")} Appvents, LLC. All Rights
               Reserved.
             </strong>
-          </p>
-          <p>
-            Developed by <strong>Franco Valdes</strong>.
           </p>
         </div>
       </Page.Content>
