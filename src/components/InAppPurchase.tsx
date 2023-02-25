@@ -23,7 +23,7 @@ import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
 export function InAppPurchase() {
   const [forceOpen, setForceOpen] = useAtom(forceIapAtom);
   const [opened, { close, open }] = useDisclosure(false);
-  const { data: customerInfo } = useGetStatus({
+  useGetStatus({
     onSuccess: (data) => {
       if (!data.activeSubscriptions.length) {
         open();
@@ -34,8 +34,10 @@ export function InAppPurchase() {
   const [selectedPkg, setSelectedPkg] = useState<Package>();
   const { data: offerings } = useGetOfferings({
     onSuccess: (data) => {
-      if (data) {
+      if (data && data.availablePackages.length > 0) {
         setSelectedPkg(data.annual!);
+      } else {
+        close();
       }
     },
   });
@@ -45,10 +47,10 @@ export function InAppPurchase() {
   const plausible = usePlausibleEvent();
 
   useEffect(() => {
-    if (forceOpen) {
+    if (forceOpen && offerings && offerings.availablePackages.length > 0) {
       open();
     }
-  }, [forceOpen, open]);
+  }, [forceOpen, offerings, open]);
 
   const onSetPackage = (pkg: Package) => {
     if (Capacitor.isNativePlatform()) {

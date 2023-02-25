@@ -13,6 +13,7 @@ import { DropletActionWatcher } from "./DropletActionWatcher";
 import { InAppPurchase } from "./InAppPurchase";
 import { MenuPanelLarge } from "./MenuPanelLarge";
 import { Capacitor } from "@capacitor/core";
+import { CapacitorPurchases } from "@capgo/capacitor-purchases";
 
 interface MissionControlContextProps {
   theme: "light" | "dark";
@@ -48,7 +49,20 @@ export function MissonControlProvider({
   colorSchemePref: MissionControlContextProps["colorSchemePref"];
   children: React.ReactNode;
 }) {
-  const { data: account } = useGetAccount();
+  const { data: account } = useGetAccount({
+    onSuccess: async (data) => {
+      if (Capacitor.isNativePlatform()) {
+        await CapacitorPurchases.logIn({
+          appUserID: data.email,
+        });
+        await CapacitorPurchases.setAttributes({
+          attributes: {
+            $email: data.email,
+          },
+        });
+      }
+    },
+  });
   const inProgress = useAtomValue(inProgressAtom);
   const { data: customerInfo } = useGetStatus();
 
