@@ -45,6 +45,10 @@ export function AppActions({ app }: AppActionsProps) {
 
   const getLogsForComponent = () => {
     close();
+    if (!app.active_deployment.services?.length) {
+      toast.error("No logs available for app");
+      return;
+    }
     getAppDeploymentLogs.mutate(
       {
         app_id: app?.id,

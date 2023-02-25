@@ -74,6 +74,8 @@ function Content({
   const onTouchMove = (event: MouseEvent | TouchEvent) => {
     if (!isRefreshedEnabled) return;
 
+    if (!refresherRef.current) return;
+
     if (!isDragging.current) {
       return;
     }
