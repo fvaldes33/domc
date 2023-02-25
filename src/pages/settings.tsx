@@ -1,9 +1,7 @@
 import { Button } from "@/components/Button";
-import { Footer } from "@/components/Footer";
 import { MainNavbar } from "@/components/MainNavbar";
+import { useMissionControl } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
-import { Toolbar } from "@/components/Toolbar";
-import { useBrowser } from "@/hooks/useBrowser";
 import { useRestorePurchases } from "@/hooks/useGetOfferings";
 import {
   useClearPreference,
@@ -18,20 +16,11 @@ import {
 import { Capacitor } from "@capacitor/core";
 import { useForm } from "@mantine/form";
 import { RateApp } from "capacitor-rate-app";
-import dayjs from "dayjs";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
 export default function Settings() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "settings",
-  //     nameOverride: "SettingsScreen",
-  //   });
-  // }, []);
-
-  const navigate = useBrowser();
-
+  const { isPaid } = useMissionControl();
   const { data: token } = useGetPreference<string>({
     key: DO_TOKEN_KEY,
   });
@@ -156,21 +145,23 @@ export default function Settings() {
           </Button>
         </form>
 
-        <section className="px-4 border-t border-ocean-2 pt-6">
-          <div className="flex items-center justify-center p-6 border border-ocean-2 bg-ocean-2/10 rounded-md ">
-            <div className="text-center">
-              <p className="mb-1">Already have a subscription?</p>
-              <Button
-                size="sm"
-                variant="light"
-                onClick={onRestorePurchases}
-                loading={restorePurchases.isLoading}
-              >
-                Restore
-              </Button>
+        {!isPaid && (
+          <section className="px-4 border-t border-ocean-2 pt-6">
+            <div className="flex items-center justify-center p-6 border border-ocean-2 bg-ocean-2/10 rounded-md ">
+              <div className="text-center">
+                <p className="mb-1">Already have a subscription?</p>
+                <Button
+                  size="sm"
+                  variant="light"
+                  onClick={onRestorePurchases}
+                  loading={restorePurchases.isLoading}
+                >
+                  Restore
+                </Button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <div className="mt-6 border-t border-ocean-2 p-4 flex items-center justify-between">
           <p>Rate App</p>

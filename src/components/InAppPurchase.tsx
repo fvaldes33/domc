@@ -19,11 +19,13 @@ import { toast } from "react-hot-toast";
 import { useAtom, useAtomValue } from "jotai";
 import { forceIapAtom } from "@/utils/iap";
 import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
+import { useRouter } from "next/router";
 
 export function InAppPurchase() {
-  const [forceOpen, setForceOpen] = useAtom(forceIapAtom);
+  const router = useRouter();
+  const plausible = usePlausibleEvent();
   const [opened, { close, open }] = useDisclosure(false);
-  useGetStatus({
+  const { data: status } = useGetStatus({
     onSuccess: (data) => {
       if (!data.activeSubscriptions.length) {
         open();
@@ -37,6 +39,10 @@ export function InAppPurchase() {
       if (data && data.availablePackages.length > 0) {
         setSelectedPkg(data.annual!);
       } else {
+        plausible.mutate({
+          name: "no_offerings",
+          url: window.location.pathname,
+        });
         close();
       }
     },
@@ -44,13 +50,6 @@ export function InAppPurchase() {
 
   const purchasePackage = usePurchasePackage();
   const restorePurchases = useRestorePurchases();
-  const plausible = usePlausibleEvent();
-
-  useEffect(() => {
-    if (forceOpen && offerings && offerings.availablePackages.length > 0) {
-      open();
-    }
-  }, [forceOpen, offerings, open]);
 
   const onSetPackage = (pkg: Package) => {
     if (Capacitor.isNativePlatform()) {
@@ -115,9 +114,29 @@ export function InAppPurchase() {
   };
 
   const onClose = () => {
-    setForceOpen(false);
-    close();
+    if (!status?.activeSubscriptions.length && router.pathname !== "/") {
+      router.push("/");
+      setTimeout(() => {
+        close();
+      }, 1000);
+    } else {
+      close();
+    }
   };
+
+  useEffect(() => {
+    if (!status) return;
+    if (!offerings) return;
+
+    if (!["/", "/about", "/settings"].includes(router.pathname)) {
+      if (
+        !status.activeSubscriptions.length &&
+        offerings.availablePackages.length
+      ) {
+        open();
+      }
+    }
+  }, [open, status, offerings, router.pathname]);
 
   return (
     <div>

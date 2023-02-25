@@ -44,7 +44,7 @@ export default function AboutPage() {
             <span
               className="underline"
               onClick={() =>
-                navigate("https://www.appvents.com/work/mission-control")
+                navigate("https://missionctrl.appvents.com/privacy")
               }
             >
               Privacy
