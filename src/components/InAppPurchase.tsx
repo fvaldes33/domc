@@ -16,22 +16,16 @@ import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { Button } from "./Button";
 import { toast } from "react-hot-toast";
-import { useAtom, useAtomValue } from "jotai";
-import { forceIapAtom } from "@/utils/iap";
 import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
 import { useRouter } from "next/router";
+import { useBrowser } from "@/hooks/useBrowser";
 
 export function InAppPurchase() {
   const router = useRouter();
+  const navigate = useBrowser();
   const plausible = usePlausibleEvent();
   const [opened, { close, open }] = useDisclosure(false);
-  const { data: status } = useGetStatus({
-    onSuccess: (data) => {
-      if (!data.activeSubscriptions.length) {
-        open();
-      }
-    },
-  });
+  const { data: status } = useGetStatus();
 
   const [selectedPkg, setSelectedPkg] = useState<Package>();
   const { data: offerings } = useGetOfferings({
@@ -258,7 +252,7 @@ export function InAppPurchase() {
                       Subscriptions automatically renew after the 3-day free
                       trial. Cancel any time on the app store.
                     </div>
-                    <div className="text-center text-sm my-4">
+                    <div className="text-center text-sm mt-4 mb-2">
                       <Button
                         size="sm"
                         variant="light"
@@ -268,9 +262,27 @@ export function InAppPurchase() {
                         Restore Purchases
                       </Button>
                     </div>
+                    <div className="flex items-center justify-center text-sm mt-2 mb-4">
+                      <span
+                        onClick={() =>
+                          navigate("https://missionctrl.appvents.com/privacy")
+                        }
+                      >
+                        Privacy
+                      </span>
+                      <span className="inline-block mx-2">|</span>
+                      <span
+                        onClick={() =>
+                          navigate(
+                            "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+                          )
+                        }
+                      >
+                        Terms of Use
+                      </span>
+                    </div>
                   </>
                 )}
-
                 {(purchasePackage.isLoading || restorePurchases.isLoading) && (
                   <div className="backdrop-blur-lg fixed inset-0 flex items-center justify-center">
                     <div className="bg-white dark:bg-slate-800 rounded-2xl w-32 h-32 flex flex-col items-center justify-center shadow-2xl">

@@ -15,7 +15,7 @@ import { useState } from "react";
 export default function BillingIndexPage() {
   const [page, setPage] = useState<number>(1);
   const { data: billing } = useGetBalance();
-  const { data } = useListBillingHistory({
+  const { data, refetch } = useListBillingHistory({
     page,
     per_page: 10,
   });
@@ -23,7 +23,12 @@ export default function BillingIndexPage() {
   return (
     <Page>
       <MainNavbar />
-      <Page.Content>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          complete();
+        }}
+      >
         <section className="p-4">
           <p className="text-2xl font-bold">Billing / Usage</p>
         </section>

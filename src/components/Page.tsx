@@ -59,6 +59,8 @@ function Content({
   const onTouchStart = (event: MouseEvent | TouchEvent) => {
     if (!isRefreshedEnabled) return;
 
+    if (!refresherRef.current) return;
+
     isDragging.current = false;
 
     if (childRef.current!.getBoundingClientRect().top < 44) {
@@ -120,6 +122,7 @@ function Content({
 
   const onTouchEnd = () => {
     if (!isRefreshedEnabled) return;
+    if (!refresherRef.current) return;
 
     if (!shouldTriggerRefresh.current) {
       animate(y, 0);

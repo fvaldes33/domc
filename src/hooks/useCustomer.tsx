@@ -85,6 +85,7 @@ export function useGetInvoiceSummary({
   return useQuery({
     queryKey: ["invoice", invoice_uuid],
     queryFn: () => getInvoiceSummary({ token, invoice_uuid }),
+    enabled: Boolean(invoice_uuid),
   });
 }
 
@@ -112,5 +113,6 @@ export function useListInvoiceItems({
   return useQuery({
     queryKey: ["invoice-items", invoice_uuid],
     queryFn: () => listInvoiceItems({ token, invoice_uuid }),
+    enabled: Boolean(invoice_uuid),
   });
 }

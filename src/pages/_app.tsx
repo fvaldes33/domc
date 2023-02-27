@@ -23,7 +23,6 @@ import { Capacitor } from "@capacitor/core";
 import { CapacitorPurchases } from "@capgo/capacitor-purchases";
 import { PlausibleContextProvider } from "@/components/PlausibleProvider";
 
-// const inter = Inter({ subsets: ["latin"] });
 const nunito = Nunito_Sans({
   subsets: ["latin"],
   weight: ["400", "600", "700"],

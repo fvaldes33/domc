@@ -42,7 +42,7 @@ export default function InvoiceDetail() {
               {Array.from({ length: 3 }).map((_, index) => (
                 <div
                   className="border-b border-ocean-2/50 last-of-type:border-0"
-                  key={index}
+                  key={`rollup-skeleton-${index}`}
                 >
                   <div className="flex items-center p-4 w-full">
                     <div className="h-5 w-5 mr-2 rounded-md bg-gray-300 animate-pulse" />
@@ -54,7 +54,10 @@ export default function InvoiceDetail() {
             </section>
             <section className="px-4 mt-6">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div className="flex items-center py-2" key={index}>
+                <div
+                  className="flex items-center py-2"
+                  key={`totals-skeleton-${index}`}
+                >
                   <div className="h-5 w-40 rounded-md bg-gray-300 animate-pulse" />
                   <div className="h-5 w-10 ml-auto rounded-md bg-gray-300 animate-pulse" />
                 </div>
@@ -70,7 +73,7 @@ export default function InvoiceDetail() {
                 );
                 return (
                   <div
-                    key={item.name}
+                    key={`charges-${item.name}`}
                     className="border-b border-ocean-2/50 last-of-type:border-0"
                   >
                     <Disclosure>
@@ -101,7 +104,7 @@ export default function InvoiceDetail() {
                             {details?.map((detail) => {
                               return (
                                 <div
-                                  key={detail.resource_uuid}
+                                  key={detail.description}
                                   className="pl-12 pr-4 py-2 flex items-start text-sm"
                                 >
                                   <div className="pr-2">
