@@ -4,7 +4,7 @@ import { createApiClient } from "dots-wrapper";
 import { IAccount } from "dots-wrapper/dist/account";
 import { useGetPreference } from "./usePreferences";
 
-async function getAccount({ token }: { token?: string | null }) {
+export async function getAccount({ token }: { token?: string | null }) {
   if (!token) throw new Error("Token is required");
 
   const dots = createApiClient({ token });

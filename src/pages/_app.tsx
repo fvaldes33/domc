@@ -22,6 +22,7 @@ import {
 import { Capacitor } from "@capacitor/core";
 import { CapacitorPurchases } from "@capgo/capacitor-purchases";
 import { PlausibleContextProvider } from "@/components/PlausibleProvider";
+import { Onboarding } from "@/components/Onboarding";
 
 const nunito = Nunito_Sans({
   subsets: ["latin"],
@@ -121,7 +122,7 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
           {children}
         </MissonControlProvider>
       ) : (
-        <SetupScreen />
+        <Onboarding />
       )}
     </App>
   );

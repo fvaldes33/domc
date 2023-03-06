@@ -6,6 +6,15 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      animation: {
+        slideUp: "slideUp 0.3s ease-in-out forwards",
+      },
+      keyframes: {
+        slideUp: {
+          "0%": { opacity: 0, transform: "translatey(30px)" },
+          "100%": { opacity: 1, transform: "translateY(0px)" },
+        },
+      },
       colors: {
         ocean: "#031b4d",
         "ocean-2": "#0061eb",

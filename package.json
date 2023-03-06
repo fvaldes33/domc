@@ -38,6 +38,7 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "dots-wrapper": "^3.8.1",
+    "embla-carousel-react": "^7.0.9",
     "es6-promise-plugin": "^4.2.2",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",

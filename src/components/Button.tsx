@@ -12,6 +12,7 @@ export interface ButtonBaseProps {
   square?: boolean;
   loading?: boolean;
   leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   full?: boolean;
   block?: boolean;
 }
@@ -82,6 +83,7 @@ const Button: ButtonComponent = forwardRef(function Button<
     loading = false,
     square = false,
     leftIcon,
+    rightIcon,
     className,
     full,
     block,
@@ -137,6 +139,7 @@ const Button: ButtonComponent = forwardRef(function Button<
       >
         {renderLeftSection()}
         <span>{children}</span>
+        {rightIcon && rightIcon}
       </div>
     </Component>
   );
