@@ -31,7 +31,7 @@ export function InAppPurchase() {
   const { data: offerings } = useGetOfferings({
     onSuccess: (data) => {
       if (data && data.availablePackages.length > 0) {
-        setSelectedPkg(data.annual!);
+        setSelectedPkg(data.lifetime!);
       } else {
         plausible.mutate({
           name: "no_offerings",
@@ -130,6 +130,7 @@ export function InAppPurchase() {
         open();
       }
     }
+    open();
   }, [open, status, offerings, router.pathname]);
 
   return (
@@ -166,78 +167,84 @@ export function InAppPurchase() {
                   </div>
                 </div>
                 <div className="mt-6">
-                  <p className="text-2xl font-bold mb-2">
-                    Start Your 3-Day Free Trial
-                  </p>
+                  <p className="text-2xl font-bold mb-2">One Time Purchase</p>
                   <p>
                     Get total control of your DigitalOcean account on the go.
-                    Monitor and manage your Droplets, Apps, and Domains all from
-                    the palm of your hand.
+                    Monitor and manage your Droplets, Apps, Databases and
+                    Domains all from the palm of your hand.
                   </p>
                 </div>
 
                 {offerings && offerings.availablePackages.length > 0 && (
                   <>
                     <div className="mt-4 space-y-6">
-                      {offerings?.availablePackages.map((pkg) => {
-                        const { product } = pkg;
-                        const isChecked =
-                          selectedPkg?.identifier === pkg.identifier;
-                        return (
-                          <div className="" key={pkg.identifier}>
-                            <input
-                              id={`pkg-${pkg.packageType}`}
-                              name="offering"
-                              type="radio"
-                              className="peer hidden"
-                              checked={isChecked}
-                              onChange={(e) => onSetPackage(pkg)}
-                            />
-                            <label
-                              htmlFor={`pkg-${pkg.packageType}`}
-                              className="relative p-4 border-2 border-ocean-2 rounded-2xl block w-full peer-checked:bg-ocean-2 peer-checked:text-white"
-                            >
-                              {pkg.packageType === "ANNUAL" && (
-                                <span className="absolute top-0 right-2 -translate-y-1/2 px-2 py-1 border-2 border-ocean-2 font-bold text-xs bg-white text-ocean-2 rounded-full">
-                                  Most Popular
-                                </span>
-                              )}
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className="font-bold">{product.title}</p>
-                                  <p className="mb-2">{product.description}</p>
-
-                                  <div className="flex items-center">
-                                    <p className="font-bold">
-                                      {product.priceString}
-                                      {pkg.packageType === "MONTHLY"
-                                        ? "/mo"
-                                        : "/yr"}
+                      {offerings?.availablePackages
+                        .filter((pkg) => pkg.packageType === "LIFETIME")
+                        .map((pkg) => {
+                          const { product } = pkg;
+                          const isChecked =
+                            selectedPkg?.identifier === pkg.identifier;
+                          return (
+                            <div className="" key={pkg.identifier}>
+                              <input
+                                id={`pkg-${pkg.packageType}`}
+                                name="offering"
+                                type="radio"
+                                className="peer hidden"
+                                checked={isChecked}
+                                onChange={(e) => onSetPackage(pkg)}
+                              />
+                              <label
+                                htmlFor={`pkg-${pkg.packageType}`}
+                                className="relative p-4 border-2 border-ocean-2 rounded-2xl block w-full peer-checked:bg-ocean-2 peer-checked:text-white"
+                              >
+                                {pkg.packageType === "ANNUAL" && (
+                                  <span className="absolute top-0 right-2 -translate-y-1/2 px-2 py-1 border-2 border-ocean-2 font-bold text-xs bg-white text-ocean-2 rounded-full">
+                                    Most Popular
+                                  </span>
+                                )}
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="font-bold">{product.title}</p>
+                                    <p className="mb-2">
+                                      {product.description}
                                     </p>
-                                    {pkg.packageType === "ANNUAL" && (
-                                      <p className="ml-2 font-bold text-green-400 italic">
-                                        &bull; 16% savings
+
+                                    <div className="flex items-center">
+                                      <p className="font-bold">
+                                        {product.priceString}
+                                        {pkg.packageType === "MONTHLY"
+                                          ? "/mo"
+                                          : pkg.packageType === "ANNUAL"
+                                          ? "/yr"
+                                          : ""}
                                       </p>
-                                    )}
+                                      {pkg.packageType === "ANNUAL" && (
+                                        <p className="ml-2 font-bold text-green-400 italic">
+                                          &bull; 16% savings
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <span
+                                      className={classNames(
+                                        "h-6 w-6 rounded-full flex items-center justify-center",
+                                        isChecked
+                                          ? "bg-white border border-white text-ocean-2"
+                                          : "bg-white border border-ocean-2"
+                                      )}
+                                    >
+                                      {isChecked ? (
+                                        <IconCheck size={16} />
+                                      ) : null}
+                                    </span>
                                   </div>
                                 </div>
-                                <div>
-                                  <span
-                                    className={classNames(
-                                      "h-6 w-6 rounded-full flex items-center justify-center",
-                                      isChecked
-                                        ? "bg-white border border-white text-ocean-2"
-                                        : "bg-white border border-ocean-2"
-                                    )}
-                                  >
-                                    {isChecked ? <IconCheck size={16} /> : null}
-                                  </span>
-                                </div>
-                              </div>
-                            </label>
-                          </div>
-                        );
-                      })}
+                              </label>
+                            </div>
+                          );
+                        })}
                     </div>
                     <div className="mt-6 flex items-center justify-center">
                       <Button
@@ -245,12 +252,12 @@ export function InAppPurchase() {
                         onClick={onPurchasePackage}
                         loading={purchasePackage.isLoading}
                       >
-                        Try it Free
+                        Purchase
                       </Button>
                     </div>
                     <div className="text-center text-sm my-4">
-                      Subscriptions automatically renew after the 3-day free
-                      trial. Cancel any time on the app store.
+                      No subscription needed. One time purchase and get access
+                      forever on all your devices.
                     </div>
                     <div className="text-center text-sm mt-4 mb-2">
                       <Button
@@ -289,8 +296,8 @@ export function InAppPurchase() {
                       <IconLoader className="animate-spin" />
                       <p className="text-center text-xs mt-2">
                         {purchasePackage.isLoading
-                          ? "Setting up your subscription"
-                          : "Restoring your subscription"}
+                          ? "Setting up your purchase"
+                          : "Restoring your purchase"}
                       </p>
                     </div>
                   </div>
