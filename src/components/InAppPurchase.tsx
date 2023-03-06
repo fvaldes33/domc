@@ -7,7 +7,7 @@ import {
 } from "@/hooks/useGetOfferings";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDisclosure } from "@mantine/hooks";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import logo from "@/assets/logo.png";
 import { IconCheck, IconLoader } from "@tabler/icons-react";
 import { Package } from "@capgo/capacitor-purchases";
@@ -31,7 +31,11 @@ export function InAppPurchase() {
   const { data: offerings } = useGetOfferings({
     onSuccess: (data) => {
       if (data && data.availablePackages.length > 0) {
-        setSelectedPkg(data.lifetime!);
+        if (data.identifier === "ltd") {
+          setSelectedPkg(data.lifetime!);
+        } else {
+          setSelectedPkg(data.annual!);
+        }
       } else {
         plausible.mutate({
           name: "no_offerings",
@@ -133,6 +137,10 @@ export function InAppPurchase() {
     open();
   }, [open, status, offerings, router.pathname]);
 
+  const isLifetime = useMemo(() => {
+    return offerings?.identifier === "ltd";
+  }, [offerings]);
+
   return (
     <div>
       <Transition show={opened} as={Fragment}>
@@ -167,19 +175,24 @@ export function InAppPurchase() {
                   </div>
                 </div>
                 <div className="mt-6">
-                  <p className="text-2xl font-bold mb-2">One Time Purchase</p>
+                  <p className="text-2xl font-bold mb-2">
+                    {isLifetime
+                      ? "One Time Purchase"
+                      : "Start Your 3-Day Free Trial"}
+                  </p>
                   <p>
                     Get total control of your DigitalOcean account on the go.
                     Monitor and manage your Droplets, Apps, Databases and
                     Domains all from the palm of your hand.
                   </p>
                 </div>
-
                 {offerings && offerings.availablePackages.length > 0 && (
                   <>
                     <div className="mt-4 space-y-6">
                       {offerings?.availablePackages
-                        .filter((pkg) => pkg.packageType === "LIFETIME")
+                        .filter((pkg) =>
+                          isLifetime ? pkg.packageType === "LIFETIME" : true
+                        )
                         .map((pkg) => {
                           const { product } = pkg;
                           const isChecked =
@@ -252,12 +265,13 @@ export function InAppPurchase() {
                         onClick={onPurchasePackage}
                         loading={purchasePackage.isLoading}
                       >
-                        Purchase
+                        {isLifetime ? "Purchase" : "Subscribe"}
                       </Button>
                     </div>
                     <div className="text-center text-sm my-4">
-                      No subscription needed. One time purchase and get access
-                      forever on all your devices.
+                      {isLifetime
+                        ? "No subscription needed. One time purchase and get access forever on all your devices."
+                        : "Subscriptions automatically renew after the 3-day freetrial. Cancel any time on the app store."}
                     </div>
                     <div className="text-center text-sm mt-4 mb-2">
                       <Button

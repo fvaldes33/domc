@@ -24,6 +24,7 @@ export function useGetOfferings(
         throw new Error("Not native platform");
       }
       const { offerings } = await CapacitorPurchases.getOfferings();
+
       if (offerings.current !== null) {
         return offerings.current;
       }
