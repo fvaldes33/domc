@@ -134,7 +134,6 @@ export function InAppPurchase() {
         open();
       }
     }
-    open();
   }, [open, status, offerings, router.pathname]);
 
   const isLifetime = useMemo(() => {
