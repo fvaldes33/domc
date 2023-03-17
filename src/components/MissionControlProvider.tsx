@@ -99,7 +99,7 @@ export function MissonControlProvider({
   }, [colorSchemePref, theme]);
 
   const isPaid = useMemo(() => {
-    return Boolean(customerInfo?.activeSubscriptions.length);
+    return Boolean(customerInfo?.entitlements?.active?.length);
   }, [customerInfo]);
 
   return (

@@ -77,7 +77,7 @@ export function InAppPurchase() {
       },
       {
         onSuccess: () => {
-          toast.success("Your free trial as started!");
+          toast.success("Your purchase was successful!");
           plausible.mutate({
             name: "subscribe_complete",
             url: window.location.pathname,
@@ -112,7 +112,10 @@ export function InAppPurchase() {
   };
 
   const onClose = () => {
-    if (!status?.activeSubscriptions.length && router.pathname !== "/") {
+    if (
+      !Object.entries(status?.entitlements.active ?? {}).length &&
+      router.pathname !== "/"
+    ) {
       router.push("/");
       setTimeout(() => {
         close();
@@ -128,7 +131,7 @@ export function InAppPurchase() {
 
     if (!["/", "/about", "/settings"].includes(router.pathname)) {
       if (
-        !status.activeSubscriptions.length &&
+        !Object.entries(status.entitlements.active).length &&
         offerings.availablePackages.length
       ) {
         open();

@@ -86,7 +86,7 @@ export function useRestorePurchases() {
         throw new Error("Not native platform");
       }
       const { customerInfo } = await CapacitorPurchases.restorePurchases();
-      if (!customerInfo.activeSubscriptions.length) {
+      if (!customerInfo.entitlements?.active?.length) {
         throw new Error("Could not restore");
       }
       return customerInfo;
