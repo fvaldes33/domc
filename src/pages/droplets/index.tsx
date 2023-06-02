@@ -2,9 +2,13 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import {
   IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
   IconLoader,
   IconMapPin,
+  IconSearch,
   IconServer,
+  IconX,
 } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
 import Link from "@/components/HapticLink";
@@ -12,6 +16,12 @@ import { useGetDroplets } from "@/hooks/useDroplets";
 import { truncate } from "@/utils/truncate";
 import { Button } from "@/components/Button";
 import empty from "@/assets/droplets.png";
+import { useMemo, useState } from "react";
+import { Footer } from "@/components/Footer";
+import { Toolbar } from "@/components/Toolbar";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { classNames } from "@/utils/classNames";
 
 export default function DropletListingPage() {
   // useMemo(async () => {
@@ -20,15 +30,33 @@ export default function DropletListingPage() {
   //     nameOverride: "DropletListingScreen",
   //   });
   // }, []);
-
-  const {
-    data: droplets,
-    isLoading,
-    refetch,
-  } = useGetDroplets({
-    page: 1,
-    per_page: 10,
+  const form = useForm({
+    initialValues: {
+      searchTerm: "",
+    },
   });
+  const [opened, { toggle }] = useDisclosure(false, {
+    onClose: () => {
+      form.setFieldValue("searchTerm", "");
+    },
+  });
+
+  const [page, setPage] = useState<number>(1);
+  const { data, isLoading, refetch } = useGetDroplets({
+    page,
+    per_page: 100,
+  });
+
+  const filteredDroplets = useMemo(() => {
+    const droplets = data?.droplets ?? [];
+    if (!form.values.searchTerm) {
+      return droplets;
+    }
+
+    return droplets.filter((d) =>
+      d.name.toLowerCase().includes(form.values.searchTerm.toLowerCase())
+    );
+  }, [form.values, data?.droplets]);
 
   return (
     <Page>
@@ -40,9 +68,51 @@ export default function DropletListingPage() {
         }}
       >
         <div className="p-4 flex items-center justify-between">
-          <div>
+          <div
+            className={classNames(
+              "transition-all duration-150 ease-in-out",
+              opened ? "hidden" : "block"
+            )}
+          >
             <h1 className="text-2xl font-bold">Droplets</h1>
           </div>
+          <form className="flex items-center gap-x-2 w-full justify-end">
+            <button
+              type="button"
+              className={classNames(
+                "transition-all duration-150 delay-300",
+                opened ? "hidden" : "block"
+              )}
+              onClick={toggle}
+            >
+              <IconSearch size={20} />
+            </button>
+            <div
+              className={classNames(
+                "transition-all duration-150 ease-in-out",
+                opened ? "w-full" : "w-0 overflow-hidden"
+              )}
+            >
+              <input
+                className="mt-1 block w-full dark:text-white dark:bg-neutral-800 placeholder:dark:text-white/75 rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
+                placeholder="Search..."
+                type="text"
+                {...form.getInputProps("searchTerm")}
+              />
+            </div>
+            <button
+              type="button"
+              className={classNames(
+                "transition-all transform",
+                opened
+                  ? "duration-150 delay-300 translate-x-0"
+                  : "invisible absolute translate-x-full"
+              )}
+              onClick={toggle}
+            >
+              <IconX size={20} />
+            </button>
+          </form>
         </div>
 
         {isLoading ? (
@@ -51,18 +121,20 @@ export default function DropletListingPage() {
           </div>
         ) : (
           <div className="px-4 space-y-4">
-            {droplets && droplets.length === 0 && (
+            {filteredDroplets && filteredDroplets.length === 0 && (
               <div className="flex flex-col items-center justify-center h-96">
                 <img src={empty.src} alt="" className="w-40" />
                 <p className="text-2xl font-bold text-center my-4">
-                  {`Looks like you don't have any droplets`}
+                  {form.isDirty()
+                    ? `No droplets match ${form.values.searchTerm}`
+                    : "Looks like you don't have any droplets"}
                 </p>
                 <Button component={Link} href="/" className="flex-shrink-0">
                   Back
                 </Button>
               </div>
             )}
-            {droplets?.map((droplet) => {
+            {filteredDroplets?.map((droplet) => {
               return (
                 <button
                   key={droplet.id}
@@ -116,6 +188,30 @@ export default function DropletListingPage() {
           </div>
         )}
       </Page.Content>
+
+      {Object.keys(data?.links ?? {}).length > 0 && (
+        <Footer className="bg-white dark:bg-black">
+          <Toolbar position="bottom" border>
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="px-2 flex items-center disabled:opacity-30"
+            >
+              <IconChevronLeft size={16} />
+              <span className="ml-2 text-sm">Prev</span>
+            </button>
+            <button
+              // @ts-ignore
+              disabled={!data?.links?.pages?.next}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="px-2 flex items-center flex-row-reverse disabled:opacity-30"
+            >
+              <IconChevronRight size={16} />
+              <span className="mr-2 text-sm">Next</span>
+            </button>
+          </Toolbar>
+        </Footer>
+      )}
     </Page>
   );
 }

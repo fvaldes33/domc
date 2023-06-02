@@ -38,10 +38,14 @@ async function getDroplets({
 
   const dots = createApiClient({ token });
   const {
-    data: { droplets },
+    data: { droplets, links, meta },
   } = await dots.droplet.listDroplets(input);
 
-  return droplets;
+  return {
+    droplets,
+    links,
+    meta,
+  };
 }
 
 async function getDropletDetails({

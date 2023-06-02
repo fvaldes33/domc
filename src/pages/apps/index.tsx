@@ -2,11 +2,24 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { useGetApps } from "@/hooks/useApps";
 import { timeAgo } from "@/utils/timeAgo";
-import { IconArrowRight, IconRocket } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
+  IconRocket,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import { Page } from "@/components/Page";
 import Link from "@/components/HapticLink";
 import rocket from "@/assets/code.png";
 import { Button } from "@/components/Button";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { useMemo, useState } from "react";
+import { classNames } from "@/utils/classNames";
+import { Footer } from "@/components/Footer";
+import { Toolbar } from "@/components/Toolbar";
 
 export default function AppListingPage() {
   // useMemo(async () => {
@@ -16,10 +29,33 @@ export default function AppListingPage() {
   //   });
   // }, []);
 
-  const { data: apps, refetch } = useGetApps({
-    page: 1,
-    per_page: 10,
+  const form = useForm({
+    initialValues: {
+      searchTerm: "",
+    },
   });
+  const [opened, { toggle }] = useDisclosure(false, {
+    onClose: () => {
+      form.setFieldValue("searchTerm", "");
+    },
+  });
+
+  const [page, setPage] = useState<number>(1);
+  const { data, refetch } = useGetApps({
+    page,
+    per_page: 100,
+  });
+
+  const filteredApps = useMemo(() => {
+    const apps = data?.apps ?? [];
+    if (!form.values.searchTerm) {
+      return apps;
+    }
+
+    return apps.filter((d) =>
+      d.spec.name.toLowerCase().includes(form.values.searchTerm.toLowerCase())
+    );
+  }, [form.values, data?.apps]);
 
   return (
     <Page>
@@ -31,13 +67,55 @@ export default function AppListingPage() {
         }}
       >
         <div className="p-4 flex items-center justify-between">
-          <div>
+          <div
+            className={classNames(
+              "transition-all duration-150 ease-in-out",
+              opened ? "hidden" : "block"
+            )}
+          >
             <h1 className="text-2xl font-bold">Apps</h1>
           </div>
+          <form className="flex items-center gap-x-2 w-full justify-end">
+            <button
+              type="button"
+              className={classNames(
+                "transition-all duration-150 delay-300",
+                opened ? "hidden" : "block"
+              )}
+              onClick={toggle}
+            >
+              <IconSearch size={20} />
+            </button>
+            <div
+              className={classNames(
+                "transition-all duration-150 ease-in-out",
+                opened ? "w-full" : "w-0 overflow-hidden"
+              )}
+            >
+              <input
+                className="mt-1 block w-full dark:text-white dark:bg-neutral-800 placeholder:dark:text-white/75 rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
+                placeholder="Search..."
+                type="text"
+                {...form.getInputProps("searchTerm")}
+              />
+            </div>
+            <button
+              type="button"
+              className={classNames(
+                "transition-all transform",
+                opened
+                  ? "duration-150 delay-300 translate-x-0"
+                  : "invisible absolute translate-x-full"
+              )}
+              onClick={toggle}
+            >
+              <IconX size={20} />
+            </button>
+          </form>
         </div>
 
         <div className="px-4">
-          {apps && apps.length === 0 && (
+          {filteredApps && filteredApps.length === 0 && (
             <div className="flex flex-col items-center justify-center h-96">
               <img src={rocket.src} alt="" className="w-40" />
               <p className="text-2xl font-bold text-center my-4">
@@ -48,7 +126,7 @@ export default function AppListingPage() {
               </Button>
             </div>
           )}
-          {apps?.map((app) => (
+          {filteredApps?.map((app) => (
             <button
               key={app.id}
               className="w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
@@ -71,13 +149,6 @@ export default function AppListingPage() {
                     {app.region.label},{" "}
                     <span className="uppercase">{app.region.flag}</span>
                   </p>
-
-                  <img
-                    alt={`flag of ${app.region.flag}`}
-                    src={`https://countryflagsapi.com/svg/${app.region.flag}`}
-                    crossOrigin="anonymous"
-                    className="w-4"
-                  />
                 </div>
 
                 <div className="text-sm flex items-center">
@@ -98,6 +169,30 @@ export default function AppListingPage() {
           ))}
         </div>
       </Page.Content>
+
+      {Object.keys(data?.links ?? {}).length > 0 && (
+        <Footer className="bg-white dark:bg-black">
+          <Toolbar position="bottom" border>
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="px-2 flex items-center disabled:opacity-30"
+            >
+              <IconChevronLeft size={16} />
+              <span className="ml-2 text-sm">Prev</span>
+            </button>
+            <button
+              // @ts-ignore
+              disabled={!data?.links?.pages?.next}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="px-2 flex items-center flex-row-reverse disabled:opacity-30"
+            >
+              <IconChevronRight size={16} />
+              <span className="mr-2 text-sm">Next</span>
+            </button>
+          </Toolbar>
+        </Footer>
+      )}
     </Page>
   );
 }

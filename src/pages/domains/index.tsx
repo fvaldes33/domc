@@ -1,10 +1,24 @@
+/* eslint-disable @next/next/no-img-element */
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { useGetDomainRecords, useGetDomains } from "@/hooks/useDomains";
-import { IconArrowRight, IconLoader } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
+  IconLoader,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import { IDomain, IDomainRecord } from "dots-wrapper/dist/domain";
 import { useMemo, useState } from "react";
 import Link from "@/components/HapticLink";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { classNames } from "@/utils/classNames";
+import { Footer } from "@/components/Footer";
+import { Toolbar } from "@/components/Toolbar";
+import { Button } from "@/components/Button";
 
 export default function DomainListingPage() {
   // useMemo(async () => {
@@ -14,20 +28,89 @@ export default function DomainListingPage() {
   //   });
   // }, []);
 
+  const form = useForm({
+    initialValues: {
+      searchTerm: "",
+    },
+  });
+  const [opened, { toggle }] = useDisclosure(false, {
+    onClose: () => {
+      form.setFieldValue("searchTerm", "");
+    },
+  });
+
   const [page, setPage] = useState<number>(1);
   const { data, isLoading, refetch } = useGetDomains({
     page,
-    per_page: 25,
+    per_page: 100,
   });
+
+  const filteredDomains = useMemo(() => {
+    const domains = data?.domains ?? [];
+    if (!form.values.searchTerm) {
+      return domains;
+    }
+
+    return domains.filter((d) =>
+      d.name.toLowerCase().includes(form.values.searchTerm.toLowerCase())
+    );
+  }, [form.values, data?.domains]);
 
   return (
     <Page>
       <MainNavbar />
-      <Page.Content>
+      <Page.Content
+        onRefresh={async (complete) => {
+          await refetch();
+          complete();
+        }}
+      >
         <div className="p-4 flex items-center justify-between">
-          <div>
+          <div
+            className={classNames(
+              "transition-all duration-150 ease-in-out",
+              opened ? "hidden" : "block"
+            )}
+          >
             <h1 className="text-2xl font-bold">Domains</h1>
           </div>
+          <form className="flex items-center gap-x-2 w-full justify-end">
+            <button
+              type="button"
+              className={classNames(
+                "transition-all duration-150 delay-300",
+                opened ? "hidden" : "block"
+              )}
+              onClick={toggle}
+            >
+              <IconSearch size={20} />
+            </button>
+            <div
+              className={classNames(
+                "transition-all duration-150 ease-in-out",
+                opened ? "w-full" : "w-0 overflow-hidden"
+              )}
+            >
+              <input
+                className="mt-1 block w-full dark:text-white dark:bg-neutral-800 placeholder:dark:text-white/75 rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
+                placeholder="Search..."
+                type="text"
+                {...form.getInputProps("searchTerm")}
+              />
+            </div>
+            <button
+              type="button"
+              className={classNames(
+                "transition-all transform",
+                opened
+                  ? "duration-150 delay-300 translate-x-0"
+                  : "invisible absolute translate-x-full"
+              )}
+              onClick={toggle}
+            >
+              <IconX size={20} />
+            </button>
+          </form>
         </div>
 
         {isLoading ? (
@@ -36,12 +119,51 @@ export default function DomainListingPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {data?.map((domain) => (
-              <DomainRecord key={domain.name} domain={domain} />
-            ))}
+            {filteredDomains.length > 0 ? (
+              <>
+                {filteredDomains?.map((domain) => (
+                  <DomainRecord key={domain.name} domain={domain} />
+                ))}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-96">
+                <p className="text-2xl font-bold text-center my-4">
+                  {form.isDirty()
+                    ? `No domains match ${form.values.searchTerm}`
+                    : "Looks like you don't have any domains"}
+                </p>
+                <Button component={Link} href="/" className="flex-shrink-0">
+                  Back
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </Page.Content>
+
+      {Object.keys(data?.links ?? {}).length > 0 && (
+        <Footer className="bg-white dark:bg-black">
+          <Toolbar position="bottom" border>
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="px-2 flex items-center disabled:opacity-30"
+            >
+              <IconChevronLeft size={16} />
+              <span className="ml-2 text-sm">Prev</span>
+            </button>
+            <button
+              // @ts-ignore
+              disabled={!data?.links?.pages?.next}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="px-2 flex items-center flex-row-reverse disabled:opacity-30"
+            >
+              <IconChevronRight size={16} />
+              <span className="mr-2 text-sm">Next</span>
+            </button>
+          </Toolbar>
+        </Footer>
+      )}
     </Page>
   );
 }

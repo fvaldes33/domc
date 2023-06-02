@@ -117,13 +117,6 @@ export default function AppDetailPage() {
                       {app.region.label},{" "}
                       <span className="uppercase">{app.region.flag}</span>
                     </p>
-
-                    <img
-                      alt={`flag of ${app.region.flag}`}
-                      src={`https://countryflagsapi.com/svg/${app.region.flag}`}
-                      crossOrigin="anonymous"
-                      className="w-4"
-                    />
                   </div>
                 </div>
                 <div className="ml-auto">

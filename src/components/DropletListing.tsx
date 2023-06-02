@@ -5,12 +5,13 @@ import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function DropletListing({ project }: { project?: IEnhancedProject }) {
-  const { data: droplets } = useGetDroplets({
+  const { data } = useGetDroplets({
     page: 1,
-    per_page: 10,
+    per_page: 100,
   });
 
   const projectDroplets = useMemo(() => {
+    const droplets = data?.droplets ?? [];
     if (!project) {
       return droplets;
     }
@@ -22,7 +23,7 @@ export function DropletListing({ project }: { project?: IEnhancedProject }) {
         .map((r) => r.urn.split(":").pop());
       return ids?.includes(String(droplet.id));
     });
-  }, [droplets, project]);
+  }, [data, project]);
 
   if (!projectDroplets?.length) {
     return null;

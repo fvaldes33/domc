@@ -36,7 +36,7 @@ async function listDatabaseClusters({
     ...input,
   });
 
-  return databases;
+  return { databases };
 }
 
 export function useListDatabaseClusters({ page, per_page }: IListRequest) {

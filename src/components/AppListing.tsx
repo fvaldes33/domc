@@ -5,16 +5,16 @@ import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function AppListing({ project }: { project?: IEnhancedProject }) {
-  const { data: apps } = useGetApps({
+  const { data } = useGetApps({
     page: 1,
-    per_page: 10,
+    per_page: 100,
   });
 
   const projectApps = useMemo(() => {
     if (!project) {
-      return apps;
+      return data?.apps;
     }
-    return apps?.filter((app) => {
+    return data?.apps?.filter((app) => {
       const ids = project?.resources
         .filter((r) => {
           return r.urn.includes("app");
@@ -22,7 +22,7 @@ export function AppListing({ project }: { project?: IEnhancedProject }) {
         .map((r) => r.urn.split(":").pop());
       return ids?.includes(app.id);
     });
-  }, [apps, project]);
+  }, [data?.apps, project]);
 
   if (!projectApps?.length) {
     return null;

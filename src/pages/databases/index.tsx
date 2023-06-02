@@ -7,15 +7,20 @@ import {
   IconLoader,
   IconMapPin,
   IconNumber,
+  IconSearch,
   IconServer,
+  IconX,
 } from "@tabler/icons-react";
 import { Page } from "@/components/Page";
 import Link from "@/components/HapticLink";
-import { useGetDroplets } from "@/hooks/useDroplets";
 import { truncate } from "@/utils/truncate";
 import { Button } from "@/components/Button";
 import empty from "@/assets/droplets.png";
 import { useListDatabaseClusters } from "@/hooks/useDatabases";
+import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { useMemo, useState } from "react";
+import { classNames } from "@/utils/classNames";
 
 export default function DatabasesListingPage() {
   // useMemo(async () => {
@@ -25,14 +30,34 @@ export default function DatabasesListingPage() {
   //   });
   // }, []);
 
-  const {
-    data: clusters,
-    isLoading,
-    refetch,
-  } = useListDatabaseClusters({
-    page: 1,
-    per_page: 10,
+  const form = useForm({
+    initialValues: {
+      searchTerm: "",
+    },
   });
+  const [opened, { toggle }] = useDisclosure(false, {
+    onClose: () => {
+      form.setFieldValue("searchTerm", "");
+    },
+  });
+
+  const [page, setPage] = useState<number>(1);
+
+  const { data, isLoading, refetch } = useListDatabaseClusters({
+    page,
+    per_page: 100,
+  });
+
+  const filteredClusters = useMemo(() => {
+    const databases = data?.databases ?? [];
+    if (!form.values.searchTerm) {
+      return databases;
+    }
+
+    return databases.filter((d) =>
+      d.name.toLowerCase().includes(form.values.searchTerm.toLowerCase())
+    );
+  }, [form.values, data?.databases]);
 
   return (
     <Page>
@@ -44,9 +69,51 @@ export default function DatabasesListingPage() {
         }}
       >
         <div className="p-4 flex items-center justify-between">
-          <div>
+          <div
+            className={classNames(
+              "transition-all duration-150 ease-in-out",
+              opened ? "hidden" : "block"
+            )}
+          >
             <h1 className="text-2xl font-bold">Databases</h1>
           </div>
+          <form className="flex items-center gap-x-2 w-full justify-end">
+            <button
+              type="button"
+              className={classNames(
+                "transition-all duration-150 delay-300",
+                opened ? "hidden" : "block"
+              )}
+              onClick={toggle}
+            >
+              <IconSearch size={20} />
+            </button>
+            <div
+              className={classNames(
+                "transition-all duration-150 ease-in-out",
+                opened ? "w-full" : "w-0 overflow-hidden"
+              )}
+            >
+              <input
+                className="mt-1 block w-full dark:text-white dark:bg-neutral-800 placeholder:dark:text-white/75 rounded-md border-gray-300 shadow-sm focus:border-ocean focus:ring-ocean sm:text-sm"
+                placeholder="Search..."
+                type="text"
+                {...form.getInputProps("searchTerm")}
+              />
+            </div>
+            <button
+              type="button"
+              className={classNames(
+                "transition-all transform",
+                opened
+                  ? "duration-150 delay-300 translate-x-0"
+                  : "invisible absolute translate-x-full"
+              )}
+              onClick={toggle}
+            >
+              <IconX size={20} />
+            </button>
+          </form>
         </div>
 
         {isLoading ? (
@@ -55,18 +122,20 @@ export default function DatabasesListingPage() {
           </div>
         ) : (
           <div className="px-4 space-y-4">
-            {clusters && clusters.length === 0 && (
+            {filteredClusters && filteredClusters.length === 0 && (
               <div className="flex flex-col items-center justify-center h-96">
                 <img src={empty.src} alt="" className="w-40" />
                 <p className="text-2xl font-bold text-center my-4">
-                  {`Looks like you don't have any databases`}
+                  {form.isDirty()
+                    ? `No databases match ${form.values.searchTerm}`
+                    : "Looks like you don't have any databases"}
                 </p>
                 <Button component={Link} href="/" className="flex-shrink-0">
                   Back
                 </Button>
               </div>
             )}
-            {clusters?.map((cluster) => {
+            {filteredClusters?.map((cluster) => {
               return (
                 <button
                   key={cluster.id}

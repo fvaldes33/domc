@@ -5,16 +5,16 @@ import { useMemo } from "react";
 import { useListDatabaseClusters } from "@/hooks/useDatabases";
 
 export function DatabaseListing({ project }: { project?: IEnhancedProject }) {
-  const { data: clusters } = useListDatabaseClusters({
+  const { data } = useListDatabaseClusters({
     page: 1,
     per_page: 100,
   });
 
   const projectClusters = useMemo(() => {
     if (!project) {
-      return clusters;
+      return data?.databases;
     }
-    return clusters?.filter((cluster) => {
+    return data?.databases?.filter((cluster) => {
       const ids = project?.resources
         .filter((r) => {
           return r.urn.includes("dbaas");
@@ -22,7 +22,7 @@ export function DatabaseListing({ project }: { project?: IEnhancedProject }) {
         .map((r) => r.urn.split(":").pop());
       return ids?.includes(String(cluster.id));
     });
-  }, [clusters, project]);
+  }, [data?.databases, project]);
 
   if (!projectClusters?.length) {
     return null;

@@ -22,10 +22,7 @@ async function getApps({
   const dots = createApiClient({ token });
   const { data } = await dots.app.listApps(input);
 
-  if (data.apps) {
-    return data.apps;
-  }
-  return [];
+  return data;
 }
 
 async function getAppDetail({

@@ -5,12 +5,14 @@ import Link from "@/components/HapticLink";
 import { useMemo } from "react";
 
 export function DomainListing({ project }: { project?: IEnhancedProject }) {
-  const { data: domains } = useGetDomains({
+  const { data } = useGetDomains({
     page: 1,
-    per_page: 25,
+    per_page: 100,
   });
 
   const projectDomains = useMemo(() => {
+    const domains = data?.domains ?? [];
+
     if (!project) {
       return domains;
     }
@@ -22,7 +24,7 @@ export function DomainListing({ project }: { project?: IEnhancedProject }) {
         .map((r) => r.urn.split(":").pop());
       return ids?.includes(domain.name);
     });
-  }, [domains, project]);
+  }, [data?.domains, project]);
 
   if (!projectDomains?.length) {
     return null;

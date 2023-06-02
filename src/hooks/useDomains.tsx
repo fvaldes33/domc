@@ -20,10 +20,10 @@ async function getDomains({
 
   const dots = createApiClient({ token });
   const {
-    data: { domains },
+    data: { domains, links, meta },
   } = await dots.domain.listDomains(input);
 
-  return domains;
+  return { domains, links, meta };
 }
 
 async function getDomain({
