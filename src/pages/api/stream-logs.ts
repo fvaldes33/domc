@@ -68,7 +68,6 @@ export default async function handler(
 
       readable.pipe(res);
     }
-    throw new Error("Something bad happened");
   } catch (error) {
     console.error("Error fetching log:", error);
     return res.status(500).json({
