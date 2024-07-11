@@ -26,7 +26,7 @@ import {
 } from "dots-wrapper/dist/droplet";
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 
 type Action =
@@ -325,6 +325,9 @@ export default function DropletPowerPage() {
                       acknowledge: true,
                     },
                     {
+                      onError: (error: any) => {
+                        toast.error(error.message);
+                      },
                       onSuccess: () => {
                         toast.success("Destroy droplet scheduled");
                         setPreference.mutate(
@@ -335,6 +338,9 @@ export default function DropletPowerPage() {
                             },
                           },
                           {
+                            onError: (error: any) => {
+                              toast.error(error.message);
+                            },
                             onSuccess: () => {
                               router.back();
                             },
@@ -349,6 +355,9 @@ export default function DropletPowerPage() {
                       droplet_id: droplet.id,
                     },
                     {
+                      onError: (error: any) => {
+                        toast.error(error.message);
+                      },
                       onSuccess: (data) => {
                         setInProgressData({
                           action: data,

@@ -2,10 +2,14 @@ import { Balance } from "@/components/Balance";
 import { Footer } from "@/components/Footer";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
+import { useMissionControl } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useGetBalance, useListBillingHistory } from "@/hooks/useCustomer";
+import { useGetPreference } from "@/hooks/usePreferences";
+import { ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 import { formatCurrency } from "@/utils/formatCurrency";
+import canAccess from "@/utils/permissions";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import {
@@ -15,9 +19,17 @@ import {
   IconHistory,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function BillingIndexPage() {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("invoice", ["read"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
   const [page, setPage] = useState<number>(1);
   const { data } = useListBillingHistory({
     page,
@@ -25,7 +37,7 @@ export default function BillingIndexPage() {
   });
 
   const onClick = (cb: Function) => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
       Haptics.impact({
         style: ImpactStyle.Light,
       });
@@ -50,6 +62,12 @@ export default function BillingIndexPage() {
                     <HapticLink
                       href={`/billing/history/${bill.invoice_uuid}`}
                       className="px-4 py-2 flex items-start border-b border-ocean-2/50"
+                      onClick={(e) => {
+                        if (!can) {
+                          e.preventDefault();
+                          toggleIap();
+                        }
+                      }}
                     >
                       <div>
                         <p>{dayjs(bill.date).format("MMM DD, YYYY")}</p>

@@ -309,12 +309,17 @@ export function useCreateRollback() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ICreateAppRollbackApiRequest) => {
-      const data = await validateRollback({
-        ...input,
-        token,
-      });
-      if (!data.valid) {
-        throw data;
+      try {
+        const data = await validateRollback({
+          ...input,
+          token,
+        });
+        if (!data.valid) {
+          throw data;
+        }
+      } catch (error) {
+        // @ts-expect-error bad api types
+        throw new Error(error.message);
       }
       return createRollback({
         ...input,

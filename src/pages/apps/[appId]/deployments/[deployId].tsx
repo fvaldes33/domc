@@ -12,7 +12,6 @@ import { AppDeploymentLogType } from "dots-wrapper/dist/app";
 import { Button } from "konsta/react";
 import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
-
 import { AppRollback } from "@/components/AppRollback";
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
@@ -89,10 +88,9 @@ export default function DeploymentDetails() {
         type,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
           if (data.historic_urls.length) {
             const [url] = data.historic_urls;
-            window.screen.orientation.unlock();
             setLogModalProps({
               show: true,
               url,
@@ -253,7 +251,6 @@ export default function DeploymentDetails() {
       <LogModal
         {...logModalProps}
         onClose={() => {
-          window.screen.orientation.lock("portrait");
           setLogModalProps({
             show: false,
             url: undefined,

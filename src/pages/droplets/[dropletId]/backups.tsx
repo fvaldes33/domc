@@ -24,6 +24,7 @@ import {
 import { useSetAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 
 type Action =
   | {
@@ -218,6 +219,9 @@ export default function DropletBackupsPage() {
                     droplet_id: droplet.id,
                   },
                   {
+                    onError: (error: any) => {
+                      toast.error(error.message);
+                    },
                     onSuccess: (data) => {
                       setInProgressData({
                         action: data,

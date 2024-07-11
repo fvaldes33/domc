@@ -31,6 +31,8 @@ export function useGetBalance() {
   return useQuery({
     queryKey: ["balance"],
     queryFn: () => getBalance({ token }),
+    retry: false,
+    keepPreviousData: false,
   });
 }
 

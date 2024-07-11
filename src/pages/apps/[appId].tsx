@@ -7,7 +7,7 @@ import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 
-import { AppActions } from "@/components/AppActions";
+import { AppActions, AppLogAction } from "@/components/AppActions";
 import { AppDeploymentRecord } from "@/components/AppDeploymentRecord";
 import { AppStatus } from "@/components/AppStatus";
 import { MainNavbar } from "@/components/MainNavbar";
@@ -17,13 +17,6 @@ import { timeAgo } from "@/utils/timeAgo";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
 export default function AppDetailPage() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "appDetail",
-  //     nameOverride: "AppDetailScreen",
-  //   });
-  // }, []);
-
   const { query } = useRouter();
   const {
     data: app,
@@ -119,7 +112,8 @@ export default function AppDetailPage() {
                     </p>
                   </div>
                 </div>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-start gap-x-2">
+                  <AppLogAction app={app} />
                   <AppActions app={app} />
                 </div>
               </header>

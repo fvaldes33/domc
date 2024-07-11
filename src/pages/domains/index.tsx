@@ -19,6 +19,7 @@ import { classNames } from "@/utils/classNames";
 import { Footer } from "@/components/Footer";
 import { Toolbar } from "@/components/Toolbar";
 import { Button } from "@/components/Button";
+import { useRouter } from "next/router";
 
 export default function DomainListingPage() {
   // useMemo(async () => {
@@ -172,6 +173,7 @@ interface DomainRecordGroup {
   [key: string]: IDomainRecord[];
 }
 function DomainRecord({ domain }: { domain: IDomain }) {
+  const router = useRouter();
   const { data, isLoading } = useGetDomainRecords({
     domain_name: domain.name,
     page: 1,
@@ -192,13 +194,15 @@ function DomainRecord({ domain }: { domain: IDomain }) {
 
   return (
     <div className="px-4">
-      <button className="text-left w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95">
-        <Link href={`/domains/${domain.name}`} className="absolute inset-0">
-          <span className="sr-only">{domain.name}</span>
-        </Link>
-        <div className="flex-1">
+      <button
+        className="text-left w-full relative rounded-lg border dark:border-gray-600 p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
+        onClick={() => {
+          router.push(`/domains/${domain.name}`);
+        }}
+      >
+        <div className="flex-1 min-w-0">
           <div className="mb-2">
-            <p className="font-medium leading-none">{domain.name}</p>
+            <p className="font-medium leading-none truncate">{domain.name}</p>
           </div>
 
           <div className="text-xs flex -mx-1">

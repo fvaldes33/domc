@@ -1,0 +1,7 @@
+{
+  "name": "domc",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

@@ -28,13 +28,15 @@ export default function Home() {
 
   const { data: activeProjectId } = useGetPreference({
     key: DO_ACTIVE_PROJECT,
-    defaultValue: projects?.find((p) => p.is_default)?.id,
     enabled: Boolean(projects),
   });
 
   const setActiveProject = useSetPreference();
 
   const project = useMemo(() => {
+    if (!activeProjectId) {
+      return projects?.find((p) => p.is_default);
+    }
     return projects?.find((p) => p.id === activeProjectId);
   }, [projects, activeProjectId]);
 

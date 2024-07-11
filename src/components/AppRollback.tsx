@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
 import { Footer } from "./Footer";
 import { Toolbar } from "./Toolbar";
+import toast from "react-hot-toast";
 
 export function AppRollback({
   appId,
@@ -35,6 +36,9 @@ export function AppRollback({
           setTimeout(() => {
             router.back();
           }, 1000);
+        },
+        onError(error) {
+          toast.error(error instanceof Error ? error.message : "Unknown error");
         },
       }
     );

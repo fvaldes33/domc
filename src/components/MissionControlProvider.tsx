@@ -1,5 +1,5 @@
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { useGetAccount } from "@/hooks/useAccount";
+import { getAccount, useGetAccount } from "@/hooks/useAccount";
 import { useGetStatus } from "@/hooks/useGetOfferings";
 import { IAccount } from "dots-wrapper/dist/account";
 import { IAction } from "dots-wrapper/dist/action";
@@ -8,25 +8,32 @@ import {
   ISnapshotDropletApiRequest,
 } from "dots-wrapper/dist/droplet";
 import { atom, useAtomValue } from "jotai";
-import { createContext, useContext, useEffect, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { DropletActionWatcher } from "./DropletActionWatcher";
 import { InAppPurchase } from "./InAppPurchase";
 import { MenuPanelLarge } from "./MenuPanelLarge";
 import { Capacitor } from "@capacitor/core";
-import { CapacitorPurchases } from "@capgo/capacitor-purchases";
+import { Purchases } from "@revenuecat/purchases-capacitor";
+import { useGetPreference } from "@/hooks/usePreferences";
+import { DO_ACCOUNTS } from "@/utils/const";
+import { TokenAccountMap } from "@/types";
+import { useDisclosure } from "@mantine/hooks";
 
 interface MissionControlContextProps {
   theme: "light" | "dark";
   colorSchemePref: "manual" | "system";
   token?: string;
   account?: IAccount;
+  accounts?: TokenAccountMap;
   isPaid: boolean;
+  toggleIap: () => void;
 }
 
 const MissionControlContext = createContext<MissionControlContextProps>({
   theme: "light",
   colorSchemePref: "manual",
   isPaid: false,
+  toggleIap: () => {},
 });
 
 interface InProgress {
@@ -49,13 +56,19 @@ export function MissonControlProvider({
   colorSchemePref: MissionControlContextProps["colorSchemePref"];
   children: React.ReactNode;
 }) {
+  const [iapOpened, { close: closeIap, open: openIap, toggle: toggleIap }] =
+    useDisclosure(false);
+  const { data: accounts } = useGetPreference<TokenAccountMap>({
+    key: DO_ACCOUNTS,
+  });
   const { data: account } = useGetAccount({
     onSuccess: async (data) => {
       if (Capacitor.isNativePlatform()) {
-        await CapacitorPurchases.logIn({
+        await Purchases.logIn({
           appUserID: data.email,
         });
-        await CapacitorPurchases.setAttributes({
+        await Purchases.setAttributes({
+          // @ts-expect-error - ts issue
           attributes: {
             $email: data.email,
           },
@@ -99,12 +112,20 @@ export function MissonControlProvider({
   }, [colorSchemePref, theme]);
 
   const isPaid = useMemo(() => {
-    return Boolean(customerInfo?.entitlements?.active?.length);
+    return Object.keys(customerInfo?.entitlements?.active ?? {}).length > 0;
   }, [customerInfo]);
 
   return (
     <MissionControlContext.Provider
-      value={{ theme, token, account, colorSchemePref, isPaid }}
+      value={{
+        theme,
+        token,
+        account,
+        accounts,
+        colorSchemePref,
+        isPaid,
+        toggleIap,
+      }}
     >
       {inProgress && (
         <DropletActionWatcher
@@ -114,7 +135,7 @@ export function MissonControlProvider({
       )}
       <MenuPanelLarge />
       {children}
-      <InAppPurchase />
+      <InAppPurchase opened={iapOpened} close={closeIap} open={openIap} />
     </MissionControlContext.Provider>
   );
 }

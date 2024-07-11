@@ -1,4 +1,4 @@
-import { DO_DESTROY_DROPLET, DO_TOKEN_KEY } from "@/utils/const";
+import { DO_BASE_URL, DO_DESTROY_DROPLET, DO_TOKEN_KEY } from "@/utils/const";
 import { getRemoteApiEndpoint } from "@/utils/endpoint";
 import {
   useMutation,
@@ -18,6 +18,7 @@ import {
   IGetDropletDestroyStatusApiRequest,
   IListDropletActionsApiRequest,
   IListDropletBackupsApiRequest,
+  IListDropletsApiRequest,
   IListDropletSnapshotsApiRequest,
   IPowerCycleDropletApiRequest,
   IPowerOffDropletApiRequest,
@@ -33,7 +34,7 @@ import { useClearPreference, useGetPreference } from "./usePreferences";
 async function getDroplets({
   token,
   ...input
-}: IListRequest & { token?: string | null }) {
+}: IListDropletsApiRequest & { token?: string | null }) {
   if (!token) throw new Error("Token is required");
 
   const dots = createApiClient({ token });
@@ -290,7 +291,6 @@ async function waitForAction({
     droplet_id,
     action_id,
   });
-
   return action;
 }
 
@@ -300,17 +300,22 @@ async function waitForAction({
  * ==========================================================
  */
 
-export function useGetDroplets({ page, per_page }: IListRequest) {
+export function useGetDroplets({
+  page,
+  per_page,
+  tag_name,
+}: IListDropletsApiRequest) {
   const { data: token } = useGetPreference<string | null>({
     key: DO_TOKEN_KEY,
   });
   return useQuery({
-    queryKey: ["droplets", page, per_page],
+    queryKey: ["droplets", page, per_page, tag_name],
     queryFn: () =>
       getDroplets({
         token,
         page,
         per_page,
+        tag_name,
       }),
   });
 }

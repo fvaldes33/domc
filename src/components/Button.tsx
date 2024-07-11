@@ -5,6 +5,8 @@ import { classNames } from "@/utils/classNames";
 import type { PolymorphicRef, PolymorphicComponentProps } from "@/types";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { useGetPreference } from "@/hooks/usePreferences";
+import { ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 
 export interface ButtonBaseProps {
   variant?: "primary" | "outline" | "light" | "danger";
@@ -67,7 +69,7 @@ const variantClasses = {
   outline: [
     "border",
     "border-ocean-2",
-    "text-ocean-2",
+    "text-ocean-2 dark:text-white",
     "focus:ring-ocean-2 focus:ring-offset-2 focus:ring-ocean-2",
   ],
 };
@@ -94,6 +96,10 @@ const Button: ButtonComponent = forwardRef(function Button<
   const Component = component || "button";
   const variantClass = variantClasses[variant];
   const sizeClass = sizeMap[size];
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
 
   const renderLeftSection = () => {
     if (loading) {
@@ -106,7 +112,7 @@ const Button: ButtonComponent = forwardRef(function Button<
   };
 
   const onClick: React.MouseEventHandler = (...args) => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
       Haptics.impact({
         style: ImpactStyle.Light,
       });

@@ -10,7 +10,11 @@ import { useRouter } from "next/router";
 
 import { Navbar } from "@/components/Navbar";
 import { MenuPanel } from "@/components/MenuPanel";
-import { DO_COLOR_SCHEME, DO_COLOR_SCHEME_PREF } from "@/utils/const";
+import {
+  DO_COLOR_SCHEME,
+  DO_COLOR_SCHEME_PREF,
+  ENABLE_HAPTIC_FEEDBACK,
+} from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
@@ -31,6 +35,10 @@ export function MainNavbar({
     key: DO_COLOR_SCHEME_PREF,
     defaultValue: "manual",
   });
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
 
   const setPreference = useSetPreference();
 
@@ -45,7 +53,7 @@ export function MainNavbar({
   const showBackBtn = router.asPath.split("/").length > 2;
 
   const onClick = (cb: Function) => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
       Haptics.impact({
         style: ImpactStyle.Light,
       });

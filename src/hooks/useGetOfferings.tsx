@@ -1,9 +1,10 @@
 import { Capacitor } from "@capacitor/core";
 import {
-  CapacitorPurchases,
+  Purchases,
   CustomerInfo,
-  Offering,
-} from "@capgo/capacitor-purchases";
+  type PurchasesOfferings,
+  PurchasesPackage,
+} from "@revenuecat/purchases-capacitor";
 import {
   useMutation,
   useQuery,
@@ -13,17 +14,22 @@ import {
 
 export function useGetOfferings(
   options: Omit<
-    UseQueryOptions<Offering | null, unknown, Offering | null, string[]>,
+    UseQueryOptions<
+      PurchasesOfferings["current"] | null,
+      unknown,
+      PurchasesOfferings["current"] | null,
+      string[]
+    >,
     "initialData"
   > = {}
 ) {
   return useQuery({
     queryKey: ["purchases", "offerings"],
-    queryFn: async (): Promise<Offering | null> => {
+    queryFn: async (): Promise<PurchasesOfferings["current"] | null> => {
       if (!Capacitor.isNativePlatform()) {
         throw new Error("Not native platform");
       }
-      const { offerings } = await CapacitorPurchases.getOfferings();
+      const offerings = await Purchases.getOfferings();
 
       if (offerings.current !== null) {
         return offerings.current;
@@ -47,7 +53,7 @@ export function useGetStatus(
       if (!Capacitor.isNativePlatform()) {
         throw new Error("Not native platform");
       }
-      const { customerInfo } = await CapacitorPurchases.getCustomerInfo();
+      const { customerInfo } = await Purchases.getCustomerInfo();
       return customerInfo;
     },
     ...options,
@@ -57,19 +63,12 @@ export function useGetStatus(
 export function usePurchasePackage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      identifier,
-      offeringIdentifier,
-    }: {
-      identifier: string;
-      offeringIdentifier: string;
-    }) => {
+    mutationFn: async ({ aPackage }: { aPackage: PurchasesPackage }) => {
       if (!Capacitor.isNativePlatform()) {
         throw new Error("Not native platform");
       }
-      return await CapacitorPurchases.purchasePackage({
-        identifier,
-        offeringIdentifier,
+      return await Purchases.purchasePackage({
+        aPackage,
       });
     },
     onSuccess: async (data) => {
@@ -85,7 +84,7 @@ export function useRestorePurchases() {
       if (!Capacitor.isNativePlatform()) {
         throw new Error("Not native platform");
       }
-      const { customerInfo } = await CapacitorPurchases.restorePurchases();
+      const { customerInfo } = await Purchases.restorePurchases();
       if (!customerInfo.entitlements?.active?.length) {
         throw new Error("Could not restore");
       }

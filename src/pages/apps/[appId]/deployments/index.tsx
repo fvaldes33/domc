@@ -18,6 +18,8 @@ import { Footer } from "@/components/Footer";
 import { useGetAppDeployments, useGetAppDetails } from "@/hooks/useApps";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { useGetPreference } from "@/hooks/usePreferences";
+import { ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 
 export default function AppDetailDeployments() {
   // useMemo(async () => {
@@ -26,7 +28,10 @@ export default function AppDetailDeployments() {
   //     nameOverride: "AppDetailDeploymentsScreen",
   //   });
   // }, []);
-
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
   const { query } = useRouter();
   const [page, setPage] = useState<number>(1);
   const { data: app } = useGetAppDetails({
@@ -47,7 +52,7 @@ export default function AppDetailDeployments() {
   }, [page]);
 
   const onClick = (cb: Function) => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
       Haptics.impact({
         style: ImpactStyle.Light,
       });

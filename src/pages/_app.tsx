@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { useGetPreference } from "@/hooks/usePreferences";
 import { App } from "@/components/App";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { SetupScreen } from "@/components/SetupScreen";
 import { MissonControlProvider } from "@/components/MissionControlProvider";
 import { Toaster } from "react-hot-toast";
 import {
@@ -20,7 +19,7 @@ import {
   DO_TOKEN_KEY,
 } from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
-import { CapacitorPurchases } from "@capgo/capacitor-purchases";
+import { LOG_LEVEL, Purchases } from "@revenuecat/purchases-capacitor";
 import { PlausibleContextProvider } from "@/components/PlausibleProvider";
 import { Onboarding } from "@/components/Onboarding";
 
@@ -90,20 +89,22 @@ function AppWrapper({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       if (Capacitor.isNativePlatform()) {
-        window.screen.orientation.lock("portrait");
-        await SplashScreen.hide();
-        CapacitorPurchases.setDebugLogsEnabled({
-          enabled: process.env.NODE_ENV !== "production",
+        await Purchases.setLogLevel({
+          level:
+            process.env.NODE_ENV !== "production"
+              ? LOG_LEVEL.DEBUG
+              : LOG_LEVEL.ERROR,
         });
         if (Capacitor.getPlatform() === "ios") {
-          CapacitorPurchases.setup({
-            apiKey: "appl_TvgfielhyfmviHVWafRxdDrqDWM", // prod
+          await Purchases.configure({
+            apiKey: process.env.NEXT_PUBLIC_REVENUE_CAT_IOS_KEY!, // prod
           });
         } else {
-          CapacitorPurchases.setup({
-            apiKey: "goog_pKBkxaOJfEEEnuVrMTjwJlxKCOE", // prod
+          await Purchases.configure({
+            apiKey: process.env.NEXT_PUBLIC_REVENUE_CAT_ANDROID_KEY!, // prod
           });
         }
+        await SplashScreen.hide();
       }
       setAppReady(true);
     })();

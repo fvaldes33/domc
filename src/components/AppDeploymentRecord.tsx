@@ -9,6 +9,7 @@ import { Fragment, useState } from "react";
 
 import { useCreateRollback } from "@/hooks/useApps";
 import { DeploymentPhaseMap } from "@/utils/deployment-phases";
+import toast from "react-hot-toast";
 
 export function AppDeploymentRecord({
   appId,
@@ -27,11 +28,18 @@ export function AppDeploymentRecord({
 
   const startRollback = () => {
     closeConfirm();
-    createRollback.mutate({
-      app_id: appId,
-      deployment_id: deployment.id,
-      skip_pin: skipPin,
-    });
+    createRollback.mutate(
+      {
+        app_id: appId,
+        deployment_id: deployment.id,
+        skip_pin: skipPin,
+      },
+      {
+        onError(error) {
+          toast.error(error instanceof Error ? error.message : "Unknown error");
+        },
+      }
+    );
   };
 
   return (

@@ -1,18 +1,24 @@
 import { Balance } from "@/components/Balance";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
+import { useMissionControl } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import { useGetBalance, useListBillingHistory } from "@/hooks/useCustomer";
 import { formatCurrency } from "@/utils/formatCurrency";
+import canAccess from "@/utils/permissions";
 import {
   IconArrowRight,
   IconChevronRight,
   IconHistory,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function BillingIndexPage() {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("invoice", ["read"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
   const [page, setPage] = useState<number>(1);
   const { data: billing } = useGetBalance();
   const { data, refetch } = useListBillingHistory({
@@ -71,6 +77,12 @@ export default function BillingIndexPage() {
                     <HapticLink
                       href={`/billing/history/${bill.invoice_uuid}`}
                       className="px-4 py-2 flex items-start border-b border-ocean-2/50"
+                      onClick={(e) => {
+                        if (!can) {
+                          e.preventDefault();
+                          toggleIap();
+                        }
+                      }}
                     >
                       <div>
                         <p>{dayjs(bill.date).format("MMM DD, YYYY")}</p>

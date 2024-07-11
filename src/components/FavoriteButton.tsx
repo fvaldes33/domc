@@ -1,5 +1,5 @@
 import { useGetPreference, useSetPreference } from "@/hooks/usePreferences";
-import { DO_FAVORITES } from "@/utils/const";
+import { DO_FAVORITES, ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { IconStar, IconStarFilled } from "@tabler/icons-react";
@@ -16,12 +16,16 @@ export function FavoriteButton({ resource }: { resource: FavoritedResource }) {
     key: DO_FAVORITES,
     defaultValue: [],
   });
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
   const setPreferences = useSetPreference<FavoritedResource[]>();
 
   const isFavorite = favorites?.find((f) => f.id === resource.id);
 
   const onClick = async () => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
       await Haptics.impact({
         style: ImpactStyle.Medium,
       });

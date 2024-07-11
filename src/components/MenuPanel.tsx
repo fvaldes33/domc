@@ -129,13 +129,13 @@ export function MenuPanel({ opened, close }: MenuPanelProps) {
                   <Footer>
                     <Toolbar border position="bottom">
                       <Link
-                        href="/settings"
+                        href="/teams"
                         className="px-2 py-2 flex items-center"
                         onClick={close}
                       >
                         <img
                           className="w-10 object-cover rounded-full bg-ocean flex-shrink-0"
-                          src={`https://avatars.dicebear.com/api/miniavs/${account.email}.svg`}
+                          src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${account.email}`}
                           alt=""
                         />
                         <div className="px-4 text-sm">

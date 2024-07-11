@@ -20,14 +20,10 @@ import { useMemo, useState } from "react";
 import { classNames } from "@/utils/classNames";
 import { Footer } from "@/components/Footer";
 import { Toolbar } from "@/components/Toolbar";
+import { useRouter } from "next/router";
 
 export default function AppListingPage() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "appListing",
-  //     nameOverride: "AppListingpage",
-  //   });
-  // }, []);
+  const router = useRouter();
 
   const form = useForm({
     initialValues: {
@@ -114,7 +110,7 @@ export default function AppListingPage() {
           </form>
         </div>
 
-        <div className="px-4">
+        <div className="px-4 space-y-4">
           {filteredApps && filteredApps.length === 0 && (
             <div className="flex flex-col items-center justify-center h-96">
               <img src={rocket.src} alt="" className="w-40" />
@@ -129,19 +125,21 @@ export default function AppListingPage() {
           {filteredApps?.map((app) => (
             <button
               key={app.id}
-              className="w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
+              className="w-full relative text-left rounded-lg border dark:border-gray-600 p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
+              onClick={() => {
+                router.push(`/apps/${app.id}`);
+              }}
             >
-              <Link href={`/apps/${app.id}`} className="absolute inset-0">
-                <span className="sr-only">{app.spec.name}</span>
-              </Link>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center mb-2">
                   {app.active_deployment.phase === "ACTIVE" ? (
-                    <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
+                    <div className="shrink-0 h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
                   ) : (
-                    <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
+                    <div className="shrink-0 h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
                   )}
-                  <p className="font-medium leading-none">{app.spec.name}</p>
+                  <p className="font-medium leading-none truncate">
+                    {app.spec.name}
+                  </p>
                 </div>
 
                 <div className="flex items-center mb-1">

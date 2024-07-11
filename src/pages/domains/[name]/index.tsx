@@ -3,21 +3,22 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { Footer } from "@/components/Footer";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
+import { useMissionControl } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import { Toolbar } from "@/components/Toolbar";
 import { useGetDomain, useGetDomainRecords } from "@/hooks/useDomains";
+import canAccess from "@/utils/permissions";
 import { IconEdit, IconLoader, IconWorld } from "@tabler/icons-react";
 import { IDomain, IDomainRecord } from "dots-wrapper/dist/domain";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 
 export default function DomainDetailPage() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "domainDetail",
-  //     nameOverride: "DomainDetailScreen",
-  //   });
-  // }, []);
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("domain", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
 
   const { query } = useRouter();
   const { data: domain, isLoading: domainLoading } = useGetDomain({
@@ -106,7 +107,17 @@ export default function DomainDetailPage() {
       </Page.Content>
       <Footer className="bg-ocean-2">
         <Toolbar position="bottom">
-          <Button full component={Link} href={`/domains/${domain?.name}/new`}>
+          <Button
+            full
+            component={Link}
+            href={`/domains/${domain?.name}/new`}
+            onClick={(e: any) => {
+              if (!can) {
+                e.preventDefault();
+                toggleIap();
+              }
+            }}
+          >
             New Record
           </Button>
         </Toolbar>
@@ -122,6 +133,11 @@ function DomainRecordItem({
   domain: IDomain;
   record: IDomainRecord;
 }) {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("domain", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+
   const recordName =
     record.name === "@"
       ? domain.name
@@ -149,7 +165,15 @@ function DomainRecordItem({
         <span>{record.ttl}</span>
       </td>
       <td className="max-w-[40px] sticky right-0 bg-white dark:bg-black z-0 pl-6 text-right">
-        <HapticLink href={`/domains/${domain.name}/${record.id}`}>
+        <HapticLink
+          href={`/domains/${domain.name}/${record.id}`}
+          onClick={(e) => {
+            if (!can) {
+              e.preventDefault();
+              toggleIap();
+            }
+          }}
+        >
           <IconEdit strokeWidth={1.5} size={16} />
         </HapticLink>
       </td>

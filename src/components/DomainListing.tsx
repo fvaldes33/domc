@@ -44,17 +44,24 @@ export function DomainListing({ project }: { project?: IEnhancedProject }) {
         </Link>
       </p>
       <ul className="px-4">
-        {projectDomains.map((domain) => (
-          <li key={domain.name}>
-            <Link
-              href={`/domains/${domain.name}`}
-              className="py-2 flex items-center justify-between"
-            >
-              <span>{domain.name}</span>
-              <span>{domain.ttl}</span>
-            </Link>
-          </li>
-        ))}
+        {projectDomains.map((domain) => {
+          const numRecords = domain.zone_file.split("\n").length - 1;
+          return (
+            <li key={domain.name}>
+              <Link
+                href={`/domains/${domain.name}`}
+                className="py-2 flex flex-col gap-y-1 gap-4 relative pr-6"
+              >
+                <p className="font-medium leading-none">{domain.name}</p>
+                <p className="text-sm truncate">{numRecords} records</p>
+                <IconArrowRight
+                  className="absolute top-1/2 right-0 transform -translate-y-1/2"
+                  size={16}
+                />
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -6,11 +6,13 @@ import {
   useRestorePurchases,
 } from "@/hooks/useGetOfferings";
 import { Dialog, Transition } from "@headlessui/react";
-import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import logo from "@/assets/logo.png";
 import { IconCheck, IconLoader } from "@tabler/icons-react";
-import { Package } from "@capgo/capacitor-purchases";
+import {
+  Purchases,
+  type PurchasesPackage,
+} from "@revenuecat/purchases-capacitor";
 import { classNames } from "@/utils/classNames";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -20,14 +22,18 @@ import { usePlausibleEvent } from "@/hooks/usePlausibleEvent";
 import { useRouter } from "next/router";
 import { useBrowser } from "@/hooks/useBrowser";
 
-export function InAppPurchase() {
+type InAppPurchaseProps = {
+  opened: boolean;
+  close: () => void;
+  open: () => void;
+};
+export function InAppPurchase({ opened, close, open }: InAppPurchaseProps) {
   const router = useRouter();
   const navigate = useBrowser();
   const plausible = usePlausibleEvent();
-  const [opened, { close, open }] = useDisclosure(false);
   const { data: status } = useGetStatus();
 
-  const [selectedPkg, setSelectedPkg] = useState<Package>();
+  const [selectedPkg, setSelectedPkg] = useState<PurchasesPackage>();
   const { data: offerings } = useGetOfferings({
     onSuccess: (data) => {
       if (data && data.availablePackages.length > 0) {
@@ -49,7 +55,7 @@ export function InAppPurchase() {
   const purchasePackage = usePurchasePackage();
   const restorePurchases = useRestorePurchases();
 
-  const onSetPackage = (pkg: Package) => {
+  const onSetPackage = (pkg: PurchasesPackage) => {
     if (Capacitor.isNativePlatform()) {
       Haptics.impact({
         style: ImpactStyle.Medium,
@@ -72,8 +78,7 @@ export function InAppPurchase() {
     });
     purchasePackage.mutate(
       {
-        offeringIdentifier: selectedPkg.offeringIdentifier,
-        identifier: selectedPkg.identifier,
+        aPackage: selectedPkg,
       },
       {
         onSuccess: () => {
@@ -112,32 +117,22 @@ export function InAppPurchase() {
   };
 
   const onClose = () => {
-    if (
-      !Object.entries(status?.entitlements.active ?? {}).length &&
-      router.pathname !== "/"
-    ) {
-      router.push("/");
-      setTimeout(() => {
-        close();
-      }, 1000);
-    } else {
-      close();
-    }
+    close();
   };
 
-  useEffect(() => {
-    if (!status) return;
-    if (!offerings) return;
+  // useEffect(() => {
+  //   if (!status) return;
+  //   if (!offerings) return;
 
-    if (!["/", "/about", "/settings"].includes(router.pathname)) {
-      if (
-        !Object.entries(status.entitlements.active).length &&
-        offerings.availablePackages.length
-      ) {
-        open();
-      }
-    }
-  }, [open, status, offerings, router.pathname]);
+  //   if (!["/", "/about", "/settings"].includes(router.pathname)) {
+  //     if (
+  //       Object.entries(status.entitlements.active).length &&
+  //       offerings.availablePackages.length
+  //     ) {
+  //       open();
+  //     }
+  //   }
+  // }, [open, status, offerings, router.pathname]);
 
   const isLifetime = useMemo(() => {
     return offerings?.identifier === "ltd";
@@ -168,7 +163,7 @@ export function InAppPurchase() {
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-full"
             >
-              <Dialog.Panel className="w-full pt-6 px-4 max-w-md mx-auto max-h-[90vh] pb-safe transform overflow-y-auto border dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 dark:text-white text-left transition-all">
+              <Dialog.Panel className="w-full pt-6 px-4 max-w-md mx-auto max-h-[90vh] pb-safe transform overflow-y-auto border dark:border-gray-800 rounded-t-2xl bg-white dark:bg-gray-900 dark:text-white text-left transition-all">
                 <div className="flex items-center">
                   <img src={logo.src} alt="" className="h-20 w-20" />
                   <div className="ml-4">

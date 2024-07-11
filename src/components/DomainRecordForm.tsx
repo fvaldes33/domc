@@ -27,6 +27,10 @@ const DU = z.discriminatedUnion("type", [
     weight: z.number(),
     ttl: z.number().default(43200),
   }),
+  z.object({
+    type: z.literal("TXT"),
+    ttl: z.number().default(3600),
+  }),
 ]);
 
 const DomainRecordSchema = z
@@ -282,6 +286,7 @@ export function DomainRecordForm({
             <option value="NS">NS</option>
             <option value="MX">MX</option>
             <option value="SRV">SRV</option>
+            <option value="TXT">TXT</option>
           </select>
         </div>
       )}

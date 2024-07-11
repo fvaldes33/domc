@@ -1,7 +1,9 @@
 import { MainNavbar } from "@/components/MainNavbar";
 import { Page } from "@/components/Page";
 import { useGetInvoiceSummary, useListInvoiceItems } from "@/hooks/useCustomer";
+import { useGetPreference } from "@/hooks/usePreferences";
 import { classNames } from "@/utils/classNames";
+import { ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
@@ -18,7 +20,10 @@ export default function InvoiceDetail() {
   const { data: items, isLoading: itemsIsLoading } = useListInvoiceItems({
     invoice_uuid: query.invoiceId as string,
   });
-
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
   const isLoading = invoiceIsLoading || itemsIsLoading;
 
   return (
@@ -82,7 +87,10 @@ export default function InvoiceDetail() {
                           <Disclosure.Button
                             className="flex items-center p-4 w-full"
                             onClick={() => {
-                              if (Capacitor.isNativePlatform()) {
+                              if (
+                                Capacitor.isNativePlatform() &&
+                                enabledHapticFeedback
+                              ) {
                                 Haptics.impact({
                                   style: ImpactStyle.Light,
                                 });

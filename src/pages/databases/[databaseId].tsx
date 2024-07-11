@@ -3,8 +3,10 @@ import { ClusterHero } from "@/components/ClusterHero";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import HapticLink from "@/components/HapticLink";
 import { MainNavbar } from "@/components/MainNavbar";
+import { useMissionControl } from "@/components/MissionControlProvider";
 import { Page } from "@/components/Page";
 import { useDatabaseCluster } from "@/hooks/useDatabases";
+import canAccess from "@/utils/permissions";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconBomb,
@@ -17,6 +19,11 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
 export default function DatabaseDetailPage() {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("database", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+
   const { query } = useRouter();
   const {
     data: cluster,
@@ -128,6 +135,12 @@ export default function DatabaseDetailPage() {
                   <HapticLink
                     href={`/databases/${query.databaseId}/users-dbs`}
                     className="flex items-center justify-between px-4 py-2"
+                    onClick={(e) => {
+                      if (!can) {
+                        e.preventDefault();
+                        toggleIap();
+                      }
+                    }}
                   >
                     <div className="flex items-center">
                       <IconUser size={16} />
@@ -140,6 +153,12 @@ export default function DatabaseDetailPage() {
                   <HapticLink
                     href={`/databases/${query.databaseId}/users-dbs`}
                     className="flex items-center justify-between px-4 py-2"
+                    onClick={(e) => {
+                      if (!can) {
+                        e.preventDefault();
+                        toggleIap();
+                      }
+                    }}
                   >
                     <div className="flex items-center">
                       <IconFileDatabase size={16} />
@@ -152,6 +171,12 @@ export default function DatabaseDetailPage() {
                   <HapticLink
                     href={`/databases/${query.databaseId}/destroy`}
                     className="flex items-center justify-between px-4 py-2"
+                    onClick={(e) => {
+                      if (!can) {
+                        e.preventDefault();
+                        toggleIap();
+                      }
+                    }}
                   >
                     <div className="flex items-center">
                       <IconBomb size={16} />

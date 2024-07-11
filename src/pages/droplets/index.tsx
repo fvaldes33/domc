@@ -22,14 +22,11 @@ import { Toolbar } from "@/components/Toolbar";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { classNames } from "@/utils/classNames";
+import { useRouter } from "next/router";
 
 export default function DropletListingPage() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "dropletListing",
-  //     nameOverride: "DropletListingScreen",
-  //   });
-  // }, []);
+  const router = useRouter();
+
   const form = useForm({
     initialValues: {
       searchTerm: "",
@@ -52,7 +49,6 @@ export default function DropletListingPage() {
     if (!form.values.searchTerm) {
       return droplets;
     }
-
     return droplets.filter((d) =>
       d.name.toLowerCase().includes(form.values.searchTerm.toLowerCase())
     );
@@ -138,23 +134,20 @@ export default function DropletListingPage() {
               return (
                 <button
                   key={droplet.id}
-                  className="w-full relative rounded-lg shadow-xl p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
+                  className="w-full relative text-left rounded-lg border dark:border-gray-600 p-4 bg-slate-100 dark:bg-gray-800 flex justify-between transition-transform duration-75 active:scale-95"
+                  onClick={() => {
+                    router.push(`/droplets/${droplet.id}`);
+                  }}
                 >
-                  <Link
-                    href={`/droplets/${droplet.id}`}
-                    className="absolute inset-0"
-                  >
-                    <span className="sr-only">{droplet.name}</span>
-                  </Link>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center mb-4">
                       {droplet.status === "active" ? (
-                        <div className="h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
+                        <div className="shrink-0 h-3 w-3 bg-green-600 rounded-full ring-1 ring-offset-2 ring-green-600 mr-2"></div>
                       ) : (
-                        <div className="h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
+                        <div className="shrink-0 h-3 w-3 bg-red-600 rounded-full ring-1 ring-offset-2 ring-red-600 mr-2"></div>
                       )}
-                      <p className="font-medium leading-none">
-                        {truncate(droplet.name, 30)}
+                      <p className="font-medium leading-none truncate">
+                        {droplet.name}
                       </p>
                     </div>
 

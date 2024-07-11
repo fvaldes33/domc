@@ -1,3 +1,4 @@
+import { IAccount } from "dots-wrapper/dist/account";
 import { NextPage } from "next";
 
 export type PropsOf<
@@ -45,3 +46,5 @@ export type FavoritedResource = {
   title?: string;
   type: FavoriteType;
 };
+
+export type TokenAccountMap = Record<string, IAccount & { token: string }>;

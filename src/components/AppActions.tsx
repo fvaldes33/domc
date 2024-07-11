@@ -1,19 +1,108 @@
 import { useDisclosure } from "@mantine/hooks";
-import { IconLoader } from "@tabler/icons-react";
+import { IconDotsVertical, IconLoader, IconScript } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AppDeploymentLogType, IApp } from "dots-wrapper/dist/app";
+import { IApp } from "dots-wrapper/dist/app";
 
 import { useCreateDeployment, useGetAppDeploymentLogs } from "@/hooks/useApps";
 import { ActionSheet } from "./ActionSheet";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { LogModal, LogModalProps } from "./LogModal";
+import canAccess from "@/utils/permissions";
+import { useMissionControl } from "./MissionControlProvider";
+import { Button } from "./Button";
 
 interface AppActionsProps {
   app: IApp;
 }
 
+export function AppLogAction({ app }: AppActionsProps) {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("app", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+  const getAppDeploymentLogs = useGetAppDeploymentLogs();
+  const queryClient = useQueryClient();
+
+  const [logModalProps, setLogModalProps] = useState<
+    Omit<LogModalProps, "onClose">
+  >({
+    show: false,
+  });
+
+  const getLogsForComponent = () => {
+    close();
+    if (!app.active_deployment.services?.length) {
+      toast.error("No logs available for app");
+      return;
+    }
+    getAppDeploymentLogs.mutate(
+      {
+        app_id: app?.id,
+        deployment_id: app.active_deployment.id,
+        component_name: app.active_deployment.services[0].name,
+        type: "RUN",
+      },
+      {
+        onSuccess: (data) => {
+          if (data.historic_urls?.length) {
+            const [url] = data.historic_urls;
+            setLogModalProps({
+              show: true,
+              url,
+              type: "RUN",
+            });
+          } else if (data.live_url) {
+            setLogModalProps({
+              show: true,
+              url: data.live_url,
+              type: "RUN",
+            });
+          }
+        },
+        onError: (error: any) => {
+          toast.error(error.message);
+        },
+      }
+    );
+  };
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        leftIcon={<IconScript className="mr-2" size={14} />}
+        onClick={() => {
+          if (!can) {
+            toggleIap();
+          } else {
+            getLogsForComponent();
+          }
+        }}
+      >
+        Logs
+      </Button>
+      <LogModal
+        {...logModalProps}
+        onClose={() => {
+          setLogModalProps({
+            show: false,
+            url: undefined,
+            type: undefined,
+          });
+        }}
+      />
+    </>
+  );
+}
+
 export function AppActions({ app }: AppActionsProps) {
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("app", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+
   const [opened, { open, close }] = useDisclosure(false);
 
   const createDeployment = useCreateDeployment();
@@ -39,6 +128,9 @@ export function AppActions({ app }: AppActionsProps) {
             queryClient.invalidateQueries(["apps", app.id]);
           }, 2500);
         },
+        onError(error) {
+          toast.error(error instanceof Error ? error.message : "Unknown error");
+        },
       }
     );
   };
@@ -55,22 +147,21 @@ export function AppActions({ app }: AppActionsProps) {
         deployment_id: app.active_deployment.id,
         component_name: app.active_deployment.services[0].name,
         type: "RUN",
+        follow: true,
       },
       {
         onSuccess: (data) => {
-          if (data.historic_urls?.length) {
-            const [url] = data.historic_urls;
-            window.screen.orientation.unlock();
-            setLogModalProps({
-              show: true,
-              url,
-              type: "RUN",
-            });
-          } else if (data.live_url) {
-            window.screen.orientation.unlock();
+          if (data.live_url) {
             setLogModalProps({
               show: true,
               url: data.live_url,
+              type: "RUN",
+            });
+          } else if (data.historic_urls?.length) {
+            const [url] = data.historic_urls;
+            setLogModalProps({
+              show: true,
+              url,
               type: "RUN",
             });
           }
@@ -84,22 +175,49 @@ export function AppActions({ app }: AppActionsProps) {
 
   return (
     <>
-      <button
-        className="text-sm px-6 bg-ocean-2 text-white rounded-md h-11 flex items-center justify-center font-semibold transform transition-transform duration-75 active:scale-95"
-        onClick={open}
+      <Button
+        size="sm"
+        rightIcon={<IconDotsVertical className="ml-2" size={14} />}
+        onClick={() => {
+          open();
+        }}
       >
         Actions
-      </button>
+      </Button>
 
       <ActionSheet show={opened} onClose={close}>
         {/* <ActionSheet.Label>Actions</ActionSheet.Label> */}
-        <ActionSheet.Button onClick={() => deploy(false)}>
+        <ActionSheet.Button
+          onClick={() => {
+            if (can) {
+              deploy(false);
+            } else {
+              toggleIap();
+            }
+          }}
+        >
           Deploy
         </ActionSheet.Button>
-        <ActionSheet.Button onClick={() => deploy(true)}>
+        <ActionSheet.Button
+          onClick={() => {
+            if (can) {
+              deploy(true);
+            } else {
+              toggleIap();
+            }
+          }}
+        >
           Force Rebuild and Deploy
         </ActionSheet.Button>
-        <ActionSheet.Button onClick={() => getLogsForComponent()}>
+        <ActionSheet.Button
+          onClick={() => {
+            if (can) {
+              getLogsForComponent();
+            } else {
+              toggleIap();
+            }
+          }}
+        >
           View Runtime Logs
         </ActionSheet.Button>
         <ActionSheet.Button
@@ -120,7 +238,6 @@ export function AppActions({ app }: AppActionsProps) {
       <LogModal
         {...logModalProps}
         onClose={() => {
-          window.screen.orientation.lock("portrait");
           setLogModalProps({
             show: false,
             url: undefined,

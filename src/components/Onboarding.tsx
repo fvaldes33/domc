@@ -5,17 +5,24 @@ import logo from "@/assets/logo.png";
 import onboarding from "@/assets/onboarding-1.png";
 import onboarding2 from "@/assets/onboarding-2.png";
 import { useCallback, useEffect, useState } from "react";
-import { IconArrowRight, IconLoader, IconLock } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconEye,
+  IconEyeOff,
+  IconLoader,
+  IconLock,
+} from "@tabler/icons-react";
 import { Button } from "./Button";
 import { useBrowser } from "@/hooks/useBrowser";
 import { useSetPreference } from "@/hooks/usePreferences";
 import { useForm, zodResolver } from "@mantine/form";
 import { z } from "zod";
-import { DO_TOKEN_KEY } from "@/utils/const";
+import { DO_TOKEN_KEY, DO_ACCOUNTS } from "@/utils/const";
 import { getAccount } from "@/hooks/useAccount";
 import { IAccount } from "dots-wrapper/dist/account";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useDisclosure } from "@mantine/hooks";
 
 const SetupSchema = z.object({
   token: z
@@ -45,13 +52,14 @@ const item = {
 export function Onboarding() {
   const navigate = useBrowser();
   const [isVisible, setIsVisible] = useState(false);
+  const [isPasswordVisible, { toggle }] = useDisclosure(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     draggable: false,
     speed: 20,
   });
   const [account, setAccount] = useState<IAccount>();
 
-  const setPreference = useSetPreference<string>();
+  const setPreference = useSetPreference();
 
   const { getInputProps, onSubmit, ...form } = useForm({
     validate: zodResolver(SetupSchema),
@@ -69,6 +77,16 @@ export function Onboarding() {
         setPreference.mutate({
           key: DO_TOKEN_KEY,
           value: token,
+        });
+        setPreference.mutate({
+          key: DO_ACCOUNTS,
+          value: {
+            // @ts-expect-error: Wrong types in package
+            [data.team.uuid]: {
+              ...data,
+              token,
+            },
+          },
         });
       }, 2000);
     } catch (error) {
@@ -275,13 +293,31 @@ export function Onboarding() {
                           <span className="absolute h-full w-10 flex items-center justify-center">
                             <IconLock size={16} className="text-indigo-800" />
                           </span>
-                          <input
-                            type="text"
-                            name="token"
-                            className="bg-white h-10 pl-9 rounded-md w-full text-indigo-800"
-                            placeholder="dop_v1_e...."
-                            {...getInputProps("token")}
-                          />
+                          <div className="relative">
+                            <input
+                              type={isPasswordVisible ? "text" : "password"}
+                              name="token"
+                              className="bg-white h-10 pr-9 rounded-md w-full text-indigo-800"
+                              placeholder="dop_v1_e...."
+                              {...getInputProps("token")}
+                            />
+                            <span className="absolute right-0 aspect-square inset-y-0 h-full flex items-center justify-center p-1">
+                              <button
+                                onClick={toggle}
+                                type="button"
+                                className="border border-ocean-2 rounded-md h-full w-full flex items-center justify-center bg-white"
+                              >
+                                {isPasswordVisible ? (
+                                  <IconEye size={16} className="text-black" />
+                                ) : (
+                                  <IconEyeOff
+                                    size={16}
+                                    className="text-black"
+                                  />
+                                )}
+                              </button>
+                            </span>
+                          </div>
                         </div>
                         {form.errors.token && (
                           <span className="italic text-red-300">

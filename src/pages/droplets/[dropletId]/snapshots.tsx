@@ -51,6 +51,9 @@ export default function DropletSnapshotsPage() {
         droplet_id: droplet!.id,
       },
       {
+        onError: (error: any) => {
+          toast.error(error.message);
+        },
         onSuccess: (data) => {
           close();
           setInProgressData({
@@ -73,6 +76,9 @@ export default function DropletSnapshotsPage() {
         name: `${droplet!.name}-${dayjs().format("c")}`,
       },
       {
+        onError: (error: any) => {
+          toast.error(error.message);
+        },
         onSuccess: (data) => {
           close();
           setInProgressData({

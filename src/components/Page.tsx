@@ -4,6 +4,8 @@ import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { animate, motion, useMotionValue } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Refresher } from "./Refresher";
+import { useGetPreference } from "@/hooks/usePreferences";
+import { ENABLE_HAPTIC_FEEDBACK } from "@/utils/const";
 
 function Page({
   children,
@@ -44,7 +46,10 @@ function Content({
 }) {
   const [isPulling, setIsPulling] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-
+  const { data: enabledHapticFeedback } = useGetPreference<boolean>({
+    key: ENABLE_HAPTIC_FEEDBACK,
+    defaultValue: true,
+  });
   const y = useMotionValue(0);
 
   const isRefreshedEnabled = Boolean(onRefresh);
@@ -126,12 +131,14 @@ function Content({
 
     if (!shouldTriggerRefresh.current) {
       animate(y, 0);
-      refresherRef.current!.style.setProperty("--refresh-opacity", "0");
-      refresherRef.current!.style.setProperty("--refresh-rotation", "0deg");
+      if (refresherRef.current) {
+        refresherRef.current.style.setProperty("--refresh-opacity", "0");
+        refresherRef.current.style.setProperty("--refresh-rotation", "0deg");
+      }
       isDragging.current = false;
       setIsPulling(false);
     } else {
-      if (Capacitor.isNativePlatform()) {
+      if (Capacitor.isNativePlatform() && enabledHapticFeedback) {
         Haptics.impact({
           style: ImpactStyle.Medium,
         });
@@ -143,9 +150,10 @@ function Content({
         shouldTriggerRefresh.current = false;
         isDragging.current = false;
         animate(y, 0);
-        // mainRef.current!.style.setProperty("--drag-y", `0px`);
-        refresherRef.current!.style.setProperty("--refresh-opacity", "0");
-        refresherRef.current!.style.setProperty("--refresh-rotation", "0deg");
+        if (refresherRef.current) {
+          refresherRef.current.style.setProperty("--refresh-opacity", "0");
+          refresherRef.current.style.setProperty("--refresh-rotation", "0deg");
+        }
         setIsPulling(false);
         setIsRefreshing(false);
       });

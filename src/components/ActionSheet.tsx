@@ -54,6 +54,23 @@ function ActionSheetLabel({
   );
 }
 
+function ActionSheetContent({
+  children,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  return (
+    <div
+      className={classNames(
+        "border-b dark:border-gray-700 px-4",
+        className ?? ""
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 function ActionSheetButton({
   children,
   className,
@@ -76,5 +93,5 @@ function ActionSheetButton({
 
 ActionSheet.Label = ActionSheetLabel;
 ActionSheet.Button = ActionSheetButton;
-
+ActionSheet.Content = ActionSheetContent;
 export { ActionSheet };

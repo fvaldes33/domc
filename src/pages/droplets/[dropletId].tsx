@@ -26,6 +26,9 @@ import Link from "@/components/HapticLink";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { useMissionControl } from "@/components/MissionControlProvider";
+import canAccess from "@/utils/permissions";
+import e from "cors";
 
 const dropletNavigationItems = [
   { label: "Power", icon: IconPower, href: "power" },
@@ -35,12 +38,11 @@ const dropletNavigationItems = [
 ];
 
 export default function DropletDetailPage() {
-  // useMemo(async () => {
-  //   await FirebaseAnalytics.setScreenName({
-  //     screenName: "dropletDetail",
-  //     nameOverride: "DropletDetailScreen",
-  //   });
-  // }, []);
+  const { isPaid, toggleIap } = useMissionControl();
+  const can = useMemo(() => {
+    return canAccess("droplet", ["update"], isPaid ? "PURCHASER" : "FREE");
+  }, [isPaid]);
+
   const { query } = useRouter();
   const {
     data: droplet,
@@ -73,6 +75,7 @@ export default function DropletDetailPage() {
 
   const isDestroying =
     dropletDestroy && dropletDestroy.droplet_id === droplet?.id;
+
   return (
     <Page>
       <MainNavbar
@@ -180,6 +183,13 @@ export default function DropletDetailPage() {
                       key={item.href}
                       href={`${droplet.id}/${item.href}`}
                       className="flex items-center justify-center aspect-square rounded-md border border-ocean-2 bg-ocean-2/10 text-ocean-2 dark:text-white"
+                      onClick={(e) => {
+                        if (!can) {
+                          e.preventDefault();
+                          toggleIap();
+                          return;
+                        }
+                      }}
                     >
                       <span className="flex flex-col items-center">
                         <item.icon size={24} strokeWidth={1} />
@@ -202,6 +212,13 @@ export default function DropletDetailPage() {
                             <Link
                               href={`${droplet.id}/networking`}
                               className="flex justify-between items-center px-4 py-2"
+                              onClick={(e) => {
+                                if (!can) {
+                                  e.preventDefault();
+                                  toggleIap();
+                                  return;
+                                }
+                              }}
                             >
                               <div className="capitalize text-sm">
                                 {network.type === "public"

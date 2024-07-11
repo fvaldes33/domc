@@ -37,7 +37,7 @@ export function useGetPreference<T = string>({
   });
 }
 
-export function useSetPreference<T = string>() {
+export function useSetPreference<T = unknown>() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ key, value }: { key: string; value: T }) =>
