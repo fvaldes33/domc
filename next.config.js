@@ -16,6 +16,7 @@ const moduleExports = {
   experimental: {
     instrumentationHook: true,
   },
+  output: "export",
 };
 
 const sentryWebpackPluginOptions = {
@@ -24,7 +25,9 @@ const sentryWebpackPluginOptions = {
   // recommended:
   //   release, url, org, project, authToken, configFile, stripPrefix,
   //   urlPrefix, include, ignore
-
+  org: "appvents",
+  project: "capacitor",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
   hideSourceMaps: true,
 
   silent: true, // Suppresses all logs

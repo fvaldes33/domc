@@ -1,17 +1,9 @@
-import * as Sentry from "@sentry/nextjs";
+export async function register() {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    await import("../sentry.server.config");
+  }
 
-const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
-
-export function register() {
-  Sentry.init({
-    dsn:
-      SENTRY_DSN ||
-      "https://8ad99a0468e54056b798828ccb3562f6@o4504677030690816.ingest.sentry.io/4504677032591360",
-    // Adjust this value in production, or use tracesSampler for greater control
-    tracesSampleRate: 1.0,
-    // ...
-    // Note: if you want to override the automatic release value, do not set a
-    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
-    // that it will also get attached to your source maps
-  });
+  if (process.env.NEXT_RUNTIME === "edge") {
+    await import("../sentry.edge.config");
+  }
 }

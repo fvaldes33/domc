@@ -26,12 +26,12 @@ PODS:
   - RevenuecatPurchasesCapacitor (7.5.5):
     - Capacitor
     - PurchasesHybridCommon (= 10.2.0)
-  - Sentry (7.27.1):
-    - Sentry/Core (= 7.27.1)
-  - Sentry/Core (7.27.1)
-  - SentryCapacitor (0.11.1):
+  - Sentry/HybridSDK (8.21.0):
+    - SentryPrivate (= 8.21.0)
+  - SentryCapacitor (0.18.0):
     - Capacitor
-    - Sentry (~> 7.27.1)
+    - Sentry/HybridSDK (= 8.21.0)
+  - SentryPrivate (8.21.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -53,6 +53,7 @@ SPEC REPOS:
     - PurchasesHybridCommon
     - RevenueCat
     - Sentry
+    - SentryPrivate
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -97,8 +98,9 @@ SPEC CHECKSUMS:
   PurchasesHybridCommon: f161942f40eb37372c78d7c6524254b0b32ac752
   RevenueCat: b552a07693b061ff7ea42c8c224f0613755aafe1
   RevenuecatPurchasesCapacitor: 41b71c418e7e250b7e72df74b0c2c409551974fc
-  Sentry: bc644307e2eb6a4c9c55cf117a80b895bb2a25a7
-  SentryCapacitor: eca3e6109e2efa6f98fca57413adc5593aa9810d
+  Sentry: ebc12276bd17613a114ab359074096b6b3725203
+  SentryCapacitor: 170d8b96ba195cead4dc60eaf5c42aacf97ff1d3
+  SentryPrivate: d651efb234cf385ec9a1cdd3eff94b5e78a0e0fe
 
 PODFILE CHECKSUM: 954fc1ed7a6a859b1f48a2e153e0fb6121f7dd45
 

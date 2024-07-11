@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import "xterm/css/xterm.css";
 
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Nunito_Sans } from "@next/font/google";
+import { Nunito_Sans } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
 import Head from "next/head";
