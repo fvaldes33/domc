@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export",
     "build:mobile": "next build && npx cap sync",
     "ionic:build": "npm run build",
     "ionic:serve": "npm run start"
