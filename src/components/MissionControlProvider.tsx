@@ -112,7 +112,7 @@ export function MissonControlProvider({
   }, [colorSchemePref, theme]);
 
   const isPaid = useMemo(() => {
-    return true; //Object.keys(customerInfo?.entitlements?.active ?? {}).length > 0;
+    return Object.keys(customerInfo?.entitlements?.active ?? {}).length > 0;
   }, [customerInfo]);
 
   return (

@@ -13,6 +13,9 @@ const moduleExports = {
     "@revenuecat/purchases-capacitor",
     "@revenuecat/purchases-typescript-internal-esm",
   ],
+  experimental: {
+    instrumentationHook: true,
+  },
 };
 
 const sentryWebpackPluginOptions = {
