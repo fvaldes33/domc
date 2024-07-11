@@ -16,6 +16,7 @@ const moduleExports = {
   experimental: {
     instrumentationHook: true,
   },
+  output: "export",
 };
 
 const sentryWebpackPluginOptions = {
