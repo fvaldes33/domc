@@ -23,8 +23,7 @@ import { Switch } from "@headlessui/react";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
-import { RateApp } from "capacitor-rate-app";
-import e from "cors";
+import { InAppReview } from "@capacitor-community/in-app-review";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
@@ -139,7 +138,7 @@ export default function Settings() {
 
   const triggerAppRate = () => {
     if (Capacitor.isNativePlatform()) {
-      RateApp.requestReview();
+      InAppReview.requestReview();
     }
   };
 

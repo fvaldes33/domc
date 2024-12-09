@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: "com.appvents.domc",
   appName: "Mission Control",
   webDir: "out",
-  bundledWebRuntime: false,
   plugins: {
     SplashScreen: {
       launchAutoHide: false,

@@ -14,7 +14,7 @@ import {
   IconRotate2,
   IconX,
 } from "@tabler/icons-react";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Fragment, useEffect, useRef, useState } from "react";
 import type { Terminal } from "xterm";
 import type { FitAddon } from "xterm-addon-fit";
@@ -50,136 +50,23 @@ async function initializeTerminal(el: HTMLDivElement) {
 }
 
 export function LogModal({ url, show, type, onClose }: LogModalProps) {
-  const [mounted, setMounted] = useState(false);
-  const xtermRef = useRef<HTMLDivElement>(null);
-  const fitAddOnRef = useRef<FitAddon>();
-  const instanceRef = useRef<Terminal>();
   const [isRotateMessageVisible, setIsRotateMessageVisible] = useState(true);
-  const [instance, setInstance] = useState<Terminal>();
-  const [fontSize, setFontSize] = useState<number>(8);
-  const [logData, setLogData] = useState<string>("");
-  useWindowEvent("resize", () => {
-    fitAddOnRef.current?.fit();
-  });
-  // const { data, isLoading, refetch, isRefetching, isError, error } =
-  //   useDownloadLogFile({
-  //     url,
-  //     onSuccess: async (data) => {
-  //       if (instance) {
-  //         if (data.success) {
-  //           instance.clear();
-  //           instance.write(data.content);
-  //         }
-  //       } else {
-  //         const Terminal = (await import("xterm")).Terminal;
-  //         const CanvasAddon = (await import("xterm-addon-canvas")).CanvasAddon;
-  //         const FitAddon = (await import("xterm-addon-fit")).FitAddon;
-
-  //         const xterm = new Terminal({
-  //           convertEol: true,
-  //           fontSize: fontSize,
-  //           theme: {
-  //             background: "transparent",
-  //           },
-  //         });
-  //         const fitAddon = new FitAddon();
-  //         const canvasAddon = new CanvasAddon();
-
-  //         xterm.loadAddon(fitAddon);
-  //         xterm.loadAddon(canvasAddon);
-
-  //         xterm.open(xtermRef.current!);
-  //         fitAddon.fit();
-
-  //         if (data.success) {
-  //           xterm.write(data.content);
-  //           xterm.scrollToBottom();
-  //         }
-
-  //         setInstance(xterm);
-  //       }
-  //     },
-  //   });
+  const [xtermInstance, setXtermInstance] = useAtom(xtermInstanceAtom);
 
   useEffect(() => {
     if (!show) {
-      setInstance(undefined);
+      setXtermInstance(null);
     }
 
     return () => {
-      setInstance(undefined);
+      setXtermInstance(null);
     };
-  }, [show]);
-
-  const changeFontSize = (size: number) => {
-    if (!instance) return;
-    instance.options.fontSize = size;
-    // instance.resize(instance.cols, instance.rows);
-    setFontSize(size);
-    // refetch();
-  };
+  }, [show, setXtermInstance]);
 
   const onBeforeClose = () => {
-    instance && instance.dispose();
+    xtermInstance?.dispose();
     onClose();
   };
-
-  // const initializeTerminal = async () => {
-  //   const Terminal = (await import("xterm")).Terminal;
-  //   const CanvasAddon = (await import("xterm-addon-canvas")).CanvasAddon;
-  //   const FitAddon = (await import("xterm-addon-fit")).FitAddon;
-
-  //   const xterm = new Terminal({
-  //     convertEol: true,
-  //     fontSize: fontSize,
-  //     theme: {
-  //       background: "transparent",
-  //     },
-  //   });
-  //   const fitAddon = new FitAddon();
-  //   const canvasAddon = new CanvasAddon();
-
-  //   xterm.loadAddon(fitAddon);
-  //   xterm.loadAddon(canvasAddon);
-
-  //   xterm.open(xtermRef.current!);
-  //   fitAddon.fit();
-  //   instanceRef.current = xterm;
-  // };
-
-  // const startStream = async () => {
-  //   if (!url) return;
-  //   await initializeTerminal();
-  //   try {
-  //     const remoteEndpoint = getRemoteApiEndpoint();
-  //     const response = await fetch(
-  //       `${remoteEndpoint}/api/stream-logs?url=${encodeURIComponent(url)}`
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const reader = response.body?.getReader();
-  //     const decoder = new TextDecoder();
-
-  //     if (!reader) {
-  //       console.error("Unable to read stream");
-  //       return;
-  //     }
-
-  //     while (true) {
-  //       const { done, value } = await reader.read();
-  //       if (done) break;
-
-  //       const chunk = decoder.decode(value, { stream: true });
-  //       console.log(chunk);
-  //       setLogData((prev) => prev + chunk);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching log:", error);
-  //   }
-  // };
 
   return (
     <Transition show={show} as={Fragment}>
@@ -195,7 +82,7 @@ export function LogModal({ url, show, type, onClose }: LogModalProps) {
         >
           <div className="fixed inset-0 bg-black/50 backdrop-blur-md" />
         </Transition.Child>
-        <div className="fixed inset-x-0 bottom-0">
+        <div className="fixed inset-0">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -205,41 +92,28 @@ export function LogModal({ url, show, type, onClose }: LogModalProps) {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-full"
           >
-            <Dialog.Panel className="relative flex flex-col w-full h-[95svh] pt-safe transform overflow-hidden border dark:border-gray-800 rounded-t-2xl bg-white dark:bg-gray-900 text-left transition-all">
-              <button
-                onClick={onBeforeClose}
-                className="h-8 w-8 bg-black text-white flex items-center justify-center rounded-full top-3 right-4 absolute"
-              >
-                <IconX />
-              </button>
-              <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+            <Dialog.Panel className="relative flex flex-col w-full h-full transform overflow-hidden border dark:border-gray-800 rounded-t-2xl bg-white dark:bg-gray-900 text-left transition-all">
+              <div className="flex items-center justify-between p-4 border-b flex-shrink-0 relative mt-safe">
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900 dark:text-white capitalize"
                 >
                   <span>{type?.toLowerCase()} Log</span>
                 </Dialog.Title>
-              </div>
 
-              <div className="flex-1 flex flex-col relative">
-                <Xterm>
-                  {url && (
-                    <>
-                      <LogStream url={url} />
-                      <LogStreamStatus />
-                    </>
-                  )}
-                </Xterm>
-              </div>
-              {/* {isLoading && (
-                <div className="absolute inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                  <IconLoader className="animate-spin" />
+                <div className="flex items-center gap-x-3 absolute inset-y-0 right-0 px-3">
+                  {url && <XtermUtils url={url} />}
+                  <button
+                    onClick={onBeforeClose}
+                    className="h-8 w-8 bg-black text-white flex items-center justify-center rounded-full"
+                  >
+                    <IconX />
+                  </button>
                 </div>
-              )} */}
+              </div>
 
-              {/* {isError && (
-                <div className="text-red-500">Something went wrong</div>
-              )} */}
+              <Xterm>{url && <LogStream url={url} />}</Xterm>
+              <LogStreamStatus />
               {isRotateMessageVisible && (
                 <div className="md:hidden w-full max-w-xs bg-slate-800 rounded-full absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white py-2 text-sm">
                   <div className="flex items-center space-x-2">
@@ -258,8 +132,6 @@ export function LogModal({ url, show, type, onClose }: LogModalProps) {
                   </div>
                 </div>
               )}
-
-              {url && <XtermUtils url={url} />}
             </Dialog.Panel>
           </Transition.Child>
         </div>
@@ -269,6 +141,7 @@ export function LogModal({ url, show, type, onClose }: LogModalProps) {
 }
 
 const xtermInstanceAtom = atom<Terminal | null>(null);
+const xtermFitAddonAtom = atom<FitAddon | null>(null);
 const xtermWriteLnAtom = atom(null, (get, _set, update: string) => {
   const xterm = get(xtermInstanceAtom);
   if (xterm) {
@@ -326,23 +199,21 @@ function Xterm({ children }: { children: React.ReactNode }) {
   const mounted = useRef<boolean>(false);
   const xtermRef = useRef<HTMLDivElement>(null);
   const setXtermInstance = useSetAtom(xtermInstanceAtom);
-
+  const setXtermFitAddon = useSetAtom(xtermFitAddonAtom);
   useEffect(() => {
     if (!xtermRef.current) return;
     if (!mounted.current) {
-      initializeTerminal(xtermRef.current).then(({ xterm }) => {
+      initializeTerminal(xtermRef.current).then(({ xterm, fitAddon }) => {
         setXtermInstance(xterm);
+        setXtermFitAddon(fitAddon);
       });
     }
     mounted.current = true;
-  }, [setXtermInstance]);
+  }, [setXtermInstance, setXtermFitAddon]);
 
   return (
     <>
-      <div
-        ref={xtermRef}
-        className="w-screen overflow-auto flex-1 mb-safe"
-      ></div>
+      <div ref={xtermRef} className="w-screen overflow-auto flex-1"></div>
       {children}
     </>
   );
@@ -385,8 +256,13 @@ function LogStreamStatus() {
 
 function XtermUtils({ url }: { url: string }) {
   const xtermInstance = useAtomValue(xtermInstanceAtom);
+  const xtermFitAddon = useAtomValue(xtermFitAddonAtom);
   const [fontSize, setFontSize] = useState<number>(8);
   const stream = useSetAtom(xtermStreamAtom);
+
+  useWindowEvent("resize", () => {
+    xtermFitAddon?.fit();
+  });
 
   const changeFontSize = (size: number) => {
     if (!xtermInstance) return;
@@ -399,8 +275,9 @@ function XtermUtils({ url }: { url: string }) {
     stream({ url, overwrite: true });
   };
 
+  // <div className="z-50 py-4 px-6 bg-slate-800 rounded-full absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
   return (
-    <div className="z-50 py-4 px-6 bg-slate-800 rounded-full absolute bottom-4 mb-safe left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+    <>
       <button
         className="h-8 w-8 bg-black text-white rounded-full flex items-center justify-center"
         onClick={() => {
@@ -443,6 +320,6 @@ function XtermUtils({ url }: { url: string }) {
           // className={isRefetching ? "animate-spin" : ""}
         />
       </button>
-    </div>
+    </>
   );
 }

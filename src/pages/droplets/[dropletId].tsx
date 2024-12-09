@@ -28,7 +28,6 @@ import { useMemo } from "react";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { useMissionControl } from "@/components/MissionControlProvider";
 import canAccess from "@/utils/permissions";
-import e from "cors";
 
 const dropletNavigationItems = [
   { label: "Power", icon: IconPower, href: "power" },
