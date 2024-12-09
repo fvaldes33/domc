@@ -1,5 +1,5 @@
 import {
-  IconQuestionCircle,
+  IconQuestionMark,
   IconClockCancel,
   IconTools,
   IconUpload,
@@ -17,7 +17,7 @@ export const DeploymentPhaseMap = new Map<string, React.FC>([
       </span>
     ),
   ],
-  ["UNKNOWN", () => <IconQuestionCircle />],
+  ["UNKNOWN", () => <IconQuestionMark />],
   ["PENDING_BUILD", () => <IconClockCancel />],
   ["PENDING_DEPLOY", () => <IconClockCancel />],
   ["BUILDING", () => <IconLoader className="animate-spin" />],

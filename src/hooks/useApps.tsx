@@ -53,6 +53,7 @@ async function getAppDeployments({
   const {
     data: {
       deployments,
+      // @ts-expect-error bad api types
       meta: { total },
     },
   } = await dots.app.listAppDeployments({

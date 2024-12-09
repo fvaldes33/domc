@@ -46,6 +46,7 @@ async function listBillingHistory({
   const {
     data: {
       billing_history,
+      // @ts-expect-error bad api types
       meta: { total },
     },
   } = await dots.customer.listBillingHistory(input);
