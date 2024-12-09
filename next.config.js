@@ -2,7 +2,7 @@
 // with Sentry.
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
+require("dotenv").config();
 const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
@@ -16,7 +16,7 @@ const moduleExports = {
   experimental: {
     instrumentationHook: true,
   },
-  // output: "export",
+  ...(process.env.VERCEL ? {} : { output: "export" }),
 };
 
 const sentryWebpackPluginOptions = {

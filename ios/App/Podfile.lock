@@ -1,24 +1,24 @@
 PODS:
-  - Capacitor (6.1.1):
+  - Capacitor (6.2.0):
     - CapacitorCordova
-  - CapacitorBrowser (6.0.1):
+  - CapacitorBrowser (6.0.4):
     - Capacitor
   - CapacitorCommunityInAppReview (6.0.0):
     - Capacitor
-  - CapacitorCordova (6.1.1)
-  - CapacitorDevice (6.0.0):
+  - CapacitorCordova (6.2.0)
+  - CapacitorDevice (6.0.2):
     - Capacitor
-  - CapacitorHaptics (6.0.0):
+  - CapacitorHaptics (6.0.2):
     - Capacitor
-  - CapacitorPreferences (6.0.1):
+  - CapacitorPreferences (6.0.3):
     - Capacitor
-  - CapacitorScreenOrientation (6.0.1):
+  - CapacitorScreenOrientation (6.0.3):
     - Capacitor
-  - CapacitorSplashScreen (6.0.1):
+  - CapacitorSplashScreen (6.0.3):
     - Capacitor
-  - CapacitorStatusBar (6.0.0):
+  - CapacitorStatusBar (6.0.2):
     - Capacitor
-  - CordovaPlugins (6.1.1):
+  - CordovaPlugins (6.2.0):
     - CapacitorCordova
   - PurchasesHybridCommon (11.1.1):
     - RevenueCat (= 4.43.2)
@@ -26,12 +26,10 @@ PODS:
   - RevenuecatPurchasesCapacitor (8.0.0):
     - Capacitor
     - PurchasesHybridCommon (= 11.1.1)
-  - Sentry/HybridSDK (8.21.0):
-    - SentryPrivate (= 8.21.0)
-  - SentryCapacitor (0.18.0):
+  - Sentry/HybridSDK (8.36.0)
+  - SentryCapacitor (1.0.2):
     - Capacitor
-    - Sentry/HybridSDK (= 8.21.0)
-  - SentryPrivate (8.21.0)
+    - Sentry/HybridSDK (= 8.36.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -53,7 +51,6 @@ SPEC REPOS:
     - PurchasesHybridCommon
     - RevenueCat
     - Sentry
-    - SentryPrivate
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -84,24 +81,23 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@sentry/capacitor"
 
 SPEC CHECKSUMS:
-  Capacitor: 8941aba4364ba9d1b22188569001f2ce45cc2b00
-  CapacitorBrowser: 473c7fd70ddbe541608ff09ec1be14da0078279e
+  Capacitor: 1f3c7b9802d958cd8c4eb63895fff85dff2e1eea
+  CapacitorBrowser: ef0529d16cd8839281050c350e7bbee4f5c6d65f
   CapacitorCommunityInAppReview: c69a9392f39a10f28092d823cfa979637f4fa079
-  CapacitorCordova: 8f2cc8d8d3619c566e9418fe8772064a94266106
-  CapacitorDevice: f8fd88f9edd1261c55a109f32015b09bbbfdc4a0
-  CapacitorHaptics: 9ebc9363f0e9b8eb4295088a0b474530acf1859b
-  CapacitorPreferences: 72909b165bc7807103778ddbb86d5d8ce06abf71
-  CapacitorScreenOrientation: 3d4965dcbda5d901b6a48350a5d270ad7d404e05
-  CapacitorSplashScreen: 61645214e8f955ff2b80f16a6a3648960fe4c89f
-  CapacitorStatusBar: 2e4369f99166125435641b1908d05f561eaba6f6
-  CordovaPlugins: 6923466e6797c1c33ae95be4ed08042cadb64892
+  CapacitorCordova: b33e7f4aa4ed105dd43283acdd940964374a87d9
+  CapacitorDevice: 1a215717f0b5061503b21a03508b0ec458a57d78
+  CapacitorHaptics: b53409aaca1203f79c6d0eb3ed5de40556339518
+  CapacitorPreferences: 9f9935bce493977183511362131a93f7b260191a
+  CapacitorScreenOrientation: 3bb823f5d265190301cdc5d58a568a287d98972a
+  CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
+  CapacitorStatusBar: 3b9ac7d0684770522c532d1158a1434512ab1477
+  CordovaPlugins: 08731213c63ccf137c576da2926bf4b3a8c40f17
   PurchasesHybridCommon: 73f4f2c6e4ec3487b4219bf60e1661100fb85da3
   RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
   RevenuecatPurchasesCapacitor: a1d86d2d55f4dcee78f86f21d9e9e87858110cdc
-  Sentry: ebc12276bd17613a114ab359074096b6b3725203
-  SentryCapacitor: 170d8b96ba195cead4dc60eaf5c42aacf97ff1d3
-  SentryPrivate: d651efb234cf385ec9a1cdd3eff94b5e78a0e0fe
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
+  SentryCapacitor: 808a63a267d5053af12c25e6125c13f79b32debc
 
 PODFILE CHECKSUM: 108f70a2a4a1fd5f3ec02cf77d3f22ded6f6b601
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
