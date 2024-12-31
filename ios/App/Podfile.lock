@@ -20,12 +20,12 @@ PODS:
     - Capacitor
   - CordovaPlugins (6.2.0):
     - CapacitorCordova
-  - PurchasesHybridCommon (11.1.1):
-    - RevenueCat (= 4.43.2)
-  - RevenueCat (4.43.2)
-  - RevenuecatPurchasesCapacitor (8.0.0):
+  - PurchasesHybridCommon (13.12.0):
+    - RevenueCat (= 5.12.0)
+  - RevenueCat (5.12.0)
+  - RevenuecatPurchasesCapacitor (9.0.8):
     - Capacitor
-    - PurchasesHybridCommon (= 11.1.1)
+    - PurchasesHybridCommon (= 13.12.0)
   - Sentry/HybridSDK (8.36.0)
   - SentryCapacitor (1.0.2):
     - Capacitor
@@ -92,12 +92,12 @@ SPEC CHECKSUMS:
   CapacitorSplashScreen: 68893659d77b5f82d753b3a70475082845e3039c
   CapacitorStatusBar: 3b9ac7d0684770522c532d1158a1434512ab1477
   CordovaPlugins: 08731213c63ccf137c576da2926bf4b3a8c40f17
-  PurchasesHybridCommon: 73f4f2c6e4ec3487b4219bf60e1661100fb85da3
-  RevenueCat: 3d934653b7e8b09af88fd47e9e84cfaf5d0a89ba
-  RevenuecatPurchasesCapacitor: a1d86d2d55f4dcee78f86f21d9e9e87858110cdc
+  PurchasesHybridCommon: 34be8fccff5e253c67ab624965e2cbda7f640632
+  RevenueCat: 459e3e60c895e20c0e7a2d767bece11140854306
+  RevenuecatPurchasesCapacitor: 0f77c93cc0cca1262d21c46cf827891039b3f6da
   Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
   SentryCapacitor: 808a63a267d5053af12c25e6125c13f79b32debc
 
-PODFILE CHECKSUM: 108f70a2a4a1fd5f3ec02cf77d3f22ded6f6b601
+PODFILE CHECKSUM: 0b4c43392f20a06767daf26f50d79b9b3bac6ff6
 
 COCOAPODS: 1.16.2

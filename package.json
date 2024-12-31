@@ -26,7 +26,7 @@
     "@headlessui/react": "^1.7.9",
     "@mantine/form": "^5.10.3",
     "@mantine/hooks": "^5.10.3",
-    "@revenuecat/purchases-capacitor": "^8.0.0",
+    "@revenuecat/purchases-capacitor": "^9.0.8",
     "@sentry/capacitor": "^1.0.2",
     "@sentry/nextjs": "8.37.1",
     "@tabler/icons-react": "^2.2.0",

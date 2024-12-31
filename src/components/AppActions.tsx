@@ -72,7 +72,6 @@ export function AppLogAction({ app }: AppActionsProps) {
       <Button
         variant="outline"
         size="sm"
-        leftIcon={<IconScript className="mr-2" size={14} />}
         onClick={() => {
           if (!can) {
             toggleIap();
@@ -177,7 +176,6 @@ export function AppActions({ app }: AppActionsProps) {
     <>
       <Button
         size="sm"
-        rightIcon={<IconDotsVertical className="ml-2" size={14} />}
         onClick={() => {
           open();
         }}
